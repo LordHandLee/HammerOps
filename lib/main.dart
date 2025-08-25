@@ -69,8 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.grey[200], // backgjround behind buttons
+      backgroundColor: const Color.fromARGB(255, 224, 211, 193), // backgjround behind buttons
       body: SafeArea(
         child: Column(
           children: [
@@ -82,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Spacer(), // centers the text
                   Text(
-                    "WELCOME [COMPANY NAME HERE]",
+                    "\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -99,11 +101,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               child: ListView(
                 children: [
-                  buildMenuButton("OPS BOARD", Colors.blueGrey[400]!, Icons.dashboard ),
-                  buildMenuButton("BRIEFCASE", Colors.blueGrey[500]!, Icons.work),
-                  buildMenuButton("TASK LIST", Colors.blueGrey[600]!, Icons.check_circle),
-                  buildMenuButton("SUPPLY DECK", Colors.blueGrey[700]!, Icons.inventory),
-                  buildMenuButton("SECURE PAY", Colors.blueGrey[800]!, Icons.lock),
+                  // buildMenuButton("OPS BOARD", Colors.blueGrey[400]!, Icons.dashboard ),
+                  // buildMenuButton("BRIEFCASE", Colors.blueGrey[500]!, Icons.work),
+                  // buildMenuButton("TASK LIST", Colors.blueGrey[600]!, Icons.check_circle),
+                  // buildMenuButton("SUPPLY DECK", Colors.blueGrey[700]!, Icons.inventory),
+                  // buildMenuButton("SECURE PAY", Colors.blueGrey[800]!, Icons.lock),
+                  buildExpandableMenu("OPS BOARD", Colors.blueGrey[400]!, Icons.dashboard, [ListTile(title: Text("Project A")),ListTile(title: Text("Project B")),ListTile(title: Text("2025 Profit Margins"))], context),
+                  buildExpandableMenu("BRIEFCASE", Colors.blueGrey[500]!, Icons.work, [ListTile(title: Text("Folder 1")), ListTile(title: Text("Folder 2"))], context),
+                  buildExpandableMenu("TASK LIST", Colors.blueGrey[600]!, Icons.check_circle, [ListTile(title: Text("Customer A    Pour Concrete")), ListTile(title: Text("Customer B    Remove debris"))], context),
+                  buildExpandableMenu("SUPPLY DECK", Colors.blueGrey[700]!, Icons.inventory, [ListTile(title: Text("QUARTERLY_FINANCIALS.PDF")), ListTile(title: Text("SAFETY_GEAR_LIST.PDF")), ListTile(title: Text("PERMIT_TEMPLATE.PDF"))], context),
+                  buildExpandableMenu("SECURE PAY", Colors.blueGrey[800]!, Icons.lock, [ListTile(title: Text("Credit Card")), ListTile(title: Text("Invoices"))], context),
+                  // buildExpandableMenu("Reports",Colors.blueGrey[800]!,Icons.menu,[ListTile(title: Text("Daily Report")),ListTile(title: Text("Weekly Report")),],),
+
                 ],
               ),
             ),
@@ -160,6 +169,28 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ],
+    ),
+  );
+}
+
+Widget buildExpandableMenu(String title, Color color, IconData icon, List<Widget> children, BuildContext context) {
+  return Container(
+    height: 80,
+    color: color,
+    child: ExpansionTile(
+      leading: Icon(icon, color: Colors.white, size: 28),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.white,
+          letterSpacing: 2,
+        ),
+        textAlign: TextAlign.center,
+      ),
+      trailing: SizedBox.shrink(),
+      children: children,
     ),
   );
 }
