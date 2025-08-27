@@ -134,11 +134,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-          // leading: Image.asset(
-          //   'images/logo.png', // URL for network image
-          //   width: 40,
-          //   height: 40,
-          // ),
+          leading: Image.asset(
+            'images/logo.png', // URL for network image
+            width: 40,
+            height: 40,
+          ),
           title: const Text('Snug Expansion Tiles')),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
