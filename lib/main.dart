@@ -145,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 40,
             height: 40,
           ),
-          title: const Text('Snug Expansion Tiles')),
+          title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]'))),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
