@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'screens/login_screen.dart';
 void main() {
   runApp(const HammerOps());
 }
@@ -30,7 +30,13 @@ class HammerOps extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Hammer Ops Demo Home Page'),
+      // home: const MyHomePage(title: 'Hammer Ops Demo Home Page'),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const MyHomePage(title: 'Hammer Ops Home Page'),
+      },
+      home: const LoginScreen(),
     );
   }
 }
