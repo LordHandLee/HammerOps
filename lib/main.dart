@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     DashboardPage(),
     FavoriteScreen(),
     ProfileScreen(),
-    // QuoteScreen(),
+    QuoteScreen(),
   ];
 
   void _incrementCounter() {
@@ -168,13 +168,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]'))),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',),
           BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Apps'),
           BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Settings'),
-          // BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Settings'),
         ],
       ),
       body: _pages[_selectedIndex],

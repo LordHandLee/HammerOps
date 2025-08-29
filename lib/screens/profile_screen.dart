@@ -37,7 +37,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
       body: Row(
         children: [
           Row()

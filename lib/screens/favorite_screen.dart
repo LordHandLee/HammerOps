@@ -37,7 +37,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
       body: Row(
         children: [
           Row()
