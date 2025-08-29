@@ -37,7 +37,13 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+            appBar: AppBar(
+          leading: Image.asset(
+            'images/logo.png', // URL for network image
+            width: 40,
+            height: 40,
+          ),
+          title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]'))),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -53,7 +59,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: "Email",
+                    label: Center(child: Text("USERNAME")),
+                    // labelText: "USERNAME",
+                    fillColor: Colors.white,
+                    filled: true,
+                    suffixIcon: Icon(Icons.person),
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -73,7 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(
-                    labelText: "Password",
+                    label: Center(child: Text("PASSWORD")),
+                    // labelText: "PASSWORD",
+                    fillColor: Colors.white,
+                    filled: true,
+                    suffixIcon: Icon(Icons.lock),
                     border: OutlineInputBorder(),
                   ),
                   obscureText: true,
