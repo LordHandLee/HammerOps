@@ -170,13 +170,14 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Color.fromARGB(255, 195, 189, 170)),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.black,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',),
-          BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Apps'),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Settings'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white,), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.apps, color: Colors.white,), label: 'Apps'),
+          BottomNavigationBarItem(icon: Icon(Icons.edit, color: Colors.white,), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white,), label: 'Settings'),
         ],
       ),
       body: _pages[_selectedIndex],
