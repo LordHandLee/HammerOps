@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 23, 36, 50),
+      backgroundColor: const Color.fromARGB(255, 23, 42, 57), // 23, 26, 50
             appBar: AppBar(
           leading: Image.asset(
             'images/logo.png', // URL for network image
@@ -54,11 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'images/logo.png', // URL for network image
-                  width: 400,
-                  height: 400,
+                  'images/hero.png', // URL for network image
+                  width: 300,
+                  height: 300,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 50),
 
                 // Email input
                 TextFormField(
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       textStyle: const TextStyle(fontSize: 18),
                     ),
-                    child: const Text("Login"),
+                    child: const Text("Login Now"),
                   ),
                 ),
 
