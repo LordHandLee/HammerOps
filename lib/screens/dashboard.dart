@@ -49,7 +49,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 icon: Icons.dashboard,
                 iconColor: Colors.white,
                 textColor: Colors.white,
-                container_color: Colors.blueGrey[400]!,
+                container_color: Color.fromARGB(255, 86, 124, 155),
+                expanded_color: Color.fromARGB(255, 86, 124, 155),
               ),
               SnugTile(
                 title: "BRIEFCASE", 
@@ -113,6 +114,7 @@ class SnugTile extends StatefulWidget {
   final Color iconColor;
   final Color textColor;
   final Color container_color;
+  final Color expanded_color;
 
   const SnugTile({
     super.key,
@@ -123,6 +125,7 @@ class SnugTile extends StatefulWidget {
     this.iconColor = Colors.black,
     this.textColor = Colors.black,
     this.container_color = Colors.white,
+    this.expanded_color = Colors.grey, // default color for expanded area
   });
 
   @override
@@ -179,7 +182,7 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
                 width: double.infinity,
                 // height of the extra content when open
                 height: widget.expandedContentHeight,
-                color: Colors.grey[100],
+                color: widget.expanded_color,
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   'Expanded content for ${widget.title}. '
