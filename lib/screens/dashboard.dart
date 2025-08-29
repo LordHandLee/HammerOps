@@ -59,7 +59,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 icon: Icons.work,
                 iconColor: Colors.white,
                 textColor: Colors.white,
-                container_color: Colors.blueGrey[500]!,
+                container_color: Color.fromARGB(255, 59, 87, 110),
+                expanded_color: Color.fromARGB(255, 59, 87, 110),
               ),
               SnugTile(
                 title: "TASK LIST", 
@@ -68,7 +69,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 icon: Icons.check_circle,
                 iconColor: Colors.white,
                 textColor: Colors.white,
-                container_color: Colors.blueGrey[600]!,
+                container_color: Color.fromARGB(255, 28, 46, 60),
+                expanded_color: Color.fromARGB(255, 28, 46, 60),
               ),
               SnugTile(
                 title: "SUPPLY DECK", 
@@ -77,7 +79,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 icon: Icons.inventory,
                 iconColor: Colors.white,
                 textColor: Colors.white,
-                container_color: Colors.blueGrey[700]!,
+                container_color: Color.fromARGB(255, 32, 43, 60),
+                expanded_color: Color.fromARGB(255, 32, 43, 60),
               ),
               SnugTile(
                 title: "SECURE PAY", 
@@ -86,7 +89,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 icon: Icons.lock,
                 iconColor: Colors.white,
                 textColor: Colors.white,
-                container_color: Colors.blueGrey[800]!,
+                container_color: Color.fromARGB(255, 25, 30, 44),
+                expanded_color: Color.fromARGB(255, 25, 30, 44),
               ),
               SnugTile(
                 title: "MY TEAM", 
@@ -95,7 +99,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 icon: Icons.contacts,
                 iconColor: Colors.white,
                 textColor: Colors.white,
-                container_color: Colors.blueGrey[900]!,
+                container_color: Color.fromARGB(255, 18, 24, 33),
+                expanded_color: Color.fromARGB(255, 18, 24, 33),
               ),
             ]
           ),
