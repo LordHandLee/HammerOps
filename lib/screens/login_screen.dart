@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 23, 36, 50),
             appBar: AppBar(
           leading: Image.asset(
             'images/logo.png', // URL for network image
@@ -52,19 +53,25 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.lock, size: screenHeight * 0.1, color: Colors.blue),
+                Image.asset(
+                  'images/logo.png', // URL for network image
+                  width: 400,
+                  height: 400,
+                ),
                 const SizedBox(height: 20),
 
                 // Email input
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    label: Center(child: Text("USERNAME")),
+                  decoration:  InputDecoration(
+                    label: Center(child: Text("\t\t\t\t\t\t\t\t\tUSERNAME")),
                     // labelText: "USERNAME",
                     fillColor: Colors.white,
                     filled: true,
                     suffixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -82,13 +89,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Password input
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    label: Center(child: Text("PASSWORD")),
+                  decoration:  InputDecoration(
+                    label: Center(child: Text("\t\t\t\t\t\t\t\t\tPASSWORD")),
                     // labelText: "PASSWORD",
                     fillColor: Colors.white,
                     filled: true,
                     suffixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
                   ),
                   obscureText: true,
                   validator: (value) {
