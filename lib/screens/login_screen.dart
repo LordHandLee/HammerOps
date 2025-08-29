@@ -63,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Email input
                 TextFormField(
                   controller: _emailController,
+                  textAlign: TextAlign.center,
                   decoration:  InputDecoration(
                     label: Center(child: Text("\t\t\t\t\t\t\t\t\tUSERNAME")),
                     // labelText: "USERNAME",
@@ -89,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Password input
                 TextFormField(
                   controller: _passwordController,
+                  textAlign: TextAlign.center,
                   decoration:  InputDecoration(
                     label: Center(child: Text("\t\t\t\t\t\t\t\t\tPASSWORD")),
                     // labelText: "PASSWORD",
@@ -125,12 +127,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
-                TextButton(
+                const SizedBox(height: 25),
+                Container(
+                  width: screenWidth * 0.8,
+                  child: const Text(
+                    "No account?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, decoration: TextDecoration.underline),
+                  ),
+                ),
+                // const Text("No account?"),
+                // const SizedBox(height: 10),
+                ElevatedButton(
                   onPressed: () {
                     // Navigate to registration page
                   },
-                  child: const Text("Don't have an account? Sign up"),
+                  child: const Text("CREATE ACCOUNT"),
                 )
               ],
             ),
