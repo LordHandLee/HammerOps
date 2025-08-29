@@ -1,54 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
-import 'screens/favorite_screen.dart';
-import 'screens/profile_screen.dart';
-import 'screens/quote_screen.dart';
-import 'screens/dashboard.dart';
 
-void main() {
-  runApp(const HammerOps());
-}
-
-class HammerOps extends StatelessWidget {
-  const HammerOps({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      // home: const MyHomePage(title: 'Hammer Ops Demo Home Page'),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const MyHomePage(title: 'Hammer Ops Home Page'),
-        '/favorite': (context) => const FavoriteScreen(),
-      },
-      // home: const LoginScreen(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -62,87 +15,13 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _DashboardPageState extends State<DashboardPage> {
   final GlobalKey _topBarKey = GlobalKey();
   final GlobalKey _bottomBarKey = GlobalKey();
 
-  double topBarHeight = 0;
-  double bottomBarHeight = 0;
-
-  int _counter = 0;
-  int _selectedIndex = 1;
-
-  // Pages for navigation
-  final List<Widget> _pages = const [
-    // DashboardPage(title: title)
-    FavoriteScreen(),
-    ProfileScreen(),
-    QuoteScreen(),
-  ];
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-  });
-  }
-
-//   @override
-//   Widget build(BuildContext context) {
-//      final screenHeight = MediaQuery.of(context).size.height;
-//     final appBarHeight = kToolbarHeight;
-//     final navBarHeight = kBottomNavigationBarHeight;
-//     final availableHeight = screenHeight - appBarHeight - navBarHeight;
-
-//     return MaterialApp(
-//       home: Scaffold(
-//         appBar: AppBar(title: const Text('Expandable Tiles')),
-//         bottomNavigationBar: BottomNavigationBar(
-//           items: const [
-//             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-//             BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-//           ],
-//         ),
-//         body: SafeArea(
-//           child: SingleChildScrollView(
-//             child: Column(
-//               children: List.generate(5, (index) {
-//                 return ConstrainedBox(
-//                   constraints: BoxConstraints(
-//                     minHeight: availableHeight / 5, // each tile fills 1/5 of space
-//                   ),
-//                   child: ExpansionTile(
-//                     title: Text('Tile ${index + 1}'),
-//                     children: [
-//                       Container(
-//                         height: 250, // expanded content height
-//                         color: Colors.grey[300],
-//                         child: Center(child: Text('Content ${index + 1}')),
-//                       ),
-//                     ],
-//                   ),
-//                 );
-//               }),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-  
-// }
 
 @override
   Widget build(BuildContext context) {
@@ -158,25 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final collapsedHeight = availableHeight / 6;
 
-    return Scaffold(
-      appBar: AppBar(
-          leading: Image.asset(
-            'images/logo.png', // URL for network image
-            width: 40,
-            height: 40,
-          ),
-          title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]'))),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home',),
-          BottomNavigationBarItem(icon: Icon(Icons.apps), label: 'Apps'),
-          BottomNavigationBarItem(icon: Icon(Icons.edit), label: 'Settings'),
-          // BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Settings'),
-        ],
-      ),
-      body: SafeArea(
+    return SafeArea(
         // scrollable column so expanded tiles can push content and we can scroll
         child: SingleChildScrollView(
           child: Column(
@@ -238,13 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ]
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
-/// A tiny custom expansion tile that has NO gaps, and animates height changes.
-/// Uses AnimatedSize (requires a TickerProvider) to smoothly animate expansion.
+
 class SnugTile extends StatefulWidget {
   final String title;
   final double collapsedHeight;
@@ -334,5 +193,4 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
     );
   }
 }
-
 
