@@ -166,7 +166,8 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 40,
             height: 40,
           ),
-          title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]'))),
+          title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]')),
+          backgroundColor: Color.fromARGB(255, 195, 189, 170)),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,

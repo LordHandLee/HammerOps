@@ -38,13 +38,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 23, 42, 57), // 23, 26, 50
-            appBar: AppBar(
-          leading: Image.asset(
-            'images/logo.png', // URL for network image
-            width: 40,
-            height: 40,
-          ),
-          title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]'))),
+          //   appBar: AppBar(
+          // leading: Image.asset(
+          //   'images/logo.png', // URL for network image
+          //   width: 40,
+          //   height: 40,
+          // ),
+          // title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]')),
+          // backgroundColor: Color.fromARGB(255, 195, 189, 170)),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -112,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 50),
 
                 // Login button
                 SizedBox(
@@ -127,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 50),
                 Container(
                   width: screenWidth * 0.8,
                   child: const Text(
