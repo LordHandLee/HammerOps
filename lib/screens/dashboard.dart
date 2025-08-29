@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key, required this.title});
+  const DashboardPage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -12,7 +12,7 @@ class DashboardPage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String title;
+  
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();

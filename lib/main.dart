@@ -73,14 +73,15 @@ class _MyHomePageState extends State<MyHomePage> {
   double bottomBarHeight = 0;
 
   int _counter = 0;
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   // Pages for navigation
   final List<Widget> _pages = const [
     // DashboardPage(title: title)
+    DashboardPage(),
     FavoriteScreen(),
     ProfileScreen(),
-    QuoteScreen(),
+    // QuoteScreen(),
   ];
 
   void _incrementCounter() {
@@ -176,69 +177,70 @@ class _MyHomePageState extends State<MyHomePage> {
           // BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Settings'),
         ],
       ),
-      body: SafeArea(
-        // scrollable column so expanded tiles can push content and we can scroll
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SnugTile(
-                title: "OPS BOARD", 
-                collapsedHeight: collapsedHeight,
-                expandedContentHeight: 180,
-                icon: Icons.dashboard,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-                container_color: Colors.blueGrey[400]!,
-              ),
-              SnugTile(
-                title: "BRIEFCASE", 
-                collapsedHeight: collapsedHeight,
-                expandedContentHeight: 180,
-                icon: Icons.work,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-                container_color: Colors.blueGrey[500]!,
-              ),
-              SnugTile(
-                title: "TASK LIST", 
-                collapsedHeight: collapsedHeight,
-                expandedContentHeight: 180,
-                icon: Icons.check_circle,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-                container_color: Colors.blueGrey[600]!,
-              ),
-              SnugTile(
-                title: "SUPPLY DECK", 
-                collapsedHeight: collapsedHeight,
-                expandedContentHeight: 180,
-                icon: Icons.inventory,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-                container_color: Colors.blueGrey[700]!,
-              ),
-              SnugTile(
-                title: "SECURE PAY", 
-                collapsedHeight: collapsedHeight,
-                expandedContentHeight: 180,
-                icon: Icons.lock,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-                container_color: Colors.blueGrey[800]!,
-              ),
-              SnugTile(
-                title: "MY TEAM", 
-                collapsedHeight: collapsedHeight,
-                expandedContentHeight: 180,
-                icon: Icons.contacts,
-                iconColor: Colors.white,
-                textColor: Colors.white,
-                container_color: Colors.blueGrey[900]!,
-              ),
-            ]
-          ),
-        ),
-      ),
+      body: _pages[_selectedIndex],
+      // body: SafeArea(
+      //   // scrollable column so expanded tiles can push content and we can scroll
+      //   child: SingleChildScrollView(
+      //     child: Column(
+      //       children: [
+      //         SnugTile(
+      //           title: "OPS BOARD", 
+      //           collapsedHeight: collapsedHeight,
+      //           expandedContentHeight: 180,
+      //           icon: Icons.dashboard,
+      //           iconColor: Colors.white,
+      //           textColor: Colors.white,
+      //           container_color: Colors.blueGrey[400]!,
+      //         ),
+      //         SnugTile(
+      //           title: "BRIEFCASE", 
+      //           collapsedHeight: collapsedHeight,
+      //           expandedContentHeight: 180,
+      //           icon: Icons.work,
+      //           iconColor: Colors.white,
+      //           textColor: Colors.white,
+      //           container_color: Colors.blueGrey[500]!,
+      //         ),
+      //         SnugTile(
+      //           title: "TASK LIST", 
+      //           collapsedHeight: collapsedHeight,
+      //           expandedContentHeight: 180,
+      //           icon: Icons.check_circle,
+      //           iconColor: Colors.white,
+      //           textColor: Colors.white,
+      //           container_color: Colors.blueGrey[600]!,
+      //         ),
+      //         SnugTile(
+      //           title: "SUPPLY DECK", 
+      //           collapsedHeight: collapsedHeight,
+      //           expandedContentHeight: 180,
+      //           icon: Icons.inventory,
+      //           iconColor: Colors.white,
+      //           textColor: Colors.white,
+      //           container_color: Colors.blueGrey[700]!,
+      //         ),
+      //         SnugTile(
+      //           title: "SECURE PAY", 
+      //           collapsedHeight: collapsedHeight,
+      //           expandedContentHeight: 180,
+      //           icon: Icons.lock,
+      //           iconColor: Colors.white,
+      //           textColor: Colors.white,
+      //           container_color: Colors.blueGrey[800]!,
+      //         ),
+      //         SnugTile(
+      //           title: "MY TEAM", 
+      //           collapsedHeight: collapsedHeight,
+      //           expandedContentHeight: 180,
+      //           icon: Icons.contacts,
+      //           iconColor: Colors.white,
+      //           textColor: Colors.white,
+      //           container_color: Colors.blueGrey[900]!,
+      //         ),
+      //       ]
+      //     ),
+      //   ),
+      // ),
     );
   }
 }
