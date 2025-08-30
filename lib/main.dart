@@ -80,8 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // DashboardPage(title: title)
     DashboardPage(),
     FavoriteScreen(),
-    ProfileScreen(),
     QuoteScreen(),
+    ProfileScreen(),
   ];
 
   void _incrementCounter() {
@@ -160,6 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final collapsedHeight = availableHeight / 6;
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 32, 43, 62),
       appBar: AppBar(
           leading: Image.asset(
             'images/logo.png', // URL for network image

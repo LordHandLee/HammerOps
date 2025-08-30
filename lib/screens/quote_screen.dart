@@ -37,6 +37,7 @@ class _QuoteScreenState extends State<QuoteScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 59, 87, 110),
       body: Row(
         children: [
           Row()

@@ -37,6 +37,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 23, 42, 57), // 23, 26, 50
+          //   appBar: AppBar(
+          // leading: Image.asset(
+          //   'images/logo.png', // URL for network image
+          //   width: 40,
+          //   height: 40,
+          // ),
+          // title: Center(child: const Text('\t
       body: Row(
         children: [
           Row()
