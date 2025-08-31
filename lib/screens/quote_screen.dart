@@ -38,10 +38,23 @@ class _QuoteScreenState extends State<QuoteScreen> {
 
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 59, 87, 110),
-      body: Row(
-        children: [
-          Row()
-        ],
+      body: Center(
+        child: Container(
+              decoration: BoxDecoration(
+              color: Color.fromARGB(255, 39, 63, 82),
+              border: Border.all(width: 20, color: Color.fromARGB(255, 39, 63, 82)),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("LOAD QUOTE", style: TextStyle(color: Colors.white),),
+              Text("CREATE QUOTE", style: TextStyle(color: Colors.white),),
+            ],
+          ),
+        ),
       )
     );
   }
