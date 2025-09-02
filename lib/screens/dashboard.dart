@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -189,6 +190,13 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
                 height: widget.expandedContentHeight,
                 color: widget.expanded_color,
                 padding: const EdgeInsets.all(16),
+                // child: BarChart(
+                //   BarChartData(
+                //     // read about it in the BarChartData section
+                //   ),
+                //   duration: Duration(milliseconds: 150), // Optional
+                //   curve: Curves.linear, // Optional
+                // ),
                 child: Text(
                   'Expanded content for ${widget.title}. '
                   'Put any widgets you want here (forms, lists, images, etc.).',

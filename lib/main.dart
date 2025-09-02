@@ -33,7 +33,9 @@ class HammerOps extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        canvasColor: Colors.transparent,
+        useMaterial3: true,
       ),
       // home: const MyHomePage(title: 'Hammer Ops Demo Home Page'),
       initialRoute: '/login',
@@ -169,6 +171,46 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]')),
           backgroundColor: Color.fromARGB(255, 195, 189, 170)),
+      endDrawer: Drawer(
+        backgroundColor: Color.fromARGB(205, 195, 189, 170),
+        child: SafeArea(
+          child:ListView(
+            // padding: EdgeInsets.zero,
+            // padding: const EdgeInsets.all(0.0), // Important for full screen drawer
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  // color: Color.fromARGB(205, 195, 189, 170),
+                ),
+                child: Text(
+                  'Drawer Header',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home'),
+                onTap: () {
+                  // Handle navigation to Home page
+                  Navigator.pop(context); // Close the drawer
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Settings'),
+                onTap: () {
+                  // Handle navigation to Settings page
+                  Navigator.pop(context); // Close the drawer
+                },
+              ),
+            ],
+          ),
+      ),
+      ),
+      
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black,
@@ -181,6 +223,8 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white,), label: 'Settings'),
         ],
       ),
+
+      
       body: _pages[_selectedIndex],
       // body: SafeArea(
       //   // scrollable column so expanded tiles can push content and we can scroll
