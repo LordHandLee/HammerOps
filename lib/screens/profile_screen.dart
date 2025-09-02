@@ -45,9 +45,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
           //   height: 40,
           // ),
           // title: Center(child: const Text('\t
-      body: Row(
+      body: Column(
         children: [
-          Row()
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.person, size: 50, color: Colors.grey),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text("[NAME HERE]", style: TextStyle(color: Colors.white, fontSize: 24),),
+                  Text("[JOB TITLE HERE]", style: TextStyle(color: Colors.white, fontSize: 18),),
+                  Text("[COMPANY NAME HERE]", style: TextStyle(color: Colors.white, fontSize: 18),),
+                  
+                ],
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("CERTIFICATIONS", style: TextStyle(color: Colors.white, fontSize: 18),),
+              Text("EDIT PROFILE", style: TextStyle(color: Colors.white, fontSize: 18),),
+            ],
+          ),
         ],
       )
     );
