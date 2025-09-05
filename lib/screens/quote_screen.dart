@@ -40,18 +40,19 @@ class _QuoteScreenState extends State<QuoteScreen> {
       backgroundColor: Color.fromARGB(255, 59, 87, 110),
       body: Center(
         child: Container(
+              width: screenWidth * 0.6,
               decoration: BoxDecoration(
               color: Color.fromARGB(255, 39, 63, 82),
-              border: Border.all(width: 20, color: Color.fromARGB(255, 39, 63, 82)),
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              border: Border.all(width: 25, color: Color.fromARGB(255, 39, 63, 82)),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
             ),
-          padding: const EdgeInsets.all(8.0),
+          // padding: const EdgeInsets.all(8.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("LOAD QUOTE", style: TextStyle(color: Colors.white),),
-              Text("CREATE QUOTE", style: TextStyle(color: Colors.white),),
+              Text("LOAD QUOTE", style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),),
+              Text("CREATE QUOTE", style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),),
             ],
           ),
         ),

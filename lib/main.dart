@@ -4,6 +4,7 @@ import 'screens/favorite_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/quote_screen.dart';
 import 'screens/dashboard.dart';
+import 'screens/drawer.dart';
 
 void main() {
   runApp(const HammerOps());
@@ -171,45 +172,46 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]')),
           backgroundColor: Color.fromARGB(255, 195, 189, 170)),
-      endDrawer: Drawer(
-        backgroundColor: Color.fromARGB(205, 195, 189, 170),
-        child: SafeArea(
-          child:ListView(
-            // padding: EdgeInsets.zero,
-            // padding: const EdgeInsets.all(0.0), // Important for full screen drawer
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  // color: Color.fromARGB(205, 195, 189, 170),
-                ),
-                child: Text(
-                  'Drawer Header',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
-                onTap: () {
-                  // Handle navigation to Home page
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
-                onTap: () {
-                  // Handle navigation to Settings page
-                  Navigator.pop(context); // Close the drawer
-                },
-              ),
-            ],
-          ),
-      ),
-      ),
+          endDrawer: MyDrawer(),
+      // endDrawer: Drawer(
+      //   backgroundColor: Color.fromARGB(205, 195, 189, 170),
+      //   child: SafeArea(
+      //     child:ListView(
+      //       // padding: EdgeInsets.zero,
+      //       // padding: const EdgeInsets.all(0.0), // Important for full screen drawer
+      //       children: <Widget>[
+      //         DrawerHeader(
+      //           decoration: BoxDecoration(
+      //             // color: Color.fromARGB(205, 195, 189, 170),
+      //           ),
+      //           child: Text(
+      //             'Drawer Header',
+      //             style: TextStyle(
+      //               color: Colors.white,
+      //               fontSize: 24,
+      //             ),
+      //           ),
+      //         ),
+      //         ListTile(
+      //           leading: Icon(Icons.home),
+      //           title: Text('Home'),
+      //           onTap: () {
+      //             // Handle navigation to Home page
+      //             Navigator.pop(context); // Close the drawer
+      //           },
+      //         ),
+      //         ListTile(
+      //           leading: Icon(Icons.settings),
+      //           title: Text('Settings'),
+      //           onTap: () {
+      //             // Handle navigation to Settings page
+      //             Navigator.pop(context); // Close the drawer
+      //           },
+      //         ),
+      //       ],
+      //     ),
+      // ),
+      // ),
       
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
