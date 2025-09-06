@@ -230,10 +230,10 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white,), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.apps, color: Colors.white,), label: 'Apps'),
-          BottomNavigationBarItem(icon: Icon(Icons.edit, color: Colors.white,), label: 'Settings'),
-          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white,), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white,), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.apps, color: Colors.white,), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.edit, color: Colors.white,), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white,), label: ''),
         ],
       ),
 
