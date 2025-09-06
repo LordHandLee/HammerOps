@@ -78,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int _selectedIndex = 0;
   bool _isDrawerOpen = false;
+  //
 
   // Pages for navigation
   final List<Widget> _pages = const [

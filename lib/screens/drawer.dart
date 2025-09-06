@@ -56,6 +56,12 @@ class MyDrawer extends StatelessWidget {
                     selected: selectedIndex == 1,
                     onTap: () => onSelectItem(1),
                     ),
+                    ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Settings'),
+                    selected: selectedIndex == 1,
+                    onTap: () => onSelectItem(1),
+                    ),
                 ],
                   ),
                 
