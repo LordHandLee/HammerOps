@@ -77,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _counter = 0;
   int _selectedIndex = 0;
+  bool _isDrawerOpen = false;
 
   // Pages for navigation
   final List<Widget> _pages = const [
@@ -171,8 +172,17 @@ class _MyHomePageState extends State<MyHomePage> {
             height: 40,
           ),
           title: Center(child: const Text('\t\t\t\t\t\t\t\t\t\t\tWELCOME\n[COMPANY NAME HERE]')),
-          backgroundColor: Color.fromARGB(255, 195, 189, 170)),
-          endDrawer: MyDrawer(),
+          backgroundColor: Color.fromARGB(255, 195, 189, 170),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                setState(() {
+                  _isDrawerOpen = !_isDrawerOpen;
+                });
+              })
+          ],),
+          // endDrawer: MyDrawer(),
       // endDrawer: Drawer(
       //   backgroundColor: Color.fromARGB(205, 195, 189, 170),
       //   child: SafeArea(
@@ -227,7 +237,24 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       
-      body: _pages[_selectedIndex],
+      body: Stack(
+        children: [
+           _pages[_selectedIndex],
+
+          MyDrawer(
+            isDrawerOpen: _isDrawerOpen,
+            selectedIndex: _selectedIndex,
+            onSelectItem: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
       // body: SafeArea(
       //   // scrollable column so expanded tiles can push content and we can scroll
       //   child: SingleChildScrollView(
@@ -291,9 +318,9 @@ class _MyHomePageState extends State<MyHomePage> {
       //     ),
       //   ),
       // ),
-    );
-  }
-}
+//     )
+//   }
+// }
 
 /// A tiny custom expansion tile that has NO gaps, and animates height changes.
 /// Uses AnimatedSize (requires a TickerProvider) to smoothly animate expansion.
