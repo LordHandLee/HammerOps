@@ -19,6 +19,17 @@ class HammerOps extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        navigationBarTheme: NavigationBarThemeData(
+          indicatorColor: Colors.transparent, // 👈 Hover / selection circle color
+          indicatorShape: const CircleBorder(), // 👈 Hover / selection circle shape
+          iconTheme: WidgetStateProperty.all(
+            const IconThemeData(color: Colors.white),
+          ),
+          labelTextStyle: WidgetStateProperty.all(
+            const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.black,
+        ),
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -224,19 +235,72 @@ class _MyHomePageState extends State<MyHomePage> {
       // ),
       // ),
       
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white,), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.apps, color: Colors.white,), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.edit, color: Colors.white,), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white,), label: ''),
-        ],
-      ),
-
+      // bottomNavigationBar: BottomNavigationBar(
+      //   type: BottomNavigationBarType.fixed,
+        
+      //   backgroundColor: Colors.white,
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onItemTapped,
+      //   items: const [
+      //     BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.white,), label: 'home'),
+      //     BottomNavigationBarItem(icon: Icon(Icons.apps, color: Colors.white,), label: ''),
+      //     BottomNavigationBarItem(icon: Icon(Icons.edit, color: Colors.white,), label: ''),
+      //     BottomNavigationBarItem(icon: Icon(Icons.person, color: Colors.white,), label: ''),
+      //   ],
+      // ),
+      bottomNavigationBar: NavigationBar(
+          height: availableHeight / 6,
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (index) {
+            setState(() => _selectedIndex = index);
+          },
+          destinations: [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "",
+              selectedIcon: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.home, color: Colors.white),
+                ),
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.apps),
+              selectedIcon: Container(
+                width: 44, height: 44,
+                decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+                child: Icon(Icons.settings, color: Colors.white),
+              ),
+              label: '',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.edit),
+              selectedIcon: Container(
+                width: 44, height: 44,
+                decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+                child: Icon(Icons.settings, color: Colors.white),
+              ),
+              label: '',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person),
+              selectedIcon: Container(
+                width: 44, height: 44,
+                decoration: BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+                child: Icon(Icons.settings, color: Colors.white),
+              ),
+              label: '',
+            ),
+            // NavigationDestination(icon: Icon(Icons.apps), label: "Settings"),
+            // NavigationDestination(icon: Icon(Icons.edit), label: "Profile"),
+            // NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+          ],
+        ),
+      
       
       body: Stack(
         children: [

@@ -20,7 +20,7 @@ class MyDrawer extends StatelessWidget {
           final media = MediaQuery.of(context);
           final topPad = kToolbarHeight + media.padding.top;                 // AppBar + status bar
           final bottomPad = kBottomNavigationBarHeight + media.padding.bottom; // Bottom nav + gesture inset
-          final availableHeight = media.size.height - topPad - bottomPad;
+          final availableHeight = media.size.height- topPad - bottomPad;
 
           return AnimatedPositioned(
           duration: const Duration(milliseconds: 300),
@@ -46,7 +46,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                   ListTile(
                     leading: const Icon(Icons.home),
-                    title: const Text('QUOTE CRAFT'),
+                    title: const Text('QUOTE'),
                     selected: selectedIndex == 0,
                     onTap: () => onSelectItem(0),
                   ),
