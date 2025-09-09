@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MyDrawer extends StatelessWidget {
+class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
   final int selectedIndex;
   // final Function(int) onSelectItem;
@@ -12,6 +12,13 @@ class MyDrawer extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelectItem,
     });
+  @override
+  State<MyDrawer> createState() => _MyDrawerState();
+}
+
+class _MyDrawerState extends State<MyDrawer> {
+  final GlobalKey<NavigatorState> _drawerNavigatorKey = GlobalKey<NavigatorState>();
+
 
   @override
     Widget build(BuildContext context) {
@@ -35,7 +42,7 @@ class MyDrawer extends StatelessWidget {
 
       return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
-      top: isDrawerOpen ? openTop : closedTop, // hidden above AppBar
+      top: widget.isDrawerOpen ? openTop : closedTop, // hidden above AppBar
       // bottom: -bottomPad,
       left: 0,
       right: 0,
@@ -43,41 +50,58 @@ class MyDrawer extends StatelessWidget {
       child: Material(
         elevation: 16,
         color: const Color.fromARGB(205, 195, 189, 170),
+        child: Navigator(
+          key: _drawerNavigatorKey,
+          onGenerateRoute: (settings) {
+            // default route = drawer menu
+            return MaterialPageRoute(
+              builder: (context) => _DrawerMenu(
+                onNavigate: (Widget page) {
+                  _drawerNavigatorKey.currentState!.push(
+                    MaterialPageRoute(builder: (_) => page),
+                  );
+                },
+              ),
+            );
+          },
+        )
         // child: SafeArea(
         //   top: false, // already handled by padding
         //   bottom: false,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  'Drawer Header',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('QUOTE'),
-                selected: selectedIndex == 0,
-                onTap: () => onSelectItem(0),
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                selected: selectedIndex == 1,
-                onTap: () => onSelectItem(1),
-                ),
-                ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                selected: selectedIndex == 1,
-                onTap: () => onSelectItem(1),
-                ),
-            ],
-              ),
+
+          // child: ListView(
+          //   padding: EdgeInsets.zero,
+          //   children: [
+          //     const Padding(
+          //       padding: EdgeInsets.all(16),
+          //       child: Text(
+          //         'Drawer Header',
+          //         style: TextStyle(color: Colors.white, fontSize: 24),
+          //       ),
+          //     ),
+          //     ListTile(
+          //       leading: const Icon(Icons.home),
+          //       title: const Text('QUOTE'),
+          //       selected: selectedIndex == 0,
+          //       onTap: () => onSelectItem(0),
+          //     ),
+          //     ListTile(
+          //       leading: const Icon(Icons.settings),
+          //       title: const Text('Settings'),
+          //       selected: selectedIndex == 1,
+          //       onTap: () => onSelectItem(1),
+          //       ),
+          //     ListTile(
+          //     leading: const Icon(Icons.settings),
+          //     title: const Text('Settings'),
+          //     selected: selectedIndex == 1,
+          //     onTap: () => onSelectItem(1),
+          //     ),
+          //   ],
+          //     ),
             
           // ),
+
         ),
       );
     }
@@ -123,3 +147,58 @@ class MyDrawer extends StatelessWidget {
 //       );
 //     }
 // }
+
+
+
+
+class _DrawerMenu extends StatelessWidget {
+  final ValueChanged<Widget> onNavigate;
+
+  const _DrawerMenu({Key? key, required this.onNavigate}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text(
+            'Drawer Header',
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.home),
+          title: const Text('Home'),
+          onTap: () => onNavigate(const DrawerSubPage(title: "Home Page")),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('Settings'),
+          onTap: () => onNavigate(const DrawerSubPage(title: "Settings Page")),
+        ),
+      ],
+    );
+  }
+}
+
+class DrawerSubPage extends StatelessWidget {
+  final String title;
+
+  const DrawerSubPage({Key? key, required this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(onPressed: () => Navigator.pop(context)),
+        backgroundColor: const Color.fromARGB(255, 195, 189, 170),
+        title: Text(title),
+      ),
+      body: Center(
+        child: Text("This is $title"),
+      ),
+    );
+  }
+}
