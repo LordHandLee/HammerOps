@@ -179,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: Color.fromARGB(255, 32, 43, 62),
       appBar: AppBar(
           leading: Image.asset(
-            'images/logo.png', // URL for network image
+            'images/logo1.png', // URL for network image
             width: 40,
             height: 40,
           ),
