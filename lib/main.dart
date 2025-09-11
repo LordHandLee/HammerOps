@@ -5,6 +5,7 @@ import 'screens/profile_screen.dart';
 import 'screens/quote_screen.dart';
 import 'screens/dashboard.dart';
 import 'screens/drawer.dart';
+import 'database/repository.dart';
 
 void main() {
   runApp(const HammerOps());
