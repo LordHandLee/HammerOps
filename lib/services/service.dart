@@ -5,6 +5,35 @@ class QuoteService {
 
   QuoteService(this.quoteRepository);
 
+  Future<int> calculateQuotePrice(List<String> fieldValues) async {
+    // Dummy logic: each field value adds $100
+    return fieldValues.length * 100;
+  }
+
+  Future<String> createQuoteFromTemplate(int userId, int templateId, List<String> fieldValues) async {
+    // Basic validation
+    if (fieldValues.isEmpty) {
+      return "Error: Field values cannot be empty";
+    }
+
+    // Calculate total amount based on field values (dummy logic here)
+    // Create quote companion
+    final quote = JobQuotesCompanion.insert(
+      templateId: templateId,
+      customerName: 'N/A',
+      customerContact: 'N/A',
+      totalAmount: 0.0,
+      createdBy: userId,
+    );
+
+    try {
+      await quoteRepository.createQuoteFromTemplate(quote: quote, fieldValues: fieldValues);
+      return "Quote created successfully from template";
+    } catch (e) {
+      return "Error creating quote: $e";
+    }
+  }
+
   /// Business logic: add quote with validation and extra rules
   Future<String> createQuote(int userId, String description, double price) async {
     if (price < 0) {
