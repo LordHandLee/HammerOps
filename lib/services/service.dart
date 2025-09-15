@@ -7,6 +7,16 @@ class TemplateService {
   TemplateService(this.templateRepository);
 
   Future<int> createTemplate(String name, int createdBy, List<Map<String, dynamic>> fields) async {
+    // enforce rules
+    final fieldNames = fields.map((f) => f.name.value.toLowerCase()).toSet();
+
+    final hasHours = fieldNames.contains("hours worked") && fieldNames.contains("hourly rate");
+    final hasSqft  = fieldNames.contains("square footage") && fieldNames.contains("price per square foot");
+
+    if (!hasHours && !hasSqft) {
+      throw Exception("Template must include (hours worked + hourly rate) or (square footage + price per square foot)");
+    }
+
     final templateId = await templateRepository.addTemplate(name, createdBy);
     for (var field in fields) {
       await templateRepository.addTemplateField(
@@ -31,19 +41,60 @@ class TemplateService {
 
 class QuoteService {
   final QuoteRepository quoteRepository;
+  final TemplateRepository templateRepository;
 
-  QuoteService(this.quoteRepository);
+  QuoteService(this.quoteRepository, this.templateRepository);
 
-  Future<int> calculateQuotePrice(List<String> fieldValues) async {
-    // Dummy logic: each field value adds $100
-    for (var value in fieldValues) {
-      if (value.isEmpty) {
-        throw Exception("Field values cannot be empty");
+  Future<double> previewQuotePrice(int templateId, Map<int, double> inputValues) async {
+    // 1. Load template fields
+    final templateWithFields = await templateRepository.getTemplateWithFields(templateId);
+
+    double total = 0.0;
+    double? hours, hourlyRate, sqft, pricePerSqft;
+
+    for (final field in templateWithFields.fields) {
+      final value = inputValues[field.id] ?? 0.0;
+
+      switch (field.name.toLowerCase()) {
+        case "hours worked":
+          hours = value;
+          break;
+        case "hourly rate":
+          hourlyRate = value;
+          break;
+        case "square footage":
+          sqft = value;
+          break;
+        case "price per square foot":
+          pricePerSqft = value;
+          break;
+        default:
+          total += value; // treat as expense
       }
     }
+
+    if (hours != null && hourlyRate != null) {
+      total += hours * hourlyRate;
+    }
+
+    if (sqft != null && pricePerSqft != null) {
+      total += sqft * pricePerSqft;
+    }
+
+    return total;
   }
 
-  Future<String> createQuoteFromTemplate(int userId, int templateId, List<String> fieldValues) async {
+
+  // Future<int> calculateQuotePrice(List<String> fieldValues) async {
+  //   // Dummy logic: each field value adds $100
+  //   for (var value in fieldValues) {
+  //     if (value.isEmpty) {
+  //       throw Exception("Field values cannot be empty");
+  //     }
+  //   }
+  // }
+
+  Future<String> createQuoteFromTemplate(int userId, int templateId, double amount, List<String> fieldValues) async {
     // Basic validation
     if (fieldValues.isEmpty) {
       return "Error: Field values cannot be empty";
@@ -55,12 +106,12 @@ class QuoteService {
       templateId: templateId,
       customerName: 'N/A',
       customerContact: 'N/A',
-      totalAmount: 0.0,
+      totalAmount: amount,
       createdBy: userId,
     );
 
     try {
-      await quoteRepository.createQuoteFromTemplate(quote: quote, fieldValues: fieldValues);
+      await quoteRepository.createQuoteFromTemplate(quote, fieldValues);
       return "Quote created successfully from template";
     } catch (e) {
       return "Error creating quote: $e";
