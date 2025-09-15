@@ -18,6 +18,32 @@ class UserRepository {
   Future<int> removeUser(User user) => userDao.deleteUser(user);
 }
 
+class TemplateRepository {
+  final TemplatesDao templatesDao;
+
+  TemplateRepository(this.templatesDao);
+
+  Future<int> addTemplate(String name, int createdBy) {
+    final template = TemplatesCompanion.insert(name: name, createdBy: createdBy);
+    return templatesDao.insertTemplate(template);
+  }
+
+  Future<int> addTemplateField(int templateId, String fieldName, String fieldType, {bool isRequired = false, int sortOrder = 0}) {
+    final field = TemplateFieldsCompanion.insert(
+      templateId: templateId,
+      fieldName: fieldName,
+      fieldType: fieldType,
+      isRequired: Value(isRequired),
+      sortOrder: Value(sortOrder),
+    );
+    return templatesDao.insertTemplateField(field);
+  }
+
+  Future<List<Template>> getAllTemplates() => templatesDao.getAllTemplates();
+
+  Future<TemplateWithFields?> getTemplateWithFields(int templateId) => templatesDao.getTemplateWithFields(templateId);
+}
+
 class QuoteRepository {
   final JobQuotesDao jobQuotesDao;
   final UserDao userDao;
@@ -25,19 +51,19 @@ class QuoteRepository {
 
   QuoteRepository(this.jobQuotesDao, this.userDao);
 
-  Future<int> createQuoteFromTemplate({quote=JobQuotesCompanion.insert(templateId: template), fieldValues=List<String>}) => jobQuotesDao.createQuoteWithFields(quote, fieldValues);
+  Future<int> createQuoteFromTemplate(quote, fieldValues) => jobQuotesDao.createQuoteWithFields(quote, fieldValues);
 
 
-  Future<int> addQuote(int userId, String description, double price) {
-    final quote = JobQuotesCompanion.insert(
-      templateId: 1, // Assuming a default template for simplicity
-      customerName: description,
-      customerContact: 'N/A',
-      totalAmount: price,
-      createdBy: userId,
-    );
-    return jobQuotesDao.insertJobQuote(quote);
-  }
+  // Future<int> addQuote(int userId, String description, double price) {
+  //   final quote = JobQuotesCompanion.insert(
+  //     templateId: 1, // Assuming a default template for simplicity
+  //     customerName: description,
+  //     customerContact: 'N/A',
+  //     totalAmount: price,
+  //     createdBy: userId,
+  //   );
+  //   return jobQuotesDao.insertJobQuote(quote);
+  // }
 
   Future<List<JobQuote>> getQuotesForUser(int userId) {
     return (jobQuotesDao.select(jobQuotesDao.jobQuotes)

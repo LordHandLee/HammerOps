@@ -29,7 +29,7 @@ class TemplatesDao extends DatabaseAccessor<AppDatabase> with _$TemplatesDaoMixi
   // Get all templates
   Future<List<Template>> getAllTemplates() => select(templates).get();
 
-  //Get a template with fields
+  //Get a template with fields "Hours worked" ... "hourly rate"
   Future<TemplateWithFields?> getTemplateWithFields(int templateId) async {
     final template = await (select(templates)..where((t) => t.id.equals(templateId))).getSingleOrNull();
     if (template == null) return null;

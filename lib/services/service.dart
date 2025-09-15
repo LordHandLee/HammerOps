@@ -1,5 +1,34 @@
 import 'package:hammer_ops/database/repository.dart';
 
+
+class TemplateService {
+  final TemplateRepository templateRepository;
+
+  TemplateService(this.templateRepository);
+
+  Future<int> createTemplate(String name, int createdBy, List<Map<String, dynamic>> fields) async {
+    final templateId = await templateRepository.addTemplate(name, createdBy);
+    for (var field in fields) {
+      await templateRepository.addTemplateField(
+        templateId,
+        field['fieldName'],
+        field['fieldType'],
+        isRequired: field['isRequired'] ?? false,
+        sortOrder: field['sortOrder'] ?? 0,
+      );
+    }
+    return templateId;
+  }
+
+  Future<TemplateWithFields?> getTemplateWithFields(int templateId) {
+    return templateRepository.getTemplateWithFields(templateId);
+  }
+
+  Future<List<Template>> getAllTemplates() {
+    return templateRepository.getAllTemplates();
+  }
+}
+
 class QuoteService {
   final QuoteRepository quoteRepository;
 
@@ -7,7 +36,11 @@ class QuoteService {
 
   Future<int> calculateQuotePrice(List<String> fieldValues) async {
     // Dummy logic: each field value adds $100
-    return fieldValues.length * 100;
+    for (var value in fieldValues) {
+      if (value.isEmpty) {
+        throw Exception("Field values cannot be empty");
+      }
+    }
   }
 
   Future<String> createQuoteFromTemplate(int userId, int templateId, List<String> fieldValues) async {
