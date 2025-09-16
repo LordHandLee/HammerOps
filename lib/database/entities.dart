@@ -24,7 +24,7 @@ class Users extends Table {
 class Templates extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 100)();
-  IntColumn get createdBy => integer().customConstraint('REFERENCES users(id)')();
+  IntColumn get createdBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
@@ -33,7 +33,7 @@ class Templates extends Table {
 // ------------------
 class TemplateFields extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get templateId => integer().customConstraint('REFERENCES templates(id) ON DELETE CASCADE')();
+  IntColumn get templateId => integer().references(Templates, #id, onDelete: KeyAction.cascade)();
   TextColumn get fieldName => text().withLength(min: 1, max: 100)();
   TextColumn get fieldType => text().withLength(min: 1, max: 50)(); // e.g., text, number, date
   BoolColumn get isRequired => boolean().withDefault(const Constant(false))();
@@ -45,14 +45,14 @@ class TemplateFields extends Table {
 // ------------------
 class JobQuotes extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get templateId => integer().customConstraint('REFERENCES templates(id)')(); // each quote belongs to template and user
+  IntColumn get templateId => integer().references(Templates, #id, onDelete: KeyAction.cascade)(); // each quote belongs to template and user
   TextColumn get customerName => text().withLength(min: 1, max: 100)();
   TextColumn get customerContact => text().withLength(min: 1, max: 100)();
   DateTimeColumn get quoteDate => dateTime().withDefault(currentDateAndTime)();
   RealColumn get totalAmount => real().withDefault(const Constant(0.0))();
 
   // Foreign key to Users table (assuming a user creates the quote)
-  IntColumn get createdBy => integer().customConstraint('REFERENCES users(id)')();
+  IntColumn get createdBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
 }
 
 // ------------------
@@ -60,8 +60,8 @@ class JobQuotes extends Table {
 // ------------------
 class QuoteFieldValues extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get quoteId => integer().customConstraint('REFERENCES job_quotes(id) ON DELETE CASCADE')();
-  IntColumn get fieldId => integer().customConstraint('REFERENCES template_fields(id)')();
+  IntColumn get quoteId => integer().references(JobQuotes, #id, onDelete: KeyAction.cascade)();
+  IntColumn get fieldId => integer().references(TemplateFields, #id, onDelete: KeyAction.cascade)();
   TextColumn get fieldValue => text().nullable()(); // store as text, cast as needed
 }
 
@@ -71,13 +71,13 @@ class QuoteFieldValues extends Table {
 // ------------------
 class Jobs extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get quoteId => integer().customConstraint('REFERENCES job_quotes(id)')(); // each job is linked to a quote
+  IntColumn get quoteId => integer().references(JobQuotes, #id, onDelete: KeyAction.cascade)(); // each job is linked to a quote
   TextColumn get jobStatus => text().withLength(min: 1, max: 50)(); // e.g., pending, in-progress, completed
   DateTimeColumn get startDate => dateTime().nullable()();
   DateTimeColumn get endDate => dateTime().nullable()();
 
   // Foreign key to Users table (assuming a user is assigned the job)
-  IntColumn get assignedTo => integer().customConstraint('REFERENCES users(id)')();
+  IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
 }
 
 // ------------------
@@ -90,7 +90,7 @@ class Customers extends Table {
   TextColumn get address => text().nullable()();
   
   // Foreign key to Users table (assuming a user manages the customer)
-  IntColumn get managedBy => integer().customConstraint('REFERENCES users(id)')();
+  IntColumn get managedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
 }
 
 // ------------------

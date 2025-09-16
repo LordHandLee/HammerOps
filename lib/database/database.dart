@@ -13,7 +13,9 @@ part 'database.g.dart';
 // ------------------
 // DATABASE
 // ------------------
-@DriftDatabase(tables: [Users], daos: [UserDao])
+@DriftDatabase(
+  tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company], 
+  daos: [UserDao, TemplatesDao, JobQuotesDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

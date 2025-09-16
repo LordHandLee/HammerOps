@@ -11,7 +11,7 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
 
   Future<List<User>> getAllUsers() => select(users).get();
   Stream<List<User>> watchAllUsers() => select(users).watch();
-  Future<int> insertUser(UsersCompanion user) => into(users).insert(user);
+  Future<int> insertUser(User user) => into(users).insert(user);
   Future<bool> updateUser(User user) => update(users).replace(user);
   Future<int> deleteUser(User user) => delete(users).delete(user);
 }
@@ -63,7 +63,7 @@ class JobQuotesDao extends DatabaseAccessor<AppDatabase> with _$JobQuotesDaoMixi
   }
 
   // Get a quote with its template and field values
-  Future<QuoteWithValues> getQuoteDetails(int quoteId) async {
+  Future<QuoteWithValues?> getQuoteDetails(int quoteId) async {
     final quote = await (select(jobQuotes)..where((q) => q.id.equals(quoteId))).getSingleOrNull();
     if (quote == null) return null;
 
@@ -77,8 +77,10 @@ class JobQuotesDao extends DatabaseAccessor<AppDatabase> with _$JobQuotesDaoMixi
     final fields = await (select(templateFields)..where((f) => f.id.isIn(fieldIds))).get();
 
     final fieldValuePairs = fieldValues.map((v) {
-      final field = fields.firstWhere((f) => f.id == v.fieldId, orElse: () => null);
-      return FieldValuePair(field: field!, value: v.fieldValue ?? '');
+      final field = fields.firstWhere((f) => f.id == v.fieldId, orElse: () {
+        throw Exception('TemplateField not found for fieldId: ${v.fieldId}');
+      });
+      return FieldValuePair(field: field, value: v.fieldValue ?? '');
     }).toList();
 
     return QuoteWithValues(quote: quote, template: template, fields: fieldValuePairs);
