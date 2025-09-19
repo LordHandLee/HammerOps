@@ -1,0 +1,16 @@
+  Generating the build script.
+  Reading the asset graph.
+  Checking for updates.
+  Updating the asset graph.
+  Building, incremental build.
+  0s drift_dev on 76 inputs; lib/database/DAO.dart
+  0s drift_dev on 76 inputs: 1 same; lib/database/database.dart
+  4s drift_dev on 76 inputs: 2 same; spent 3s analyzing; lib/database/entities.dart
+  10s drift_dev on 76 inputs: 1 skipped, 5 same; spent 8s analyzing, 2s resolving; lib/scrap.dart
+  11s drift_dev on 76 inputs: 9 skipped, 1 output, 10 same, 1 no-op; spent 9s analyzing, 2s resolving; lib/database/entities.dart
+  12s drift_dev on 76 inputs: 47 skipped, 1 output, 19 same, 9 no-op; spent 9s analyzing, 2s resolving
+  0s source_gen:combining_builder on 38 inputs; lib/database/DAO.dart
+  0s source_gen:combining_builder on 38 inputs: 37 skipped, 1 same
+  Running the post build.
+  Writing the asset graph.
+  Built with build_runner in 13s; wrote 21 outputs.

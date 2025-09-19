@@ -1,4 +1,10 @@
+// part of 'database.dart';
+// import 'database.dart';
+// import 'entities.dart';
+// import 'package:drift/drift.dart';
 part of 'database.dart';
+// part 'database.g.dart';
+// import 'database.g.dart';
 
 // ------------------
 // DAO
@@ -6,19 +12,21 @@ part of 'database.dart';
 
 @DriftAccessor(tables: [Users])
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
-  final AppDatabase db;
-  UserDao(this.db) : super(db);
+  // final AppDatabase db;
+  UserDao(super.db);
 
   Future<List<User>> getAllUsers() => select(users).get();
   Stream<List<User>> watchAllUsers() => select(users).watch();
-  Future<int> insertUser(User user) => into(users).insert(user);
+  Future<int> insertUser(UsersCompanion user) => into(users).insert(user);
   Future<bool> updateUser(User user) => update(users).replace(user);
   Future<int> deleteUser(User user) => delete(users).delete(user);
 }
 
 @DriftAccessor(tables: [Templates, TemplateFields])
 class TemplatesDao extends DatabaseAccessor<AppDatabase> with _$TemplatesDaoMixin {
-  TemplatesDao(AppDatabase db) : super(db);
+  // final AppDatabase db;
+  // TemplatesDao(AppDatabase db) : super(db);
+  TemplatesDao(super.db);
 
   // Insert template
   Future<int> insertTemplate(TemplatesCompanion template) => into(templates).insert(template);
@@ -42,7 +50,8 @@ class TemplatesDao extends DatabaseAccessor<AppDatabase> with _$TemplatesDaoMixi
 
 @DriftAccessor(tables: [JobQuotes, QuoteFieldValues, Templates, TemplateFields])
 class JobQuotesDao extends DatabaseAccessor<AppDatabase> with _$JobQuotesDaoMixin {
-  JobQuotesDao(AppDatabase db) : super(db);
+  // JobQuotesDao(AppDatabase db) : super(db);
+  JobQuotesDao(super.db);
 
   // Insert job quote
   Future<int> insertJobQuote(JobQuotesCompanion quote) => into(jobQuotes).insert(quote);
@@ -125,4 +134,16 @@ class FieldValuePair {
   final String value;
 
   FieldValuePair({required this.field, required this.value});
+}
+
+
+class AppDao {
+  final UserDao user;
+  final TemplatesDao template;
+  final JobQuotesDao quote;
+
+  AppDao(AppDatabase db)
+      : user = UserDao(db),
+        template = TemplatesDao(db),
+        quote = JobQuotesDao(db);
 }

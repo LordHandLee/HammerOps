@@ -1,6 +1,7 @@
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/database/database.dart';
 
+
 class TemplateService {
   final TemplateRepository templateRepository;
 
@@ -161,4 +162,13 @@ class QuoteService {
   //         .toList();
   //   });
   // }
+}
+
+class AppService {
+  final TemplateService template;
+  final QuoteService quote;
+
+  AppService(AppRepository repo)
+      : template = TemplateService(repo.template),
+        quote = QuoteService(repo.quote, repo.template);
 }

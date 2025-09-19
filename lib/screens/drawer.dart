@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/quote__craft/quote_craft.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
@@ -177,6 +178,11 @@ class _DrawerMenu extends StatelessWidget {
           leading: const Icon(Icons.settings),
           title: const Text('Settings'),
           onTap: () => onNavigate(const DrawerSubPage(title: "Settings Page")),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('QUOTE CRAFT'),
+          onTap: () => onNavigate(const QuoteCraft()),
         ),
       ],
     );

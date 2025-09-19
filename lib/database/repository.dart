@@ -14,7 +14,7 @@ class UserRepository {
   //   return userDao.insertUser(user);
   // }
 
-  Future<int> addUser(User user) => userDao.insertUser(user);
+  Future<int> addUser(UsersCompanion user) => userDao.insertUser(user);
   Future<bool> editUser(User user) => userDao.updateUser(user);
   Future<int> removeUser(User user) => userDao.deleteUser(user);
 }
@@ -96,3 +96,14 @@ class QuoteRepository {
 //     });
 //   }
 // }
+
+class AppRepository {
+  final UserRepository user;
+  final TemplateRepository template;
+  final QuoteRepository quote;
+
+  AppRepository(AppDao dao)
+      : user = UserRepository(dao.user),
+        template = TemplateRepository(dao.template),
+        quote = QuoteRepository(dao.quote, dao.user);
+}
