@@ -4,14 +4,15 @@ import 'package:hammer_ops/database/database.dart';
 // import 'package:hammer_ops/database/DAO.dart';
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/services/service.dart';
+import 'package:hammer_ops/database/database_connection.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
+  final executor = await openConnection();
 
 
-
-  final db = AppDatabase();
+  final db = AppDatabase(executor);
   final dao = AppDao(db);
   final repo = AppRepository(dao);
   final service = AppService(repo);
