@@ -1122,21 +1122,6 @@ class $TemplateFieldsTable extends TemplateFields
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _fieldTypeMeta = const VerificationMeta(
-    'fieldType',
-  );
-  @override
-  late final GeneratedColumn<String> fieldType = GeneratedColumn<String>(
-    'field_type',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 50,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _isRequiredMeta = const VerificationMeta(
     'isRequired',
   );
@@ -1169,7 +1154,6 @@ class $TemplateFieldsTable extends TemplateFields
     id,
     templateId,
     fieldName,
-    fieldType,
     isRequired,
     sortOrder,
   ];
@@ -1204,14 +1188,6 @@ class $TemplateFieldsTable extends TemplateFields
     } else if (isInserting) {
       context.missing(_fieldNameMeta);
     }
-    if (data.containsKey('field_type')) {
-      context.handle(
-        _fieldTypeMeta,
-        fieldType.isAcceptableOrUnknown(data['field_type']!, _fieldTypeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_fieldTypeMeta);
-    }
     if (data.containsKey('is_required')) {
       context.handle(
         _isRequiredMeta,
@@ -1245,10 +1221,6 @@ class $TemplateFieldsTable extends TemplateFields
         DriftSqlType.string,
         data['${effectivePrefix}field_name'],
       )!,
-      fieldType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}field_type'],
-      )!,
       isRequired: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_required'],
@@ -1270,14 +1242,12 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
   final int id;
   final int templateId;
   final String fieldName;
-  final String fieldType;
   final bool isRequired;
   final int sortOrder;
   const TemplateField({
     required this.id,
     required this.templateId,
     required this.fieldName,
-    required this.fieldType,
     required this.isRequired,
     required this.sortOrder,
   });
@@ -1287,7 +1257,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
     map['id'] = Variable<int>(id);
     map['template_id'] = Variable<int>(templateId);
     map['field_name'] = Variable<String>(fieldName);
-    map['field_type'] = Variable<String>(fieldType);
     map['is_required'] = Variable<bool>(isRequired);
     map['sort_order'] = Variable<int>(sortOrder);
     return map;
@@ -1298,7 +1267,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
       id: Value(id),
       templateId: Value(templateId),
       fieldName: Value(fieldName),
-      fieldType: Value(fieldType),
       isRequired: Value(isRequired),
       sortOrder: Value(sortOrder),
     );
@@ -1313,7 +1281,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
       id: serializer.fromJson<int>(json['id']),
       templateId: serializer.fromJson<int>(json['templateId']),
       fieldName: serializer.fromJson<String>(json['fieldName']),
-      fieldType: serializer.fromJson<String>(json['fieldType']),
       isRequired: serializer.fromJson<bool>(json['isRequired']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
     );
@@ -1325,7 +1292,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
       'id': serializer.toJson<int>(id),
       'templateId': serializer.toJson<int>(templateId),
       'fieldName': serializer.toJson<String>(fieldName),
-      'fieldType': serializer.toJson<String>(fieldType),
       'isRequired': serializer.toJson<bool>(isRequired),
       'sortOrder': serializer.toJson<int>(sortOrder),
     };
@@ -1335,14 +1301,12 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
     int? id,
     int? templateId,
     String? fieldName,
-    String? fieldType,
     bool? isRequired,
     int? sortOrder,
   }) => TemplateField(
     id: id ?? this.id,
     templateId: templateId ?? this.templateId,
     fieldName: fieldName ?? this.fieldName,
-    fieldType: fieldType ?? this.fieldType,
     isRequired: isRequired ?? this.isRequired,
     sortOrder: sortOrder ?? this.sortOrder,
   );
@@ -1353,7 +1317,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
           ? data.templateId.value
           : this.templateId,
       fieldName: data.fieldName.present ? data.fieldName.value : this.fieldName,
-      fieldType: data.fieldType.present ? data.fieldType.value : this.fieldType,
       isRequired: data.isRequired.present
           ? data.isRequired.value
           : this.isRequired,
@@ -1367,7 +1330,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
           ..write('id: $id, ')
           ..write('templateId: $templateId, ')
           ..write('fieldName: $fieldName, ')
-          ..write('fieldType: $fieldType, ')
           ..write('isRequired: $isRequired, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
@@ -1376,7 +1338,7 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
 
   @override
   int get hashCode =>
-      Object.hash(id, templateId, fieldName, fieldType, isRequired, sortOrder);
+      Object.hash(id, templateId, fieldName, isRequired, sortOrder);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1384,7 +1346,6 @@ class TemplateField extends DataClass implements Insertable<TemplateField> {
           other.id == this.id &&
           other.templateId == this.templateId &&
           other.fieldName == this.fieldName &&
-          other.fieldType == this.fieldType &&
           other.isRequired == this.isRequired &&
           other.sortOrder == this.sortOrder);
 }
@@ -1393,14 +1354,12 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
   final Value<int> id;
   final Value<int> templateId;
   final Value<String> fieldName;
-  final Value<String> fieldType;
   final Value<bool> isRequired;
   final Value<int> sortOrder;
   const TemplateFieldsCompanion({
     this.id = const Value.absent(),
     this.templateId = const Value.absent(),
     this.fieldName = const Value.absent(),
-    this.fieldType = const Value.absent(),
     this.isRequired = const Value.absent(),
     this.sortOrder = const Value.absent(),
   });
@@ -1408,17 +1367,14 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
     this.id = const Value.absent(),
     required int templateId,
     required String fieldName,
-    required String fieldType,
     this.isRequired = const Value.absent(),
     this.sortOrder = const Value.absent(),
   }) : templateId = Value(templateId),
-       fieldName = Value(fieldName),
-       fieldType = Value(fieldType);
+       fieldName = Value(fieldName);
   static Insertable<TemplateField> custom({
     Expression<int>? id,
     Expression<int>? templateId,
     Expression<String>? fieldName,
-    Expression<String>? fieldType,
     Expression<bool>? isRequired,
     Expression<int>? sortOrder,
   }) {
@@ -1426,7 +1382,6 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
       if (id != null) 'id': id,
       if (templateId != null) 'template_id': templateId,
       if (fieldName != null) 'field_name': fieldName,
-      if (fieldType != null) 'field_type': fieldType,
       if (isRequired != null) 'is_required': isRequired,
       if (sortOrder != null) 'sort_order': sortOrder,
     });
@@ -1436,7 +1391,6 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
     Value<int>? id,
     Value<int>? templateId,
     Value<String>? fieldName,
-    Value<String>? fieldType,
     Value<bool>? isRequired,
     Value<int>? sortOrder,
   }) {
@@ -1444,7 +1398,6 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
       id: id ?? this.id,
       templateId: templateId ?? this.templateId,
       fieldName: fieldName ?? this.fieldName,
-      fieldType: fieldType ?? this.fieldType,
       isRequired: isRequired ?? this.isRequired,
       sortOrder: sortOrder ?? this.sortOrder,
     );
@@ -1462,9 +1415,6 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
     if (fieldName.present) {
       map['field_name'] = Variable<String>(fieldName.value);
     }
-    if (fieldType.present) {
-      map['field_type'] = Variable<String>(fieldType.value);
-    }
     if (isRequired.present) {
       map['is_required'] = Variable<bool>(isRequired.value);
     }
@@ -1480,7 +1430,6 @@ class TemplateFieldsCompanion extends UpdateCompanion<TemplateField> {
           ..write('id: $id, ')
           ..write('templateId: $templateId, ')
           ..write('fieldName: $fieldName, ')
-          ..write('fieldType: $fieldType, ')
           ..write('isRequired: $isRequired, ')
           ..write('sortOrder: $sortOrder')
           ..write(')'))
@@ -4634,7 +4583,6 @@ typedef $$TemplateFieldsTableCreateCompanionBuilder =
       Value<int> id,
       required int templateId,
       required String fieldName,
-      required String fieldType,
       Value<bool> isRequired,
       Value<int> sortOrder,
     });
@@ -4643,7 +4591,6 @@ typedef $$TemplateFieldsTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> templateId,
       Value<String> fieldName,
-      Value<String> fieldType,
       Value<bool> isRequired,
       Value<int> sortOrder,
     });
@@ -4715,11 +4662,6 @@ class $$TemplateFieldsTableFilterComposer
 
   ColumnFilters<String> get fieldName => $composableBuilder(
     column: $table.fieldName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get fieldType => $composableBuilder(
-    column: $table.fieldType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4801,11 +4743,6 @@ class $$TemplateFieldsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get fieldType => $composableBuilder(
-    column: $table.fieldType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<bool> get isRequired => $composableBuilder(
     column: $table.isRequired,
     builder: (column) => ColumnOrderings(column),
@@ -4854,9 +4791,6 @@ class $$TemplateFieldsTableAnnotationComposer
 
   GeneratedColumn<String> get fieldName =>
       $composableBuilder(column: $table.fieldName, builder: (column) => column);
-
-  GeneratedColumn<String> get fieldType =>
-      $composableBuilder(column: $table.fieldType, builder: (column) => column);
 
   GeneratedColumn<bool> get isRequired => $composableBuilder(
     column: $table.isRequired,
@@ -4948,14 +4882,12 @@ class $$TemplateFieldsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> templateId = const Value.absent(),
                 Value<String> fieldName = const Value.absent(),
-                Value<String> fieldType = const Value.absent(),
                 Value<bool> isRequired = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
               }) => TemplateFieldsCompanion(
                 id: id,
                 templateId: templateId,
                 fieldName: fieldName,
-                fieldType: fieldType,
                 isRequired: isRequired,
                 sortOrder: sortOrder,
               ),
@@ -4964,14 +4896,12 @@ class $$TemplateFieldsTableTableManager
                 Value<int> id = const Value.absent(),
                 required int templateId,
                 required String fieldName,
-                required String fieldType,
                 Value<bool> isRequired = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
               }) => TemplateFieldsCompanion.insert(
                 id: id,
                 templateId: templateId,
                 fieldName: fieldName,
-                fieldType: fieldType,
                 isRequired: isRequired,
                 sortOrder: sortOrder,
               ),
@@ -6878,4 +6808,7 @@ mixin _$JobQuotesDaoMixin on DatabaseAccessor<AppDatabase> {
   $TemplateFieldsTable get templateFields => attachedDatabase.templateFields;
   $QuoteFieldValuesTable get quoteFieldValues =>
       attachedDatabase.quoteFieldValues;
+}
+mixin _$CompanyDaoMixin on DatabaseAccessor<AppDatabase> {
+  $CompanyTable get company => attachedDatabase.company;
 }

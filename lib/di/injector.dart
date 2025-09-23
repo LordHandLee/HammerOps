@@ -6,10 +6,10 @@ import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/services/service.dart';
 import 'package:hammer_ops/database/database_connection.dart';
 
-final getIt = GetIt.instance;
+final GetIt getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
-  final executor = await openConnection();
+  final executor =  openConnection();
 
 
   final db = AppDatabase(executor);

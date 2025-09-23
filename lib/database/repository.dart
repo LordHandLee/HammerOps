@@ -29,11 +29,11 @@ class TemplateRepository {
     return templatesDao.insertTemplate(template);
   }
 
-  Future<int> addTemplateField(int templateId, String fieldName, String fieldType, {bool isRequired = false, int sortOrder = 0}) {
+  Future<int> addTemplateField(int templateId, String fieldName, {bool isRequired = false, int sortOrder = 0}) {
     final field = TemplateFieldsCompanion.insert(
       templateId: templateId,
       fieldName: fieldName,
-      fieldType: fieldType,
+      // fieldType: fieldType,
       isRequired: Value(isRequired),
       sortOrder: Value(sortOrder),
     );
@@ -47,10 +47,10 @@ class TemplateRepository {
 
 class QuoteRepository {
   final JobQuotesDao jobQuotesDao;
-  final UserDao userDao;
+ 
   // final TemplatesDao templatesDao;
 
-  QuoteRepository(this.jobQuotesDao, this.userDao);
+  QuoteRepository(this.jobQuotesDao);
 
   Future<int> createQuoteFromTemplate(quote, fieldValues) => jobQuotesDao.createQuoteWithFields(quote, fieldValues);
 
@@ -97,13 +97,28 @@ class QuoteRepository {
 //   }
 // }
 
+class CompanyRepository {
+  final CompanyDao companyDao;
+
+  CompanyRepository(this.companyDao);
+
+  Future<int> addCompany(String name) {
+    final company = CompanyCompanion.insert(name: name);
+    return companyDao.insertCompany(company);
+  }
+
+  Future<List<CompanyData>> getAllCompanies() => companyDao.getAllCompanies();
+}
+
 class AppRepository {
   final UserRepository user;
   final TemplateRepository template;
   final QuoteRepository quote;
+  final CompanyRepository company;
 
   AppRepository(AppDao dao)
       : user = UserRepository(dao.user),
         template = TemplateRepository(dao.template),
-        quote = QuoteRepository(dao.quote, dao.user);
+        company = CompanyRepository(dao.company),
+        quote = QuoteRepository(dao.quote);
 }

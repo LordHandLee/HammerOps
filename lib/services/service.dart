@@ -1,5 +1,6 @@
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/database/database.dart';
+import 'package:get_it/get_it.dart';
 
 
 class TemplateService {
@@ -7,15 +8,35 @@ class TemplateService {
 
   TemplateService(this.templateRepository);
 
-  Future<int> createTemplate(String name, int createdBy, List<Map<String, dynamic>> fields) async {
+  Future<int> createTemplate(String name, int createdBy, List<String> fields) async {
     // enforce rules
     // final fieldNames = fields.map((f) => f.name.value.toLowerCase()).toSet();
-    final fieldNames = fields.map((f) => (f['fieldName'] as String).toLowerCase()).toSet();
+    final fieldNames = fields.map((f) => (f).toLowerCase()).toSet();
+    print("Field names: $fieldNames");
 
-    final hasHours = fieldNames.contains("hours worked") && fieldNames.contains("hourly rate");
-    final hasSqft  = fieldNames.contains("square footage") && fieldNames.contains("price per square foot");
+    final hasHours = fieldNames.contains("hourly rate");
+    final hasSqft  = fieldNames.contains("square footage");
+    final both = fieldNames.contains("hourly rate") && fieldNames.contains("square footage");
 
-    if (!hasHours && !hasSqft) {
+    if (both) {
+      // ensure all four fields are present
+      fields.remove('both');
+      fields.add("hours worked");
+      fields.add("hourly rate");
+      fields.add("square footage");
+      fields.add("price per square foot");
+    }
+    if (hasHours && !hasSqft) {
+      // hours worked + hourly rate
+      fields.add("hours worked");
+      //fields.add("hourly rate");
+    }
+    if (!hasHours && hasSqft) {
+      // square footage + price per square foot
+      //fields.add("square footage");
+      fields.add("price per square foot");
+    }
+    else {
       throw Exception("Template must include (hours worked + hourly rate) or (square footage + price per square foot)");
     }
 
@@ -23,10 +44,10 @@ class TemplateService {
     for (var field in fields) {
       await templateRepository.addTemplateField(
         templateId,
-        field['fieldName'],
-        field['fieldType'],
-        isRequired: field['isRequired'] ?? false,
-        sortOrder: field['sortOrder'] ?? 0,
+        field,
+        // field['fieldType'],
+        // isRequired: field['isRequired'] ?? false,
+        // sortOrder: field['sortOrder'] ?? 0,
       );
     }
     return templateId;
@@ -164,11 +185,68 @@ class QuoteService {
   // }
 }
 
+
+class UserService {
+  final UserRepository userRepository;
+  int? _currentUserId;
+
+  UserService(this.userRepository);
+
+  void setCurrentUser(int userId) {
+    _currentUserId = userId;
+  }
+
+  // Simulate getting current logged-in user ID
+  int getCurrentUser() {
+    if (_currentUserId == null) {
+      throw StateError("No user is currently logged in.");
+    }
+    // In real app, integrate with auth system
+    return _currentUserId!;
+  }
+
+  Future<int> addUser(String name, int companyId) {
+    final user = UsersCompanion.insert(name: name, companyId: companyId);
+    return userRepository.addUser(user);
+  }
+  // Future<User?> getUserById(int id) {
+  //   return userRepository.getUserById(id);
+  // }
+
+  // Future<List<User>> getAllUsers() {
+  //   return userRepository.getAllUsers();
+  // }
+}
+
+class CompanyService {
+  final CompanyRepository companyRepository;
+
+  CompanyService(this.companyRepository);
+
+  Future<int> addCompany(String name) {
+    // CompanyCompanion.insert(name: name);
+    return companyRepository.addCompany(name);
+  }
+
+  // Future<Company?> getCompanyById(int id) {
+  //   return companyRepository.getCompanyById(id);
+  // }
+
+  Future<List<CompanyData>> getAllCompanies() {
+    return companyRepository.getAllCompanies();
+  }
+}
+
+
 class AppService {
   final TemplateService template;
   final QuoteService quote;
+  final UserService user;
+  final CompanyService company;
 
   AppService(AppRepository repo)
       : template = TemplateService(repo.template),
+        user = UserService(repo.user),
+        company = CompanyService(repo.company),
         quote = QuoteService(repo.quote, repo.template);
 }

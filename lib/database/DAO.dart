@@ -113,6 +113,15 @@ class JobQuotesDao extends DatabaseAccessor<AppDatabase> with _$JobQuotesDaoMixi
 
 }
 
+@DriftAccessor(tables: [Company])
+class CompanyDao extends DatabaseAccessor<AppDatabase> with _$CompanyDaoMixin {
+  CompanyDao(super.db);
+
+  Future<int> insertCompany(CompanyCompanion companyCompanion) => into(company).insert(companyCompanion);
+
+  Future<List<CompanyData>> getAllCompanies() => select(company).get();
+}
+
 class TemplateWithFields {
   final Template template;
   final List<TemplateField> fields;
@@ -141,9 +150,11 @@ class AppDao {
   final UserDao user;
   final TemplatesDao template;
   final JobQuotesDao quote;
+  final CompanyDao company;
 
   AppDao(AppDatabase db)
       : user = UserDao(db),
         template = TemplatesDao(db),
+        company = CompanyDao(db),
         quote = JobQuotesDao(db);
 }

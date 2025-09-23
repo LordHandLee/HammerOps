@@ -5,9 +5,11 @@ import 'screens/profile_screen.dart';
 import 'screens/quote_screen.dart';
 import 'screens/dashboard.dart';
 import 'screens/drawer.dart';
+import 'di/injector.dart';
 // import 'database/repository.dart';
 
-void main() {
+void main() async {
+  await setupDependencies();
   runApp(const HammerOps());
 }
 

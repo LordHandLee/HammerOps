@@ -21,7 +21,8 @@ class QuoteCraft extends StatelessWidget {
               // navigate to create template screen
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CreateTemplate()),
+                // MaterialPageRoute(builder: (context) => CreateTemplate()),
+                MaterialPageRoute(builder: (context) => DynamicFieldsForm()),
               );
               // Example usage of createQuoteFromTemplate
               // final service = Service();
