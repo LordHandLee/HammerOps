@@ -85,13 +85,13 @@ class QuoteScreen extends StatelessWidget {
 
         switch (settings.name) {
           case '/':
-            page = const QuoteMenu(); // your existing center container
+            page =  QuoteMenu(); // your existing center container
             break;
           case '/create':
             page = const CreateQuote(); // your form/list/etc.
             break;
           default:
-            page = const QuoteMenu();
+            page =  QuoteMenu();
         }
 
         return MaterialPageRoute(

@@ -52,6 +52,8 @@ class QuoteRepository {
 
   QuoteRepository(this.jobQuotesDao);
 
+  Future<List<JobQuote>> getAllQuotes() => jobQuotesDao.select(jobQuotesDao.jobQuotes).get();
+
   Future<int> createQuoteFromTemplate(quote, fieldValues) => jobQuotesDao.createQuoteWithFields(quote, fieldValues);
 
 

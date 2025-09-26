@@ -46,8 +46,10 @@ class TemplateFields extends Table {
 class JobQuotes extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get templateId => integer().references(Templates, #id, onDelete: KeyAction.cascade)(); // each quote belongs to template and user
+  // TextColumn get quoteName => text().withLength(min: 1, max: 100)();
   TextColumn get customerName => text().withLength(min: 1, max: 100)();
   TextColumn get customerContact => text().withLength(min: 1, max: 100)();
+  // add quote name/description 
   DateTimeColumn get quoteDate => dateTime().withDefault(currentDateAndTime)();
   RealColumn get totalAmount => real().withDefault(const Constant(0.0))();
 
@@ -78,6 +80,9 @@ class Jobs extends Table {
 
   // Foreign key to Users table (assuming a user is assigned the job)
   IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+
+  // Foreign key to Customers table (assuming a job is for a specific customer)
+  IntColumn get customer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
 }
 
 // ------------------
@@ -130,8 +135,72 @@ class Company extends Table {
 //   // Is flagged for review or important
 //   BoolColumn get isFlagged => boolean().withDefault(const Constant(false))();
 
+//   TextColumn get reasonForFlag => text().nullable()();
+
 //   // Foreign key to Users table (assuming a user is assigned the task)
 //   IntColumn get assignedTo => integer().customConstraint('REFERENCES users(id)')();
 // }
 
 
+
+// ------------------
+// COMPLAINTS (TABLE)
+// ------------------
+class Complaints extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text().withLength(min: 1, max: 100)();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get reportedAt => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get isResolved => boolean().withDefault(const Constant(false))();
+
+  // Foreign key to Users table (assuming a user reports the complaint)
+  IntColumn get reportedByUser => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  
+  // Foreign key to Users table (assuming a user is assigned to resolve the complaint)
+  IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+
+  // Foreign key to Customers table (if complaint is from a customer)
+  IntColumn get reportedByCustomer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+
+}
+
+// ------------------
+// INJURIES (TABLE)
+// ------------------
+class Injuries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text().withLength(min: 1, max: 100)();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get occurredAt => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get isResolved => boolean().withDefault(const Constant(false))();
+
+  // Foreign key to Users table (assuming a user reports the injury)
+  IntColumn get reportedByUser => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  
+  // Foreign key to Users table (assuming a user is assigned to resolve the injury)
+  IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+
+  // Foreign key to Customers table (if injury is from a customer)
+  IntColumn get reportedByCustomer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+}
+
+// ------------------
+// DOCUMENTS (TABLE)
+// ------------------
+class Documents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text().withLength(min: 1, max: 100)();
+  TextColumn get filePath => text()(); // path to the document file
+  DateTimeColumn get uploadedAt => dateTime().withDefault(currentDateAndTime)();
+
+  // Foreign key to Users table (assuming a user uploads the document)
+  IntColumn get uploadedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+
+  // Foreign key to Customers table (if document is related to a customer)
+  IntColumn get customerId => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+
+  // Foreign key to Jobs table (if document is related to a job)
+  IntColumn get jobId => integer().references(Jobs, #id, onDelete: KeyAction.cascade)();
+
+  
+}

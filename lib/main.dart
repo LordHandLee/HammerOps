@@ -23,8 +23,8 @@ class HammerOps extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         navigationBarTheme: NavigationBarThemeData(
-          indicatorColor: Colors.transparent, // 👈 Hover / selection circle color
-          indicatorShape: const CircleBorder(), // 👈 Hover / selection circle shape
+          indicatorColor: Colors.transparent, // 
+          indicatorShape: const CircleBorder(), // 
           iconTheme: WidgetStateProperty.all(
             const IconThemeData(color: Colors.white),
           ),

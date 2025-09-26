@@ -1,5 +1,6 @@
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/database/database.dart';
+import 'package:drift/drift.dart';
 import 'package:get_it/get_it.dart';
 
 
@@ -16,22 +17,23 @@ class TemplateService {
 
     final hasHours = fieldNames.contains("hourly rate");
     final hasSqft  = fieldNames.contains("square footage");
-    final both = fieldNames.contains("hourly rate") && fieldNames.contains("square footage");
+    final both = fieldNames.contains("both");
 
     if (both) {
       // ensure all four fields are present
+      print("Both detected, adding all four fields");
       fields.remove('both');
       fields.add("hours worked");
       fields.add("hourly rate");
       fields.add("square footage");
       fields.add("price per square foot");
     }
-    if (hasHours && !hasSqft) {
+    else if (hasHours && !hasSqft) {
       // hours worked + hourly rate
       fields.add("hours worked");
       //fields.add("hourly rate");
     }
-    if (!hasHours && hasSqft) {
+    else if (!hasHours && hasSqft) {
       // square footage + price per square foot
       //fields.add("square footage");
       fields.add("price per square foot");
@@ -67,6 +69,10 @@ class QuoteService {
   final TemplateRepository templateRepository;
 
   QuoteService(this.quoteRepository, this.templateRepository);
+
+  Future<List<JobQuote>> getAllQuotes() {
+    return quoteRepository.getAllQuotes();
+  }
 
   Future<double> previewQuotePrice(int templateId, Map<int, double> inputValues) async {
     // 1. Load template fields
@@ -121,7 +127,7 @@ class QuoteService {
   //   }
   // }
 
-  Future<String> createQuoteFromTemplate(int userId, int templateId, amount, List<String> fieldValues) async {
+  Future<String> createQuoteFromTemplate(int userId, String customerName, String customerContact, int templateId, amount, List<String> fieldValues) async {
     // Basic validation
     if (fieldValues.isEmpty) {
       return "Error: Field values cannot be empty";
@@ -131,14 +137,32 @@ class QuoteService {
     // Create quote companion
     final quote = JobQuotesCompanion.insert(
       templateId: templateId,
-      customerName: 'N/A',
-      customerContact: 'N/A',
-      totalAmount: amount,
+      customerName: customerName,
+      customerContact: customerContact,
+      totalAmount: Value(amount),
       createdBy: userId,
     );
 
+    // Create field value companions
+    final fieldValueCompanions = <QuoteFieldValuesCompanion>[];
+
+
     try {
-      await quoteRepository.createQuoteFromTemplate(quote, fieldValues);
+      // Fetch template fields to map names to IDs
+      final templateWithFields = await templateRepository.getTemplateWithFields(templateId);
+      if (templateWithFields == null) {
+        return "Error: Template with ID $templateId not found.";
+      }
+      for (int i = 0; i < templateWithFields.fields.length; i++) {
+        final field = templateWithFields.fields[i];
+        final value = i < fieldValues.length ? fieldValues[i] : '';
+        fieldValueCompanions.add(QuoteFieldValuesCompanion.insert(
+          quoteId: 0, // Placeholder, will be set in transaction
+          fieldId: field.id,
+          fieldValue: Value(value),
+        ));
+      }
+      await quoteRepository.createQuoteFromTemplate(quote, fieldValueCompanions);
       return "Quote created successfully from template";
     } catch (e) {
       return "Error creating quote: $e";

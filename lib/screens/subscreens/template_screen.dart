@@ -84,6 +84,8 @@ class TemplateScreen extends StatefulWidget {
 class _TemplateScreenState extends State<TemplateScreen> {
   final Map<int, TextEditingController> _controllers = {};
   double? _previewPrice;
+  TextEditingController? name = TextEditingController(text: "John Doe");
+  TextEditingController? contact = TextEditingController(text: "123-456-7890");
 
   @override
   void dispose() {
@@ -106,10 +108,44 @@ class _TemplateScreenState extends State<TemplateScreen> {
       widget.templateId,
       inputValues,
     );
-
     setState(() {
       _previewPrice = price;
     });
+  }
+
+  Future<void> _saveQuote(userId, templateId, customerName, customerContact, List<String> fields) async {
+    // Build a map of fieldId -> user input value
+
+    // int userId, int templateId, amount, List<String> fieldValues
+    
+    if (_previewPrice == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please preview the quote before saving.')),
+          );
+        }
+        return;
+      }
+    if (customerName.isEmpty || customerContact.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Customer name and contact cannot be empty.')),
+          );
+        }
+        return;
+      }
+    print([userId, templateId, customerName, customerContact, _previewPrice, fields]);
+
+    String success = await widget.quoteService.createQuoteFromTemplate(
+      userId, customerName, customerContact, templateId, _previewPrice, fields
+    );
+    print(success);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Quote saved successfully!')),
+      );
+    }
   }
 
   @override
@@ -142,6 +178,24 @@ class _TemplateScreenState extends State<TemplateScreen> {
 
           return Column(
             children: [
+              TextFormField(
+                controller: name,
+                keyboardType: TextInputType.name,
+                decoration: const InputDecoration(
+                  labelText: 'Customer Name',
+                  border: OutlineInputBorder(),
+                ),
+                // initialValue: "John Doe",
+              ),
+              TextFormField(
+                controller: contact,
+                keyboardType: TextInputType.name,
+                decoration: const InputDecoration(
+                  labelText: 'Customer Contact',
+                  border: OutlineInputBorder(),
+                ),
+                // initialValue: "123-456-7890",
+              ),
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.all(12.0),
@@ -160,9 +214,24 @@ class _TemplateScreenState extends State<TemplateScreen> {
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => _previewQuote(fields),
-                child: const Text('Preview Quote'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _previewQuote(fields),
+                    child: const Text('Preview Quote'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _saveQuote(
+                      1,
+                      widget.templateId,
+                      name?.text,
+                      contact?.text,
+                      fields.map((f) => f.fieldName).toList(),
+                    ),
+                    child: const Text('Save Quote'),
+                  ),
+                ],
               ),
               if (_previewPrice != null)
                 Padding(
