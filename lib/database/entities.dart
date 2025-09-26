@@ -107,46 +107,48 @@ class Company extends Table {
   TextColumn get address => text().nullable()();
 }
 
-// // ------------------
-// // TOOLS (TABLE)
-// // ------------------
-// class Tools extends Table {
-//   IntColumn get id => integer().autoIncrement()();
-//   TextColumn get name => text().withLength(min: 1, max: 100)();
-//   TextColumn get description => text().nullable()();
+// ------------------
+// TOOLS (TABLE)
+// ------------------
+class Tools extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 1, max: 100)();
+  TextColumn get description => text().nullable()();
   
-//   // Is available for use or currently in use by someone
-//   BoolColumn get isAvailable => boolean().withDefault(const Constant(true))();
+  // Is available for use or currently in use by someone
+  BoolColumn get isAvailable => boolean().withDefault(const Constant(true))();
 
-//   // Foreign key to Users table (assuming a user manages the tool)
-//   IntColumn get managedBy => integer().customConstraint('REFERENCES users(id)')();
-// }
+  // Foreign key to Users table (assuming a user manages the tool)
+  IntColumn get managedBy => integer().customConstraint('REFERENCES users(id)')();
 
-// // ------------------
-// // TASKS (TABLE)
-// // ------------------
-// class Tasks extends Table {
-//   IntColumn get id => integer().autoIncrement()();
-//   TextColumn get title => text().withLength(min: 1, max: 100)();
-//   TextColumn get description => text().nullable()();
-//   DateTimeColumn get dueDate => dateTime().nullable()();
-//   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
+  
+}
 
-//   // Is flagged for review or important
-//   BoolColumn get isFlagged => boolean().withDefault(const Constant(false))();
+// ------------------
+// TASKS (TABLE)
+// ------------------
+class Tasks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text().withLength(min: 1, max: 100)();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get dueDate => dateTime().nullable()();
+  BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
 
-//   TextColumn get reasonForFlag => text().nullable()();
+  // Is flagged for review or important
+  BoolColumn get isFlagged => boolean().withDefault(const Constant(false))();
 
-//   // Foreign key to Users table (assuming a user is assigned the task)
-//   IntColumn get assignedTo => integer().customConstraint('REFERENCES users(id)')();
-// }
+  TextColumn get reasonForFlag => text().nullable()();
+
+  // Foreign key to Users table (assuming a user is assigned the task)
+  IntColumn get assignedTo => integer().customConstraint('REFERENCES users(id)')();
+}
 
 
 
 // ------------------
 // COMPLAINTS (TABLE)
 // ------------------
-class Complaints extends Table {
+class Complaint extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get description => text().nullable()();
@@ -167,7 +169,7 @@ class Complaints extends Table {
 // ------------------
 // INJURIES (TABLE)
 // ------------------
-class Injuries extends Table {
+class Injury extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get description => text().nullable()();
@@ -187,7 +189,7 @@ class Injuries extends Table {
 // ------------------
 // DOCUMENTS (TABLE)
 // ------------------
-class Documents extends Table {
+class Document extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get filePath => text()(); // path to the document file
@@ -202,5 +204,5 @@ class Documents extends Table {
   // Foreign key to Jobs table (if document is related to a job)
   IntColumn get jobId => integer().references(Jobs, #id, onDelete: KeyAction.cascade)();
 
-  
+
 }
