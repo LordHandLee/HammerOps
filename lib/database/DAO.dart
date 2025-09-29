@@ -122,6 +122,71 @@ class CompanyDao extends DatabaseAccessor<AppDatabase> with _$CompanyDaoMixin {
   Future<List<CompanyData>> getAllCompanies() => select(company).get();
 }
 
+@DriftAccessor(tables: [Jobs])
+class JobsDao extends DatabaseAccessor<AppDatabase> with _$JobsDaoMixin {
+  JobsDao(super.db);
+
+  Future<int> insertJob(JobsCompanion job) => into(jobs).insert(job);
+
+  Future<List<Job>> getAllJobs() => select(jobs).get();
+}
+
+@DriftAccessor(tables: [Customers])
+class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixin {
+  CustomersDao(super.db);
+
+  Future<int> insertCustomer(CustomersCompanion customer) => into(customers).insert(customer);
+
+  Future<List<Customer>> getAllCustomers() => select(customers).get();
+}
+
+@DriftAccessor(tables: [Tools])
+class ToolsDao extends DatabaseAccessor<AppDatabase> with _$ToolsDaoMixin {
+  ToolsDao(super.db);
+
+  Future<int> insertTool(ToolsCompanion tool) => into(tools).insert(tool);
+
+  Future<List<Tool>> getAllTools() => select(tools).get();
+}
+
+@DriftAccessor(tables: [Tasks])
+class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
+  TasksDao(super.db);
+
+  Future<int> insertTask(TasksCompanion task) => into(tasks).insert(task);
+
+  Future<List<Task>> getAllTasks() => select(tasks).get();
+}
+
+@DriftAccessor(tables: [Complaint])
+class ComplaintDao extends DatabaseAccessor<AppDatabase> with _$ComplaintDaoMixin {
+  ComplaintDao(super.db);
+
+  Future<int> insertComplaint(ComplaintCompanion complaint) => into(complaint).insert(complaint);
+
+  Future<List<ComplaintData>> getAllComplaints() => select(complaint).get();
+}
+
+@DriftAccessor(tables: [Injury])
+class InjuryDao extends DatabaseAccessor<AppDatabase> with _$InjuryDaoMixin {
+  InjuryDao(super.db);
+
+  Future<int> insertInjury(InjuryCompanion injury) => into(injury).insert(injury);
+
+  Future<List<InjuryData>> getAllInjuries() => select(injury).get();
+}
+
+@DriftAccessor(tables: [Document])
+class DocumentDao extends DatabaseAccessor<AppDatabase> with _$DocumentDaoMixin {
+  DocumentDao(super.db);
+
+  Future<int> insertDocument(DocumentCompanion document) => into(document).insert(document);
+
+  Future<List<DocumentData>> getAllDocuments() => select(document).get();
+}
+
+// jobs, customers, tools, tasks, complaint, injury, document
+
 class TemplateWithFields {
   final Template template;
   final List<TemplateField> fields;
