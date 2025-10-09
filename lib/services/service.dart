@@ -261,123 +261,123 @@ class CompanyService {
   }
 }
 
-class JobService {
-  final JobRepository jobRepository;
+// class JobService {
+//   final JobRepository jobRepository;
 
-  JobService(this.jobRepository);
+//   JobService(this.jobRepository);
 
-  Future<int> addJob(String title, String description, int assignedTo) {
-    return jobRepository.addJob(title, description, assignedTo);
-  }
+//   Future<int> addJob(String title, String description, int assignedTo) {
+//     return jobRepository.addJob(title, description, assignedTo);
+//   }
 
-  Future<List<JobData>> getAllJobs() {
-    return jobRepository.getAllJobs();
-  }
-}
+//   Future<List<JobData>> getAllJobs() {
+//     return jobRepository.getAllJobs();
+//   }
+// }
 
-class CustomerService {
-  final CustomerRepository customerRepository;
+// class CustomerService {
+//   final CustomerRepository customerRepository;
 
-  CustomerService(this.customerRepository);
+//   CustomerService(this.customerRepository);
 
-  Future<int> addCustomer(String name, String contactInfo) {
-    return customerRepository.addCustomer(name, contactInfo);
-  }
+//   Future<int> addCustomer(String name, String contactInfo) {
+//     return customerRepository.addCustomer(name, contactInfo);
+//   }
 
-  Future<List<Customer>> getAllCustomers() {
-    return customerRepository.getAllCustomers();
-  }
-}
+//   Future<List<Customer>> getAllCustomers() {
+//     return customerRepository.getAllCustomers();
+//   }
+// }
 
-class ToolService {
-  final ToolRepository toolRepository;
+// class ToolService {
+//   final ToolRepository toolRepository;
 
-  ToolService(this.toolRepository);
+//   ToolService(this.toolRepository);
 
-  Future<int> addTool(String name, String description, int managedBy) {
-    return toolRepository.addTool(name, description, managedBy);
-  }
+//   Future<int> addTool(String name, String description, int managedBy) {
+//     return toolRepository.addTool(name, description, managedBy);
+//   }
 
-  Future<List<Tool>> getAllTools() {
-    return toolRepository.getAllTools();
-  }
-}
+//   Future<List<Tool>> getAllTools() {
+//     return toolRepository.getAllTools();
+//   }
+// }
 
-class TaskService {
-  final TaskRepository taskRepository;
+// class TaskService {
+//   final TaskRepository taskRepository;
 
-  TaskService(this.taskRepository);
+//   TaskService(this.taskRepository);
 
-  Future<int> addTask(String title, String description, DateTime? dueDate) {
-    final task = TasksCompanion.insert(
-      title: title,
-      description: Value(description),
-      dueDate: Value(dueDate),
-    );
-    return taskRepository.addTask(task);
-  }
+//   Future<int> addTask(String title, String description, DateTime? dueDate) {
+//     final task = TasksCompanion.insert(
+//       title: title,
+//       description: Value(description),
+//       dueDate: Value(dueDate),
+//     );
+//     return taskRepository.addTask(task);
+//   }
 
-  Future<List<Task>> getAllTasks() {
-    return taskRepository.getAllTasks();
-  }
-}
+//   Future<List<Task>> getAllTasks() {
+//     return taskRepository.getAllTasks();
+//   }
+// }
 
-class ComplaintService {
-  final ComplaintRepository complaintRepository;
+// class ComplaintService {
+//   final ComplaintRepository complaintRepository;
 
-  ComplaintService(this.complaintRepository);
+//   ComplaintService(this.complaintRepository);
 
-  Future<int> addComplaint(String title, String description, int reportedBy) {
-    final complaint = ComplaintCompanion.insert(
-      title: title,
-      description: Value(description),
-      reportedBy: reportedBy,
-    );
-    return complaintRepository.addComplaint(complaint);
-  }
+//   Future<int> addComplaint(String title, String description, int reportedBy) {
+//     final complaint = ComplaintCompanion.insert(
+//       title: title,
+//       description: Value(description),
+//       reportedBy: reportedBy,
+//     );
+//     return complaintRepository.addComplaint(complaint);
+//   }
 
-  Future<List<ComplaintData>> getAllComplaints() {
-    return complaintRepository.getAllComplaints();
-  }
-}
+//   Future<List<ComplaintData>> getAllComplaints() {
+//     return complaintRepository.getAllComplaints();
+//   }
+// }
 
-class InjuryService {
-  final InjuryRepository injuryRepository;
+// class InjuryService {
+//   final InjuryRepository injuryRepository;
 
-  InjuryService(this.injuryRepository);
+//   InjuryService(this.injuryRepository);
 
-  Future<int> addInjury(String description, DateTime dateOccurred, int reportedBy) {
-    final injury = InjuryCompanion.insert(
-      description: description,
-      dateOccurred: dateOccurred,
-      reportedBy: reportedBy,
-    );
-    return injuryRepository.addInjury(injury);
-  }
+//   Future<int> addInjury(String description, DateTime dateOccurred, int reportedBy) {
+//     final injury = InjuryCompanion.insert(
+//       description: description,
+//       dateOccurred: dateOccurred,
+//       reportedBy: reportedBy,
+//     );
+//     return injuryRepository.addInjury(injury);
+//   }
 
-  Future<List<InjuryData>> getAllInjuries() {
-    return injuryRepository.getAllInjuries();
-  }
-}
+//   Future<List<InjuryData>> getAllInjuries() {
+//     return injuryRepository.getAllInjuries();
+//   }
+// }
 
-class DocumentService {
-  final DocumentRepository documentRepository;
+// class DocumentService {
+//   final DocumentRepository documentRepository;
 
-  DocumentService(this.documentRepository);
+//   DocumentService(this.documentRepository);
 
-  Future<int> addDocument(String title, String filePath, int uploadedBy) {
-    final document = DocumentCompanion.insert(
-      title: title,
-      filePath: filePath,
-      uploadedBy: uploadedBy,
-    );
-    return documentRepository.addDocument(document);
-  }
+//   Future<int> addDocument(String title, String filePath, int uploadedBy) {
+//     final document = DocumentCompanion.insert(
+//       title: title,
+//       filePath: filePath,
+//       uploadedBy: uploadedBy,
+//     );
+//     return documentRepository.addDocument(document);
+//   }
 
-  Future<List<DocumentData>> getAllDocuments() {
-    return documentRepository.getAllDocuments();
-  }
-}
+//   Future<List<DocumentData>> getAllDocuments() {
+//     return documentRepository.getAllDocuments();
+//   }
+// }
 
 
 // task, complaint, injury, document, 

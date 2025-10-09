@@ -112,124 +112,124 @@ class CompanyRepository {
   Future<List<CompanyData>> getAllCompanies() => companyDao.getAllCompanies();
 }
 
-class JobRepository {
-  final JobsDao jobsDao;
+// class JobRepository {
+//   final JobsDao jobsDao;
 
-  JobRepository(this.jobsDao);
+//   JobRepository(this.jobsDao);
 
-  Future<int> addJob(String title, String description, int assignedTo) {
-    final job = JobsCompanion.insert(
-      title: title,
-      description: Value(description),
-      assignedTo: assignedTo,
-    );
-    return jobsDao.insertJob(job);
-  }
+//   Future<int> addJob(String title, String description, int assignedTo) {
+//     final job = JobsCompanion.insert(
+//       title: title,
+//       description: Value(description),
+//       assignedTo: assignedTo,
+//     );
+//     return jobsDao.insertJob(job);
+//   }
 
-  Future<List<Job>> getAllJobs() => jobsDao.getAllJobs();
-}
+//   Future<List<Job>> getAllJobs() => jobsDao.getAllJobs();
+// }
 
-class CustomerRepository {
-  final CustomerDao customerDao;
+// class CustomerRepository {
+//   final CustomerDao customerDao;
 
-  CustomerRepository(this.customerDao);
+//   CustomerRepository(this.customerDao);
 
-  Future<int> addCustomer(String name, String contactInfo) {
-    final customer = CustomersCompanion.insert(
-      name: name,
-      contactInfo: Value(contactInfo),
-    );
-    return customerDao.insertCustomer(customer);
-  }
+//   Future<int> addCustomer(String name, String contactInfo) {
+//     final customer = CustomersCompanion.insert(
+//       name: name,
+//       contactInfo: Value(contactInfo),
+//     );
+//     return customerDao.insertCustomer(customer);
+//   }
 
-  Future<List<Customer>> getAllCustomers() => customerDao.getAllCustomers();
-}
+//   Future<List<Customer>> getAllCustomers() => customerDao.getAllCustomers();
+// }
 
-class ToolRepository {
-  final ToolsDao toolsDao;
+// class ToolRepository {
+//   final ToolsDao toolsDao;
 
-  ToolRepository(this.toolsDao);
+//   ToolRepository(this.toolsDao);
 
-  Future<int> addTool(String name, String description, int managedBy) {
-    final tool = ToolsCompanion.insert(
-      name: name,
-      description: Value(description),
-      managedBy: managedBy,
-    );
-    return toolsDao.insertTool(tool);
-  }
+//   Future<int> addTool(String name, String description, int managedBy) {
+//     final tool = ToolsCompanion.insert(
+//       name: name,
+//       description: Value(description),
+//       managedBy: managedBy,
+//     );
+//     return toolsDao.insertTool(tool);
+//   }
 
-  Future<List<Tool>> getAllTools() => toolsDao.getAllTools();
-}
+//   Future<List<Tool>> getAllTools() => toolsDao.getAllTools();
+// }
 
-class TaskRepository {
-  final TasksDao tasksDao;
+// class TaskRepository {
+//   final TasksDao tasksDao;
 
-  TaskRepository(this.tasksDao);
+//   TaskRepository(this.tasksDao);
 
-  Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
-    final task = TasksCompanion.insert(
-      title: title,
-      description: Value(description),
-      dueDate: Value(dueDate),
-      assignedTo: assignedTo,
-    );
-    return tasksDao.insertTask(task);
-  }
+//   Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
+//     final task = TasksCompanion.insert(
+//       title: title,
+//       description: Value(description),
+//       dueDate: Value(dueDate),
+//       assignedTo: assignedTo,
+//     );
+//     return tasksDao.insertTask(task);
+//   }
 
-  Future<List<Task>> getAllTasks() => tasksDao.getAllTasks();
-}
+//   Future<List<Task>> getAllTasks() => tasksDao.getAllTasks();
+// }
 
-class ComplaintRepository {
-  final ComplaintDao complaintDao;
+// class ComplaintRepository {
+//   final ComplaintDao complaintDao;
 
-  ComplaintRepository(this.complaintDao);
+//   ComplaintRepository(this.complaintDao);
 
-  Future<int> addComplaint(String description, DateTime dateFiled, int reportedBy) {
-    final complaint = ComplaintCompanion.insert(
-      description: description,
-      dateFiled: dateFiled,
-      reportedBy: reportedBy,
-    );
-    return complaintDao.insertComplaint(complaint);
-  }
+//   Future<int> addComplaint(String description, DateTime dateFiled, int reportedBy) {
+//     final complaint = ComplaintCompanion.insert(
+//       description: description,
+//       dateFiled: dateFiled,
+//       reportedBy: reportedBy,
+//     );
+//     return complaintDao.insertComplaint(complaint);
+//   }
 
-  Future<List<ComplaintData>> getAllComplaints() => complaintDao.getAllComplaints();
-}
+//   Future<List<ComplaintData>> getAllComplaints() => complaintDao.getAllComplaints();
+// }
 
-class InjuryRepository {
-  final InjuryDao injuryDao;
+// class InjuryRepository {
+//   final InjuryDao injuryDao;
 
-  InjuryRepository(this.injuryDao);
+//   InjuryRepository(this.injuryDao);
 
-  Future<int> addInjury(String description, DateTime dateOccurred, int reportedBy) {
-    final injury = InjuryCompanion.insert(
-      description: description,
-      dateOccurred: dateOccurred,
-      reportedBy: reportedBy,
-    );
-    return injuryDao.insertInjury(injury);
-  }
+//   Future<int> addInjury(String description, DateTime dateOccurred, int reportedBy) {
+//     final injury = InjuryCompanion.insert(
+//       description: description,
+//       dateOccurred: dateOccurred,
+//       reportedBy: reportedBy,
+//     );
+//     return injuryDao.insertInjury(injury);
+//   }
 
-  Future<List<InjuryData>> getAllInjuries() => injuryDao.getAllInjuries();
-}
+//   Future<List<InjuryData>> getAllInjuries() => injuryDao.getAllInjuries();
+// }
 
-class DocumentRepository {
-  final DocumentDao documentDao;
+// class DocumentRepository {
+//   final DocumentDao documentDao;
 
-  DocumentRepository(this.documentDao);
+//   DocumentRepository(this.documentDao);
 
-  Future<int> addDocument(String title, String filePath, int uploadedBy) {
-    final document = DocumentCompanion.insert(
-      title: title,
-      filePath: filePath,
-      uploadedBy: uploadedBy,
-    );
-    return documentDao.insertDocument(document);
-  }
+//   Future<int> addDocument(String title, String filePath, int uploadedBy) {
+//     final document = DocumentCompanion.insert(
+//       title: title,
+//       filePath: filePath,
+//       uploadedBy: uploadedBy,
+//     );
+//     return documentDao.insertDocument(document);
+//   }
 
-  Future<List<DocumentData>> getAllDocuments() => documentDao.getAllDocuments();
-}
+//   Future<List<DocumentData>> getAllDocuments() => documentDao.getAllDocuments();
+// }
 
 
 // task, complaint, injury repositories

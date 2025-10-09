@@ -140,50 +140,50 @@ class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixi
   Future<List<Customer>> getAllCustomers() => select(customers).get();
 }
 
-@DriftAccessor(tables: [Tools])
-class ToolsDao extends DatabaseAccessor<AppDatabase> with _$ToolsDaoMixin {
-  ToolsDao(super.db);
+// @DriftAccessor(tables: [Tools])
+// class ToolsDao extends DatabaseAccessor<AppDatabase> with _$ToolsDaoMixin {
+//   ToolsDao(super.db);
 
-  Future<int> insertTool(ToolsCompanion tool) => into(tools).insert(tool);
+//   Future<int> insertTool(ToolsCompanion tool) => into(tools).insert(tool);
 
-  Future<List<Tool>> getAllTools() => select(tools).get();
-}
+//   Future<List<Tool>> getAllTools() => select(tools).get();
+// }
 
-@DriftAccessor(tables: [Tasks])
-class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
-  TasksDao(super.db);
+// @DriftAccessor(tables: [Tasks])
+// class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
+//   TasksDao(super.db);
 
-  Future<int> insertTask(TasksCompanion task) => into(tasks).insert(task);
+//   Future<int> insertTask(TasksCompanion task) => into(tasks).insert(task);
 
-  Future<List<Task>> getAllTasks() => select(tasks).get();
-}
+//   Future<List<Task>> getAllTasks() => select(tasks).get();
+// }
 
-@DriftAccessor(tables: [Complaint])
-class ComplaintDao extends DatabaseAccessor<AppDatabase> with _$ComplaintDaoMixin {
-  ComplaintDao(super.db);
+// @DriftAccessor(tables: [Complaint])
+// class ComplaintDao extends DatabaseAccessor<AppDatabase> with _$ComplaintDaoMixin {
+//   ComplaintDao(super.db);
 
-  Future<int> insertComplaint(ComplaintCompanion complaint) => into(complaint).insert(complaint);
+//   Future<int> insertComplaint(ComplaintCompanion complaint) => into(complaint).insert(complaint);
 
-  Future<List<ComplaintData>> getAllComplaints() => select(complaint).get();
-}
+//   Future<List<ComplaintData>> getAllComplaints() => select(complaint).get();
+// }
 
-@DriftAccessor(tables: [Injury])
-class InjuryDao extends DatabaseAccessor<AppDatabase> with _$InjuryDaoMixin {
-  InjuryDao(super.db);
+// @DriftAccessor(tables: [Injury])
+// class InjuryDao extends DatabaseAccessor<AppDatabase> with _$InjuryDaoMixin {
+//   InjuryDao(super.db);
 
-  Future<int> insertInjury(InjuryCompanion injury) => into(injury).insert(injury);
+//   Future<int> insertInjury(InjuryCompanion injury) => into(injury).insert(injury);
 
-  Future<List<InjuryData>> getAllInjuries() => select(injury).get();
-}
+//   Future<List<InjuryData>> getAllInjuries() => select(injury).get();
+// }
 
-@DriftAccessor(tables: [Document])
-class DocumentDao extends DatabaseAccessor<AppDatabase> with _$DocumentDaoMixin {
-  DocumentDao(super.db);
+// @DriftAccessor(tables: [Document])
+// class DocumentDao extends DatabaseAccessor<AppDatabase> with _$DocumentDaoMixin {
+//   DocumentDao(super.db);
 
-  Future<int> insertDocument(DocumentCompanion document) => into(document).insert(document);
+//   Future<int> insertDocument(DocumentCompanion document) => into(document).insert(document);
 
-  Future<List<DocumentData>> getAllDocuments() => select(document).get();
-}
+//   Future<List<DocumentData>> getAllDocuments() => select(document).get();
+// }
 
 // jobs, customers, tools, tasks, complaint, injury, document
 

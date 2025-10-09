@@ -17,8 +17,9 @@ part 'database.g.dart';
 // DATABASE
 // ------------------
 @DriftDatabase(
-  tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company], 
-  daos: [UserDao, TemplatesDao, JobQuotesDao])
+  tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company, Tools, Tasks, Complaint,
+  Injury, Document], 
+  daos: [UserDao, TemplatesDao, JobQuotesDao, CompanyDao, JobsDao, CustomersDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 

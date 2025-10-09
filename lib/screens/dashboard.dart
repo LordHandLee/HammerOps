@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hammer_ops/screens/subscreens/briefcase_screen.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -52,6 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 86, 124, 155),
                 expanded_color: Color.fromARGB(255, 86, 124, 155),
+                subscreen: BriefcaseScreen(),
               ),
               SnugTile(
                 title: "BRIEFCASE", 
@@ -62,6 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 59, 87, 110),
                 expanded_color: Color.fromARGB(255, 59, 87, 110),
+                subscreen: BriefcaseScreen(),
               ),
               SnugTile(
                 title: "TASK LIST", 
@@ -72,6 +75,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 28, 46, 60),
                 expanded_color: Color.fromARGB(255, 28, 46, 60),
+                subscreen: BriefcaseScreen(),
               ),
               SnugTile(
                 title: "SUPPLY DECK", 
@@ -82,6 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 32, 43, 60),
                 expanded_color: Color.fromARGB(255, 32, 43, 60),
+                subscreen: BriefcaseScreen(),
               ),
               SnugTile(
                 title: "SECURE PAY", 
@@ -92,6 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 25, 30, 44),
                 expanded_color: Color.fromARGB(255, 25, 30, 44),
+                subscreen: BriefcaseScreen(),
               ),
               SnugTile(
                 title: "MY TEAM", 
@@ -102,6 +108,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 18, 24, 33),
                 expanded_color: Color.fromARGB(255, 18, 24, 33),
+                subscreen: BriefcaseScreen(),
               ),
             ]
           ),
@@ -122,6 +129,8 @@ class SnugTile extends StatefulWidget {
   final Color container_color;
   final Color expanded_color;
 
+  final Widget subscreen;
+
   const SnugTile({
     super.key,
     required this.title,
@@ -132,6 +141,7 @@ class SnugTile extends StatefulWidget {
     this.textColor = Colors.black,
     this.container_color = Colors.white,
     this.expanded_color = Colors.grey, // default color for expanded area
+    required this.subscreen,
   });
 
   @override
@@ -197,11 +207,12 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
                 //   duration: Duration(milliseconds: 150), // Optional
                 //   curve: Curves.linear, // Optional
                 // ),
-                child: Text(
-                  'Expanded content for ${widget.title}. '
-                  'Put any widgets you want here (forms, lists, images, etc.).',
-                  style: TextStyle(color: widget.textColor),
-                ),
+                child: widget.subscreen,
+                // child: Text(
+                //   'Expanded content for ${widget.title}. '
+                //   'Put any widgets you want here (forms, lists, images, etc.).',
+                //   style: TextStyle(color: widget.textColor),
+                // ),
               ),
           ],
         ),

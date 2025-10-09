@@ -74,6 +74,7 @@ class QuoteFieldValues extends Table {
 class Jobs extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get quoteId => integer().references(JobQuotes, #id, onDelete: KeyAction.cascade)(); // each job is linked to a quote
+  TextColumn get name => text().withLength(min: 1, max: 50)();
   TextColumn get jobStatus => text().withLength(min: 1, max: 50)(); // e.g., pending, in-progress, completed
   DateTimeColumn get startDate => dateTime().nullable()();
   DateTimeColumn get endDate => dateTime().nullable()();
@@ -119,9 +120,9 @@ class Tools extends Table {
   BoolColumn get isAvailable => boolean().withDefault(const Constant(true))();
 
   // Foreign key to Users table (assuming a user manages the tool)
-  IntColumn get managedBy => integer().customConstraint('REFERENCES users(id)')();
+  IntColumn get managedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
 
-  
+
 }
 
 // ------------------
@@ -140,7 +141,7 @@ class Tasks extends Table {
   TextColumn get reasonForFlag => text().nullable()();
 
   // Foreign key to Users table (assuming a user is assigned the task)
-  IntColumn get assignedTo => integer().customConstraint('REFERENCES users(id)')();
+  IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
 }
 
 
