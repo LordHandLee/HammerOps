@@ -237,7 +237,7 @@ class _DynamicFieldsFormState extends State<DynamicFieldsForm> {
   void _addField() {
     setState(() => _controllers.add(TextEditingController()));
   }
-
+ //TODO have saveTemplate method return so we can print message to user saying succesful or not and why.
   Future<void> _saveTemplate() async {
     final names = _controllers.map((c) => c.value.text).toList();
     // print("Calculation name: ${_selectedCalculation}");
@@ -247,8 +247,8 @@ class _DynamicFieldsFormState extends State<DynamicFieldsForm> {
     // Call service to save template
     // int userid = service.user.getCurrentUser();
     // // int userid = 1; // replace with actual user id
-    // final company = await service.company.addCompany("New Company");
-    // final user = await service.user.addUser("johndoe", company);
+    final company = await service.company.addCompany("New Company");
+    final user = await service.user.addUser("johndoe", company);
     service.template.createTemplate(templateName.text, 1, names);
   }
 

@@ -3,8 +3,8 @@ import 'package:hammer_ops/services/service.dart';
 import 'briefcase.dart';
 
 class BriefcaseScreen extends StatelessWidget {
-  final AppService service;
-  const BriefcaseScreen({super.key, required this.service});
+  // final AppService service;
+  const BriefcaseScreen({super.key}); //required this.service
 
   @override
   Widget build(BuildContext context) {

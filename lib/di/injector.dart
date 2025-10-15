@@ -9,7 +9,7 @@ import 'package:hammer_ops/database/database_connection.dart';
 final GetIt getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
-  final executor =  openConnection();
+  final executor = await openConnection();
 
 
   final db = AppDatabase(executor);

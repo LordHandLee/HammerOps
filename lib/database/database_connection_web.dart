@@ -5,7 +5,12 @@ import 'package:sqlite3/wasm.dart';
 // import 'package:http/http.dart' as http;
 
 Future<QueryExecutor> openConnection() async {
-  final uri = Uri.parse('https://unpkg.com/sql.js@1.10.3/dist/sql-wasm.wasm');
+  print("web");
+  // final uri = Uri.parse('https://unpkg.com/sql.js@1.10.3/dist/sql-wasm.wasm');
+  final uri = Uri.parse('/web/assets/sqlite3.wasm');
   final sqlite3 = await WasmSqlite3.loadFromUrl(uri);
-  return WasmDatabase.inMemory(sqlite3);
+  final fileSystem = await IndexedDbFileSystem.open(dbName: 'my_app');
+  sqlite3.registerVirtualFileSystem(fileSystem, makeDefault: true);
+  // return sqlite3;
+  return WasmDatabase(sqlite3: sqlite3, path: 'app.db');
 }

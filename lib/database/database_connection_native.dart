@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 
 LazyDatabase openConnection() {
   return LazyDatabase(() async {
+    print("native");
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'app.sqlite'));
     return NativeDatabase(file);
