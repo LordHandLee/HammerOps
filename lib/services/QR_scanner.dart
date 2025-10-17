@@ -1,4 +1,5 @@
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:flutter/material.dart';
 
 class ToolScanner extends StatefulWidget {
   @override

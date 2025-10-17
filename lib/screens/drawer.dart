@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/quote__craft/quote_craft.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/tool_tracker.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/job_manager.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
@@ -179,10 +181,20 @@ class _DrawerMenu extends StatelessWidget {
           title: const Text('Settings'),
           onTap: () => onNavigate(const DrawerSubPage(title: "Settings Page")),
         ),
+        // ListTile(
+        //   leading: const Icon(Icons.settings),
+        //   title: const Text('QUOTE CRAFT'),
+        //   onTap: () => onNavigate(const QuoteCraft()),
+        // ),
         ListTile(
           leading: const Icon(Icons.settings),
-          title: const Text('QUOTE CRAFT'),
-          onTap: () => onNavigate(const QuoteCraft()),
+          title: const Text('TOOL TRACKER'),
+          onTap: () => onNavigate(const ToolTracker()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('JOB MANAGER'),
+          onTap: () => onNavigate(const JobManager()),
         ),
       ],
     );
