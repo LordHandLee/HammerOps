@@ -1,7 +1,8 @@
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/database/database.dart';
 import 'package:drift/drift.dart';
-import 'package:get_it/get_it.dart';
+import 'package:device_calendar/device_calendar.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 
 class TemplateService {
@@ -237,9 +238,9 @@ class UserService {
   //   return userRepository.getUserById(id);
   // }
 
-  // Future<List<User>> getAllUsers() {
-  //   return userRepository.getAllUsers();
-  // }
+  Future<List<User>> getAllUsers() {
+    return userRepository.getUsers();
+  }
 }
 
 class CompanyService {
@@ -275,19 +276,19 @@ class CompanyService {
 //   }
 // }
 
-// class CustomerService {
-//   final CustomerRepository customerRepository;
+class CustomerService {
+  final CustomerRepository customerRepository;
 
-//   CustomerService(this.customerRepository);
+  CustomerService(this.customerRepository);
 
-//   Future<int> addCustomer(String name, String contactInfo) {
-//     return customerRepository.addCustomer(name, contactInfo);
-//   }
+  Future<int> addCustomer(String name, String contactInfo, int managedBy) {
+    return customerRepository.addCustomer(name, contactInfo, managedBy);
+  }
 
-//   Future<List<Customer>> getAllCustomers() {
-//     return customerRepository.getAllCustomers();
-//   }
-// }
+  Future<List<Customer>> getAllCustomers() {
+    return customerRepository.getAllCustomers();
+  }
+}
 
 // class ToolService {
 //   final ToolRepository toolRepository;
@@ -303,62 +304,69 @@ class CompanyService {
 //   }
 // }
 
-// class TaskService {
-//   final TaskRepository taskRepository;
+class TaskService {
+  final TaskRepository taskRepository;
 
-//   TaskService(this.taskRepository);
+  TaskService(this.taskRepository);
 
-//   Future<int> addTask(String title, String description, DateTime? dueDate) {
-//     final task = TasksCompanion.insert(
-//       title: title,
-//       description: Value(description),
-//       dueDate: Value(dueDate),
-//     );
-//     return taskRepository.addTask(task);
-//   }
+  Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
+    // final task = TasksCompanion.insert(
+    //   title: title,
+    //   description: Value(description),
+    //   dueDate: Value(dueDate),
+    //   assignedTo: assignedTo,
+    // );
+    return taskRepository.addTask(title, description, dueDate, assignedTo);
+  }
 
-//   Future<List<Task>> getAllTasks() {
-//     return taskRepository.getAllTasks();
-//   }
-// }
+  Future<List<Task>> getAllTasks() {
+    return taskRepository.getAllTasks();
+  }
 
-// class ComplaintService {
-//   final ComplaintRepository complaintRepository;
+    // --- New Flag Feature ---
+  Future<int> flagTask(int taskId, String reason) => taskRepository.flagTask(taskId, reason);
 
-//   ComplaintService(this.complaintRepository);
+  Future<int> unflagTask(int taskId) => taskRepository.unflagTask(taskId);
 
-//   Future<int> addComplaint(String title, String description, int reportedBy) {
-//     final complaint = ComplaintCompanion.insert(
-//       title: title,
-//       description: Value(description),
-//       reportedBy: reportedBy,
-//     );
-//     return complaintRepository.addComplaint(complaint);
-//   }
+  Future<List<Task>> getFlaggedTasks() => taskRepository.getFlaggedTasks();
 
-//   Future<List<ComplaintData>> getAllComplaints() {
-//     return complaintRepository.getAllComplaints();
-//   }
-// }
+  Stream<List<Task>> watchAllTasks() => taskRepository.watchAllTasks();
 
-// class InjuryService {
-//   final InjuryRepository injuryRepository;
+}
 
-//   InjuryService(this.injuryRepository);
+class ComplaintService {
+  final ComplaintRepository complaintRepository;
 
-//   Future<int> addInjury(String description, DateTime dateOccurred, int reportedBy) {
-//     final injury = InjuryCompanion.insert(
-//       description: description,
-//       dateOccurred: dateOccurred,
-//       reportedBy: reportedBy,
-//     );
-//     return injuryRepository.addInjury(injury);
-//   }
+  ComplaintService(this.complaintRepository);
 
-//   Future<List<InjuryData>> getAllInjuries() {
-//     return injuryRepository.getAllInjuries();
-//   }
-// }
+  Future<int> addComplaint(String title, Value<String?> description, DateTime dateFiled, int reportedBy, int assignedTo, int reportedByCustomer) {
+    return complaintRepository.addComplaint(title, description, dateFiled, reportedBy, assignedTo, reportedByCustomer);
+  }
+
+  Future<List<ComplaintData>> getAllComplaints() {
+    return complaintRepository.getAllComplaints();
+  }
+}
+
+class InjuryService {
+  final InjuryRepository injuryRepository;
+
+  InjuryService(this.injuryRepository);
+
+  Future<int> addInjury(String title, Value<String?> description, DateTime dateOccurred, Value<int?> reportedByUser,
+  Value<int?> reportedByCust) {
+    // final injury = InjuryCompanion.insert(
+    //   description: description,
+    //   dateOccurred: dateOccurred,
+    //   reportedBy: reportedBy,
+    // );
+    return injuryRepository.addInjury(title, description, dateOccurred, reportedByUser, reportedByCust);
+  }
+
+  Future<List<InjuryData>> getAllInjuries() {
+    return injuryRepository.getAllInjuries();
+  }
+}
 
 // class DocumentService {
 //   final DocumentRepository documentRepository;
@@ -379,6 +387,96 @@ class CompanyService {
 //   }
 // }
 
+class FleetEventService {
+  final FleetEventRepository repository;
+  final _calendarPlugin = DeviceCalendarPlugin();
+
+  FleetEventService(this.repository);
+
+  // Get future events (from DB)
+  Future<List<FleetEvent>> getFutureEvents() {
+    return repository.getFutureEvents();
+  }
+
+  // Add a new event (optionally sync with device calendar)
+  Future<void> addEvent({
+    required String vehicleName,
+    required String eventType,
+    required DateTime date,
+    String? notes,
+    bool addToCalendar = true,
+  }) async {
+    final event = FleetEventsCompanion.insert(
+      vehicleName: vehicleName,
+      eventType: eventType,
+      date: date,
+      notes: Value(notes),
+    );
+
+    await repository.addEvent(event);
+
+    if (addToCalendar) {
+      await _addToDeviceCalendar(event);
+    }
+  }
+
+  // Update existing event
+  Future<void> updateEvent(FleetEvent event, {bool updateCalendar = true}) async {
+    final updated = FleetEventsCompanion(
+      id: Value(event.id),
+      vehicleName: Value(event.vehicleName),
+      eventType: Value(event.eventType),
+      date: Value(event.date),
+      notes: Value(event.notes),
+    );
+
+    await repository.updateEvent(updated);
+
+    if (updateCalendar) {
+      await _addToDeviceCalendar(updated);
+    }
+  }
+
+  // Delete event
+  Future<void> deleteEvent(FleetEvent event, {bool removeFromCalendar = true}) async {
+    await repository.deleteEvent(event.id);
+    if (removeFromCalendar) {
+      await _removeFromDeviceCalendar(event);
+    }
+  }
+
+  // --- Calendar integration ---
+
+  Future<void> _addToDeviceCalendar(FleetEventsCompanion event) async {
+    final permissions = await _calendarPlugin.hasPermissions();
+    if (!permissions.isSuccess || !permissions.data!) {
+      await _calendarPlugin.requestPermissions();
+    }
+
+    final calendars = await _calendarPlugin.retrieveCalendars();
+    if (!calendars.isSuccess || calendars.data!.isEmpty) return;
+
+    final calendar = calendars.data!.first;
+
+      // Convert to TZDateTime
+    final start = tz.TZDateTime.from(event.date.value, tz.local);
+    final end = start.add(const Duration(hours: 1));
+
+    final calEvent = Event(
+      calendar.id,
+      title: '${event.vehicleName.value} - ${event.eventType.value}',
+      start: start,
+      end: end,
+      description: event.notes.value,
+    );
+
+    await _calendarPlugin.createOrUpdateEvent(calEvent);
+  }
+
+  Future<void> _removeFromDeviceCalendar(FleetEvent event) async {
+    // Optional: store event.calendarEventId in DB if you want to remove it later
+  }
+}
 
 // task, complaint, injury, document, 
 
@@ -388,10 +486,20 @@ class AppService {
   final QuoteService quote;
   final UserService user;
   final CompanyService company;
+  final FleetEventService fleet;
+  final ComplaintService complaint;
+  final CustomerService customer;
+  final TaskService task;
+  final InjuryService injury;
 
   AppService(AppRepository repo)
       : template = TemplateService(repo.template),
         user = UserService(repo.user),
         company = CompanyService(repo.company),
-        quote = QuoteService(repo.quote, repo.template);
+        quote = QuoteService(repo.quote, repo.template),
+        fleet = FleetEventService(repo.fleet),
+        complaint = ComplaintService(repo.complaint),
+        customer = CustomerService(repo.customer),
+        task = TaskService(repo.task),
+        injury = InjuryService(repo.injury);
 }

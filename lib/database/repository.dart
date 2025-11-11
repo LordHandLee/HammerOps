@@ -129,21 +129,22 @@ class CompanyRepository {
 //   Future<List<Job>> getAllJobs() => jobsDao.getAllJobs();
 // }
 
-// class CustomerRepository {
-//   final CustomerDao customerDao;
+class CustomerRepository {
+  final CustomersDao customerDao;
 
-//   CustomerRepository(this.customerDao);
+  CustomerRepository(this.customerDao);
 
-//   Future<int> addCustomer(String name, String contactInfo) {
-//     final customer = CustomersCompanion.insert(
-//       name: name,
-//       contactInfo: Value(contactInfo),
-//     );
-//     return customerDao.insertCustomer(customer);
-//   }
+  Future<int> addCustomer(String name, String contactInfo, int user) {
+    final customer = CustomersCompanion.insert(
+      name: name,
+      contactInfo: contactInfo,
+      managedBy: user,
+    );
+    return customerDao.insertCustomer(customer);
+  }
 
-//   Future<List<Customer>> getAllCustomers() => customerDao.getAllCustomers();
-// }
+  Future<List<Customer>> getAllCustomers() => customerDao.getAllCustomers();
+}
 
 // class ToolRepository {
 //   final ToolsDao toolsDao;
@@ -162,57 +163,69 @@ class CompanyRepository {
 //   Future<List<Tool>> getAllTools() => toolsDao.getAllTools();
 // }
 
-// class TaskRepository {
-//   final TasksDao tasksDao;
+class TaskRepository {
+  final TasksDao tasksDao;
 
-//   TaskRepository(this.tasksDao);
+  TaskRepository(this.tasksDao);
 
-//   Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
-//     final task = TasksCompanion.insert(
-//       title: title,
-//       description: Value(description),
-//       dueDate: Value(dueDate),
-//       assignedTo: assignedTo,
-//     );
-//     return tasksDao.insertTask(task);
-//   }
+  Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
+    final task = TasksCompanion.insert(
+      title: title,
+      description: Value(description),
+      dueDate: Value(dueDate),
+      assignedTo: assignedTo,
+    );
+    return tasksDao.insertTask(task);
+  }
 
-//   Future<List<Task>> getAllTasks() => tasksDao.getAllTasks();
-// }
+  Future<List<Task>> getAllTasks() => tasksDao.getAllTasks();
+    // --- New Flag Methods ---
+  Future<int> flagTask(int taskId, String reason) => tasksDao.flagTask(taskId, reason);
+  Future<int> unflagTask(int taskId) => tasksDao.unflagTask(taskId);
+  Future<List<Task>> getFlaggedTasks() => tasksDao.getFlaggedTasks();
 
-// class ComplaintRepository {
-//   final ComplaintDao complaintDao;
+  Stream<List<Task>> watchAllTasks() => tasksDao.watchAllTasks();
 
-//   ComplaintRepository(this.complaintDao);
+}
 
-//   Future<int> addComplaint(String description, DateTime dateFiled, int reportedBy) {
-//     final complaint = ComplaintCompanion.insert(
-//       description: description,
-//       dateFiled: dateFiled,
-//       reportedBy: reportedBy,
-//     );
-//     return complaintDao.insertComplaint(complaint);
-//   }
+class ComplaintRepository {
+  final ComplaintDao complaintDao;
 
-//   Future<List<ComplaintData>> getAllComplaints() => complaintDao.getAllComplaints();
-// }
+  ComplaintRepository(this.complaintDao);
 
-// class InjuryRepository {
-//   final InjuryDao injuryDao;
+  Future<int> addComplaint(String title, Value<String?> description, DateTime dateFiled, int reportedBy, int assignedTo, int reportedByCustomer) {
+    final complaint = ComplaintCompanion.insert(
+      title: title,
+      description: description,
+      reportedAt: Value(dateFiled),
+      reportedByUser: reportedBy,
+      assignedTo: assignedTo,
+      reportedByCustomer: reportedByCustomer,
+    );
+    return complaintDao.insertComplaint(complaint);
+  }
 
-//   InjuryRepository(this.injuryDao);
+  Future<List<ComplaintData>> getAllComplaints() => complaintDao.getAllComplaints();
+}
 
-//   Future<int> addInjury(String description, DateTime dateOccurred, int reportedBy) {
-//     final injury = InjuryCompanion.insert(
-//       description: description,
-//       dateOccurred: dateOccurred,
-//       reportedBy: reportedBy,
-//     );
-//     return injuryDao.insertInjury(injury);
-//   }
+class InjuryRepository {
+  final InjuryDao injuryDao;
 
-//   Future<List<InjuryData>> getAllInjuries() => injuryDao.getAllInjuries();
-// }
+  InjuryRepository(this.injuryDao);
+
+  Future<int> addInjury(String title, Value<String?> description, DateTime dateOccurred, Value<int?> reportedByUser, Value<int?> reportedByCust) {
+    final injury = InjuryCompanion.insert(
+      title: title,
+      description: description,
+      occurredAt: Value(dateOccurred),
+      reportedByUser: reportedByUser,
+      reportedByCustomer: reportedByCust
+    );
+    return injuryDao.insertInjury(injury);
+  }
+
+  Future<List<InjuryData>> getAllInjuries() => injuryDao.getAllInjuries();
+}
 
 // class DocumentRepository {
 //   final DocumentDao documentDao;
@@ -231,6 +244,16 @@ class CompanyRepository {
 //   Future<List<DocumentData>> getAllDocuments() => documentDao.getAllDocuments();
 // }
 
+class FleetEventRepository {
+  final FleetEventDao fleetDao;
+
+  FleetEventRepository(this.fleetDao);
+
+  Future<List<FleetEvent>> getFutureEvents() => fleetDao.getFutureEvents();
+  Future<void> addEvent(FleetEventsCompanion event) => fleetDao.insertEvent(event);
+  Future<void> updateEvent(FleetEventsCompanion event) => fleetDao.updateEvent(event);
+  Future<void> deleteEvent(int id) => fleetDao.deleteEvent(id);
+}
 
 // task, complaint, injury repositories
 
@@ -239,10 +262,20 @@ class AppRepository {
   final TemplateRepository template;
   final QuoteRepository quote;
   final CompanyRepository company;
+  final FleetEventRepository fleet;
+  final ComplaintRepository complaint;
+  final CustomerRepository customer;
+  final TaskRepository task;
+  final InjuryRepository injury;
 
   AppRepository(AppDao dao)
       : user = UserRepository(dao.user),
         template = TemplateRepository(dao.template),
         company = CompanyRepository(dao.company),
-        quote = QuoteRepository(dao.quote);
+        quote = QuoteRepository(dao.quote),
+        fleet = FleetEventRepository(dao.fleetevent),
+        complaint = ComplaintRepository(dao.complaint),
+        customer = CustomerRepository(dao.customer),
+        task = TaskRepository(dao.task),
+        injury = InjuryRepository(dao.injury);
 }

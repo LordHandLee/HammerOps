@@ -4623,9 +4623,9 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
   late final GeneratedColumn<int> reportedByUser = GeneratedColumn<int>(
     'reported_by_user',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES users (id) ON DELETE CASCADE',
     ),
@@ -4637,9 +4637,9 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
   late final GeneratedColumn<int> assignedTo = GeneratedColumn<int>(
     'assigned_to',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES users (id) ON DELETE CASCADE',
     ),
@@ -4650,9 +4650,9 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
   late final GeneratedColumn<int> reportedByCustomer = GeneratedColumn<int>(
     'reported_by_customer',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES customers (id) ON DELETE CASCADE',
     ),
@@ -4720,16 +4720,12 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
           _reportedByUserMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_reportedByUserMeta);
     }
     if (data.containsKey('assigned_to')) {
       context.handle(
         _assignedToMeta,
         assignedTo.isAcceptableOrUnknown(data['assigned_to']!, _assignedToMeta),
       );
-    } else if (isInserting) {
-      context.missing(_assignedToMeta);
     }
     if (data.containsKey('reported_by_customer')) {
       context.handle(
@@ -4739,8 +4735,6 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
           _reportedByCustomerMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_reportedByCustomerMeta);
     }
     return context;
   }
@@ -4774,15 +4768,15 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
       reportedByUser: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}reported_by_user'],
-      )!,
+      ),
       assignedTo: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}assigned_to'],
-      )!,
+      ),
       reportedByCustomer: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}reported_by_customer'],
-      )!,
+      ),
     );
   }
 
@@ -4798,18 +4792,18 @@ class InjuryData extends DataClass implements Insertable<InjuryData> {
   final String? description;
   final DateTime occurredAt;
   final bool isResolved;
-  final int reportedByUser;
-  final int assignedTo;
-  final int reportedByCustomer;
+  final int? reportedByUser;
+  final int? assignedTo;
+  final int? reportedByCustomer;
   const InjuryData({
     required this.id,
     required this.title,
     this.description,
     required this.occurredAt,
     required this.isResolved,
-    required this.reportedByUser,
-    required this.assignedTo,
-    required this.reportedByCustomer,
+    this.reportedByUser,
+    this.assignedTo,
+    this.reportedByCustomer,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4821,9 +4815,15 @@ class InjuryData extends DataClass implements Insertable<InjuryData> {
     }
     map['occurred_at'] = Variable<DateTime>(occurredAt);
     map['is_resolved'] = Variable<bool>(isResolved);
-    map['reported_by_user'] = Variable<int>(reportedByUser);
-    map['assigned_to'] = Variable<int>(assignedTo);
-    map['reported_by_customer'] = Variable<int>(reportedByCustomer);
+    if (!nullToAbsent || reportedByUser != null) {
+      map['reported_by_user'] = Variable<int>(reportedByUser);
+    }
+    if (!nullToAbsent || assignedTo != null) {
+      map['assigned_to'] = Variable<int>(assignedTo);
+    }
+    if (!nullToAbsent || reportedByCustomer != null) {
+      map['reported_by_customer'] = Variable<int>(reportedByCustomer);
+    }
     return map;
   }
 
@@ -4836,9 +4836,15 @@ class InjuryData extends DataClass implements Insertable<InjuryData> {
           : Value(description),
       occurredAt: Value(occurredAt),
       isResolved: Value(isResolved),
-      reportedByUser: Value(reportedByUser),
-      assignedTo: Value(assignedTo),
-      reportedByCustomer: Value(reportedByCustomer),
+      reportedByUser: reportedByUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reportedByUser),
+      assignedTo: assignedTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignedTo),
+      reportedByCustomer: reportedByCustomer == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reportedByCustomer),
     );
   }
 
@@ -4853,9 +4859,9 @@ class InjuryData extends DataClass implements Insertable<InjuryData> {
       description: serializer.fromJson<String?>(json['description']),
       occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
       isResolved: serializer.fromJson<bool>(json['isResolved']),
-      reportedByUser: serializer.fromJson<int>(json['reportedByUser']),
-      assignedTo: serializer.fromJson<int>(json['assignedTo']),
-      reportedByCustomer: serializer.fromJson<int>(json['reportedByCustomer']),
+      reportedByUser: serializer.fromJson<int?>(json['reportedByUser']),
+      assignedTo: serializer.fromJson<int?>(json['assignedTo']),
+      reportedByCustomer: serializer.fromJson<int?>(json['reportedByCustomer']),
     );
   }
   @override
@@ -4867,9 +4873,9 @@ class InjuryData extends DataClass implements Insertable<InjuryData> {
       'description': serializer.toJson<String?>(description),
       'occurredAt': serializer.toJson<DateTime>(occurredAt),
       'isResolved': serializer.toJson<bool>(isResolved),
-      'reportedByUser': serializer.toJson<int>(reportedByUser),
-      'assignedTo': serializer.toJson<int>(assignedTo),
-      'reportedByCustomer': serializer.toJson<int>(reportedByCustomer),
+      'reportedByUser': serializer.toJson<int?>(reportedByUser),
+      'assignedTo': serializer.toJson<int?>(assignedTo),
+      'reportedByCustomer': serializer.toJson<int?>(reportedByCustomer),
     };
   }
 
@@ -4879,18 +4885,22 @@ class InjuryData extends DataClass implements Insertable<InjuryData> {
     Value<String?> description = const Value.absent(),
     DateTime? occurredAt,
     bool? isResolved,
-    int? reportedByUser,
-    int? assignedTo,
-    int? reportedByCustomer,
+    Value<int?> reportedByUser = const Value.absent(),
+    Value<int?> assignedTo = const Value.absent(),
+    Value<int?> reportedByCustomer = const Value.absent(),
   }) => InjuryData(
     id: id ?? this.id,
     title: title ?? this.title,
     description: description.present ? description.value : this.description,
     occurredAt: occurredAt ?? this.occurredAt,
     isResolved: isResolved ?? this.isResolved,
-    reportedByUser: reportedByUser ?? this.reportedByUser,
-    assignedTo: assignedTo ?? this.assignedTo,
-    reportedByCustomer: reportedByCustomer ?? this.reportedByCustomer,
+    reportedByUser: reportedByUser.present
+        ? reportedByUser.value
+        : this.reportedByUser,
+    assignedTo: assignedTo.present ? assignedTo.value : this.assignedTo,
+    reportedByCustomer: reportedByCustomer.present
+        ? reportedByCustomer.value
+        : this.reportedByCustomer,
   );
   InjuryData copyWithCompanion(InjuryCompanion data) {
     return InjuryData(
@@ -4963,9 +4973,9 @@ class InjuryCompanion extends UpdateCompanion<InjuryData> {
   final Value<String?> description;
   final Value<DateTime> occurredAt;
   final Value<bool> isResolved;
-  final Value<int> reportedByUser;
-  final Value<int> assignedTo;
-  final Value<int> reportedByCustomer;
+  final Value<int?> reportedByUser;
+  final Value<int?> assignedTo;
+  final Value<int?> reportedByCustomer;
   const InjuryCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
@@ -4982,13 +4992,10 @@ class InjuryCompanion extends UpdateCompanion<InjuryData> {
     this.description = const Value.absent(),
     this.occurredAt = const Value.absent(),
     this.isResolved = const Value.absent(),
-    required int reportedByUser,
-    required int assignedTo,
-    required int reportedByCustomer,
-  }) : title = Value(title),
-       reportedByUser = Value(reportedByUser),
-       assignedTo = Value(assignedTo),
-       reportedByCustomer = Value(reportedByCustomer);
+    this.reportedByUser = const Value.absent(),
+    this.assignedTo = const Value.absent(),
+    this.reportedByCustomer = const Value.absent(),
+  }) : title = Value(title);
   static Insertable<InjuryData> custom({
     Expression<int>? id,
     Expression<String>? title,
@@ -5018,9 +5025,9 @@ class InjuryCompanion extends UpdateCompanion<InjuryData> {
     Value<String?>? description,
     Value<DateTime>? occurredAt,
     Value<bool>? isResolved,
-    Value<int>? reportedByUser,
-    Value<int>? assignedTo,
-    Value<int>? reportedByCustomer,
+    Value<int?>? reportedByUser,
+    Value<int?>? assignedTo,
+    Value<int?>? reportedByCustomer,
   }) {
     return InjuryCompanion(
       id: id ?? this.id,
@@ -5547,6 +5554,360 @@ class DocumentCompanion extends UpdateCompanion<DocumentData> {
   }
 }
 
+class $FleetEventsTable extends FleetEvents
+    with TableInfo<$FleetEventsTable, FleetEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FleetEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _vehicleNameMeta = const VerificationMeta(
+    'vehicleName',
+  );
+  @override
+  late final GeneratedColumn<String> vehicleName = GeneratedColumn<String>(
+    'vehicle_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventTypeMeta = const VerificationMeta(
+    'eventType',
+  );
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+    'event_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    vehicleName,
+    eventType,
+    date,
+    notes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fleet_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FleetEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('vehicle_name')) {
+      context.handle(
+        _vehicleNameMeta,
+        vehicleName.isAcceptableOrUnknown(
+          data['vehicle_name']!,
+          _vehicleNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_vehicleNameMeta);
+    }
+    if (data.containsKey('event_type')) {
+      context.handle(
+        _eventTypeMeta,
+        eventType.isAcceptableOrUnknown(data['event_type']!, _eventTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventTypeMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FleetEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FleetEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      vehicleName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vehicle_name'],
+      )!,
+      eventType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_type'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+    );
+  }
+
+  @override
+  $FleetEventsTable createAlias(String alias) {
+    return $FleetEventsTable(attachedDatabase, alias);
+  }
+}
+
+class FleetEvent extends DataClass implements Insertable<FleetEvent> {
+  final int id;
+  final String vehicleName;
+  final String eventType;
+  final DateTime date;
+  final String? notes;
+  const FleetEvent({
+    required this.id,
+    required this.vehicleName,
+    required this.eventType,
+    required this.date,
+    this.notes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['vehicle_name'] = Variable<String>(vehicleName);
+    map['event_type'] = Variable<String>(eventType);
+    map['date'] = Variable<DateTime>(date);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    return map;
+  }
+
+  FleetEventsCompanion toCompanion(bool nullToAbsent) {
+    return FleetEventsCompanion(
+      id: Value(id),
+      vehicleName: Value(vehicleName),
+      eventType: Value(eventType),
+      date: Value(date),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+    );
+  }
+
+  factory FleetEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FleetEvent(
+      id: serializer.fromJson<int>(json['id']),
+      vehicleName: serializer.fromJson<String>(json['vehicleName']),
+      eventType: serializer.fromJson<String>(json['eventType']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      notes: serializer.fromJson<String?>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'vehicleName': serializer.toJson<String>(vehicleName),
+      'eventType': serializer.toJson<String>(eventType),
+      'date': serializer.toJson<DateTime>(date),
+      'notes': serializer.toJson<String?>(notes),
+    };
+  }
+
+  FleetEvent copyWith({
+    int? id,
+    String? vehicleName,
+    String? eventType,
+    DateTime? date,
+    Value<String?> notes = const Value.absent(),
+  }) => FleetEvent(
+    id: id ?? this.id,
+    vehicleName: vehicleName ?? this.vehicleName,
+    eventType: eventType ?? this.eventType,
+    date: date ?? this.date,
+    notes: notes.present ? notes.value : this.notes,
+  );
+  FleetEvent copyWithCompanion(FleetEventsCompanion data) {
+    return FleetEvent(
+      id: data.id.present ? data.id.value : this.id,
+      vehicleName: data.vehicleName.present
+          ? data.vehicleName.value
+          : this.vehicleName,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      date: data.date.present ? data.date.value : this.date,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FleetEvent(')
+          ..write('id: $id, ')
+          ..write('vehicleName: $vehicleName, ')
+          ..write('eventType: $eventType, ')
+          ..write('date: $date, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, vehicleName, eventType, date, notes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FleetEvent &&
+          other.id == this.id &&
+          other.vehicleName == this.vehicleName &&
+          other.eventType == this.eventType &&
+          other.date == this.date &&
+          other.notes == this.notes);
+}
+
+class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
+  final Value<int> id;
+  final Value<String> vehicleName;
+  final Value<String> eventType;
+  final Value<DateTime> date;
+  final Value<String?> notes;
+  const FleetEventsCompanion({
+    this.id = const Value.absent(),
+    this.vehicleName = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.date = const Value.absent(),
+    this.notes = const Value.absent(),
+  });
+  FleetEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required String vehicleName,
+    required String eventType,
+    required DateTime date,
+    this.notes = const Value.absent(),
+  }) : vehicleName = Value(vehicleName),
+       eventType = Value(eventType),
+       date = Value(date);
+  static Insertable<FleetEvent> custom({
+    Expression<int>? id,
+    Expression<String>? vehicleName,
+    Expression<String>? eventType,
+    Expression<DateTime>? date,
+    Expression<String>? notes,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (vehicleName != null) 'vehicle_name': vehicleName,
+      if (eventType != null) 'event_type': eventType,
+      if (date != null) 'date': date,
+      if (notes != null) 'notes': notes,
+    });
+  }
+
+  FleetEventsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? vehicleName,
+    Value<String>? eventType,
+    Value<DateTime>? date,
+    Value<String?>? notes,
+  }) {
+    return FleetEventsCompanion(
+      id: id ?? this.id,
+      vehicleName: vehicleName ?? this.vehicleName,
+      eventType: eventType ?? this.eventType,
+      date: date ?? this.date,
+      notes: notes ?? this.notes,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (vehicleName.present) {
+      map['vehicle_name'] = Variable<String>(vehicleName.value);
+    }
+    if (eventType.present) {
+      map['event_type'] = Variable<String>(eventType.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FleetEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('vehicleName: $vehicleName, ')
+          ..write('eventType: $eventType, ')
+          ..write('date: $date, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5565,12 +5926,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ComplaintTable complaint = $ComplaintTable(this);
   late final $InjuryTable injury = $InjuryTable(this);
   late final $DocumentTable document = $DocumentTable(this);
+  late final $FleetEventsTable fleetEvents = $FleetEventsTable(this);
   late final UserDao userDao = UserDao(this as AppDatabase);
   late final TemplatesDao templatesDao = TemplatesDao(this as AppDatabase);
   late final JobQuotesDao jobQuotesDao = JobQuotesDao(this as AppDatabase);
   late final CompanyDao companyDao = CompanyDao(this as AppDatabase);
   late final JobsDao jobsDao = JobsDao(this as AppDatabase);
   late final CustomersDao customersDao = CustomersDao(this as AppDatabase);
+  late final FleetEventDao fleetEventDao = FleetEventDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5589,6 +5952,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     complaint,
     injury,
     document,
+    fleetEvents,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -11540,9 +11904,9 @@ typedef $$InjuryTableCreateCompanionBuilder =
       Value<String?> description,
       Value<DateTime> occurredAt,
       Value<bool> isResolved,
-      required int reportedByUser,
-      required int assignedTo,
-      required int reportedByCustomer,
+      Value<int?> reportedByUser,
+      Value<int?> assignedTo,
+      Value<int?> reportedByCustomer,
     });
 typedef $$InjuryTableUpdateCompanionBuilder =
     InjuryCompanion Function({
@@ -11551,9 +11915,9 @@ typedef $$InjuryTableUpdateCompanionBuilder =
       Value<String?> description,
       Value<DateTime> occurredAt,
       Value<bool> isResolved,
-      Value<int> reportedByUser,
-      Value<int> assignedTo,
-      Value<int> reportedByCustomer,
+      Value<int?> reportedByUser,
+      Value<int?> assignedTo,
+      Value<int?> reportedByCustomer,
     });
 
 final class $$InjuryTableReferences
@@ -11563,9 +11927,9 @@ final class $$InjuryTableReferences
   static $UsersTable _reportedByUserTable(_$AppDatabase db) => db.users
       .createAlias($_aliasNameGenerator(db.injury.reportedByUser, db.users.id));
 
-  $$UsersTableProcessedTableManager get reportedByUser {
-    final $_column = $_itemColumn<int>('reported_by_user')!;
-
+  $$UsersTableProcessedTableManager? get reportedByUser {
+    final $_column = $_itemColumn<int>('reported_by_user');
+    if ($_column == null) return null;
     final manager = $$UsersTableTableManager(
       $_db,
       $_db.users,
@@ -11581,9 +11945,9 @@ final class $$InjuryTableReferences
     $_aliasNameGenerator(db.injury.assignedTo, db.users.id),
   );
 
-  $$UsersTableProcessedTableManager get assignedTo {
-    final $_column = $_itemColumn<int>('assigned_to')!;
-
+  $$UsersTableProcessedTableManager? get assignedTo {
+    final $_column = $_itemColumn<int>('assigned_to');
+    if ($_column == null) return null;
     final manager = $$UsersTableTableManager(
       $_db,
       $_db.users,
@@ -11600,9 +11964,9 @@ final class $$InjuryTableReferences
         $_aliasNameGenerator(db.injury.reportedByCustomer, db.customers.id),
       );
 
-  $$CustomersTableProcessedTableManager get reportedByCustomer {
-    final $_column = $_itemColumn<int>('reported_by_customer')!;
-
+  $$CustomersTableProcessedTableManager? get reportedByCustomer {
+    final $_column = $_itemColumn<int>('reported_by_customer');
+    if ($_column == null) return null;
     final manager = $$CustomersTableTableManager(
       $_db,
       $_db.customers,
@@ -11960,9 +12324,9 @@ class $$InjuryTableTableManager
                 Value<String?> description = const Value.absent(),
                 Value<DateTime> occurredAt = const Value.absent(),
                 Value<bool> isResolved = const Value.absent(),
-                Value<int> reportedByUser = const Value.absent(),
-                Value<int> assignedTo = const Value.absent(),
-                Value<int> reportedByCustomer = const Value.absent(),
+                Value<int?> reportedByUser = const Value.absent(),
+                Value<int?> assignedTo = const Value.absent(),
+                Value<int?> reportedByCustomer = const Value.absent(),
               }) => InjuryCompanion(
                 id: id,
                 title: title,
@@ -11980,9 +12344,9 @@ class $$InjuryTableTableManager
                 Value<String?> description = const Value.absent(),
                 Value<DateTime> occurredAt = const Value.absent(),
                 Value<bool> isResolved = const Value.absent(),
-                required int reportedByUser,
-                required int assignedTo,
-                required int reportedByCustomer,
+                Value<int?> reportedByUser = const Value.absent(),
+                Value<int?> assignedTo = const Value.absent(),
+                Value<int?> reportedByCustomer = const Value.absent(),
               }) => InjuryCompanion.insert(
                 id: id,
                 title: title,
@@ -12620,6 +12984,202 @@ typedef $$DocumentTableProcessedTableManager =
       DocumentData,
       PrefetchHooks Function({bool uploadedBy, bool customerId, bool jobId})
     >;
+typedef $$FleetEventsTableCreateCompanionBuilder =
+    FleetEventsCompanion Function({
+      Value<int> id,
+      required String vehicleName,
+      required String eventType,
+      required DateTime date,
+      Value<String?> notes,
+    });
+typedef $$FleetEventsTableUpdateCompanionBuilder =
+    FleetEventsCompanion Function({
+      Value<int> id,
+      Value<String> vehicleName,
+      Value<String> eventType,
+      Value<DateTime> date,
+      Value<String?> notes,
+    });
+
+class $$FleetEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $FleetEventsTable> {
+  $$FleetEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get vehicleName => $composableBuilder(
+    column: $table.vehicleName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FleetEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FleetEventsTable> {
+  $$FleetEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get vehicleName => $composableBuilder(
+    column: $table.vehicleName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FleetEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FleetEventsTable> {
+  $$FleetEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get vehicleName => $composableBuilder(
+    column: $table.vehicleName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+}
+
+class $$FleetEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FleetEventsTable,
+          FleetEvent,
+          $$FleetEventsTableFilterComposer,
+          $$FleetEventsTableOrderingComposer,
+          $$FleetEventsTableAnnotationComposer,
+          $$FleetEventsTableCreateCompanionBuilder,
+          $$FleetEventsTableUpdateCompanionBuilder,
+          (
+            FleetEvent,
+            BaseReferences<_$AppDatabase, $FleetEventsTable, FleetEvent>,
+          ),
+          FleetEvent,
+          PrefetchHooks Function()
+        > {
+  $$FleetEventsTableTableManager(_$AppDatabase db, $FleetEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FleetEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FleetEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FleetEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> vehicleName = const Value.absent(),
+                Value<String> eventType = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+              }) => FleetEventsCompanion(
+                id: id,
+                vehicleName: vehicleName,
+                eventType: eventType,
+                date: date,
+                notes: notes,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String vehicleName,
+                required String eventType,
+                required DateTime date,
+                Value<String?> notes = const Value.absent(),
+              }) => FleetEventsCompanion.insert(
+                id: id,
+                vehicleName: vehicleName,
+                eventType: eventType,
+                date: date,
+                notes: notes,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FleetEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FleetEventsTable,
+      FleetEvent,
+      $$FleetEventsTableFilterComposer,
+      $$FleetEventsTableOrderingComposer,
+      $$FleetEventsTableAnnotationComposer,
+      $$FleetEventsTableCreateCompanionBuilder,
+      $$FleetEventsTableUpdateCompanionBuilder,
+      (
+        FleetEvent,
+        BaseReferences<_$AppDatabase, $FleetEventsTable, FleetEvent>,
+      ),
+      FleetEvent,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12649,6 +13209,8 @@ class $AppDatabaseManager {
       $$InjuryTableTableManager(_db, _db.injury);
   $$DocumentTableTableManager get document =>
       $$DocumentTableTableManager(_db, _db.document);
+  $$FleetEventsTableTableManager get fleetEvents =>
+      $$FleetEventsTableTableManager(_db, _db.fleetEvents);
 }
 
 mixin _$UserDaoMixin on DatabaseAccessor<AppDatabase> {
@@ -12685,4 +13247,24 @@ mixin _$CustomersDaoMixin on DatabaseAccessor<AppDatabase> {
   $CompanyTable get company => attachedDatabase.company;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
+}
+mixin _$FleetEventDaoMixin on DatabaseAccessor<AppDatabase> {
+  $FleetEventsTable get fleetEvents => attachedDatabase.fleetEvents;
+}
+mixin _$TasksDaoMixin on DatabaseAccessor<AppDatabase> {
+  $CompanyTable get company => attachedDatabase.company;
+  $UsersTable get users => attachedDatabase.users;
+  $TasksTable get tasks => attachedDatabase.tasks;
+}
+mixin _$ComplaintDaoMixin on DatabaseAccessor<AppDatabase> {
+  $CompanyTable get company => attachedDatabase.company;
+  $UsersTable get users => attachedDatabase.users;
+  $CustomersTable get customers => attachedDatabase.customers;
+  $ComplaintTable get complaint => attachedDatabase.complaint;
+}
+mixin _$InjuryDaoMixin on DatabaseAccessor<AppDatabase> {
+  $CompanyTable get company => attachedDatabase.company;
+  $UsersTable get users => attachedDatabase.users;
+  $CustomersTable get customers => attachedDatabase.customers;
+  $InjuryTable get injury => attachedDatabase.injury;
 }

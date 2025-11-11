@@ -6,10 +6,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 LazyDatabase openConnection() {
+  print("native");
   return LazyDatabase(() async {
-    print("native");
+    
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'app.sqlite'));
+    print(file);
     return NativeDatabase(file);
   });
 }

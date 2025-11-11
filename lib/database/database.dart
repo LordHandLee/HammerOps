@@ -18,13 +18,15 @@ part 'database.g.dart';
 // ------------------
 @DriftDatabase(
   tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company, Tools, Tasks, Complaint,
-  Injury, Document], 
-  daos: [UserDao, TemplatesDao, JobQuotesDao, CompanyDao, JobsDao, CustomersDao])
+  Injury, Document, FleetEvents], 
+  daos: [UserDao, TemplatesDao, JobQuotesDao, CompanyDao, JobsDao, CustomersDao, FleetEventDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
   int get schemaVersion => 1;
+
+  
 }
 
 // // Open DB file

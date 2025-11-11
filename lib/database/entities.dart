@@ -178,13 +178,13 @@ class Injury extends Table {
   BoolColumn get isResolved => boolean().withDefault(const Constant(false))();
 
   // Foreign key to Users table (assuming a user reports the injury)
-  IntColumn get reportedByUser => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  IntColumn get reportedByUser => integer().nullable().references(Users, #id, onDelete: KeyAction.cascade)();
   
   // Foreign key to Users table (assuming a user is assigned to resolve the injury)
-  IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  IntColumn get assignedTo => integer().nullable().references(Users, #id, onDelete: KeyAction.cascade)();
 
   // Foreign key to Customers table (if injury is from a customer)
-  IntColumn get reportedByCustomer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+  IntColumn get reportedByCustomer => integer().nullable().references(Customers, #id, onDelete: KeyAction.cascade)();
 }
 
 // ------------------
@@ -206,4 +206,19 @@ class Document extends Table {
   IntColumn get jobId => integer().references(Jobs, #id, onDelete: KeyAction.cascade)();
 
 
+}
+
+// ------------------
+// FleetEvents (TABLE)
+// ------------------
+
+class FleetEvents extends Table {
+  IntColumn get id => integer().autoIncrement()(); // UUID or random string
+  TextColumn get vehicleName => text()();
+  TextColumn get eventType => text()(); // maintenance, repair, inspection
+  DateTimeColumn get date => dateTime()();
+  TextColumn get notes => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }

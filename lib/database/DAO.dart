@@ -149,32 +149,66 @@ class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixi
 //   Future<List<Tool>> getAllTools() => select(tools).get();
 // }
 
-// @DriftAccessor(tables: [Tasks])
-// class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
-//   TasksDao(super.db);
+@DriftAccessor(tables: [Tasks])
+class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
+  TasksDao(super.db);
 
-//   Future<int> insertTask(TasksCompanion task) => into(tasks).insert(task);
+  Future<int> insertTask(TasksCompanion task) => into(tasks).insert(task);
 
-//   Future<List<Task>> getAllTasks() => select(tasks).get();
-// }
+  Future<List<Task>> getAllTasks() => select(tasks).get();
 
-// @DriftAccessor(tables: [Complaint])
-// class ComplaintDao extends DatabaseAccessor<AppDatabase> with _$ComplaintDaoMixin {
-//   ComplaintDao(super.db);
+    // --- New Methods for Flag Feature ---
+  Future<int> flagTask(int taskId, String reason) {
+    return (update(tasks)
+          ..where((t) => t.id.equals(taskId)))
+        .write(
+      TasksCompanion(
+        isFlagged: const Value(true),
+        reasonForFlag: Value(reason),
+      ),
+    );
+  }
 
-//   Future<int> insertComplaint(ComplaintCompanion complaint) => into(complaint).insert(complaint);
+  Future<int> unflagTask(int taskId) {
+    return (update(tasks)
+          ..where((t) => t.id.equals(taskId)))
+        .write(
+      const TasksCompanion(
+        isFlagged: Value(false),
+        reasonForFlag: Value(null),
+      ),
+    );
+  }
 
-//   Future<List<ComplaintData>> getAllComplaints() => select(complaint).get();
-// }
+  Future<List<Task>> getFlaggedTasks() {
+    return (select(tasks)..where((t) => t.isFlagged.equals(true))).get();
+  }
 
-// @DriftAccessor(tables: [Injury])
-// class InjuryDao extends DatabaseAccessor<AppDatabase> with _$InjuryDaoMixin {
-//   InjuryDao(super.db);
+  Stream<List<Task>> watchAllTasks() {
+  return (select(tasks)
+        ..orderBy([(t) => OrderingTerm.asc(t.dueDate)]))
+      .watch();
+}
 
-//   Future<int> insertInjury(InjuryCompanion injury) => into(injury).insert(injury);
+}
 
-//   Future<List<InjuryData>> getAllInjuries() => select(injury).get();
-// }
+@DriftAccessor(tables: [Complaint])
+class ComplaintDao extends DatabaseAccessor<AppDatabase> with _$ComplaintDaoMixin {
+  ComplaintDao(super.db);
+
+  Future<int> insertComplaint(ComplaintCompanion complaints) => into(complaint).insert(complaints);
+
+  Future<List<ComplaintData>> getAllComplaints() => select(complaint).get();
+}
+
+@DriftAccessor(tables: [Injury])
+class InjuryDao extends DatabaseAccessor<AppDatabase> with _$InjuryDaoMixin {
+  InjuryDao(super.db);
+
+  Future<int> insertInjury(InjuryCompanion injurys) => into(injury).insert(injurys);
+
+  Future<List<InjuryData>> getAllInjuries() => select(injury).get();
+}
 
 // @DriftAccessor(tables: [Document])
 // class DocumentDao extends DatabaseAccessor<AppDatabase> with _$DocumentDaoMixin {
@@ -186,6 +220,31 @@ class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixi
 // }
 
 // jobs, customers, tools, tasks, complaint, injury, document
+
+@DriftAccessor(tables: [FleetEvents])
+class FleetEventDao extends DatabaseAccessor<AppDatabase> with _$FleetEventDaoMixin {
+  FleetEventDao(AppDatabase db) : super(db);
+
+  Future<List<FleetEvent>> getAllEvents() =>
+    select(fleetEvents).get();
+
+  Future<List<FleetEvent>> getFutureEvents() {
+    final now = DateTime.now();
+    return (select(fleetEvents)
+          ..where((tbl) => tbl.date.isBiggerThanValue(now))
+          ..orderBy([(t) => OrderingTerm(expression: t.date)]))
+        .get();
+  }
+
+  Future<void> insertEvent(FleetEventsCompanion event) =>
+      into(fleetEvents).insert(event);
+
+  Future<void> updateEvent(FleetEventsCompanion event) =>
+      update(fleetEvents).replace(event);
+
+  Future<void> deleteEvent(int id) =>
+      (delete(fleetEvents)..where((t) => t.id.equals(id))).go();
+}
 
 class TemplateWithFields {
   final Template template;
@@ -216,10 +275,20 @@ class AppDao {
   final TemplatesDao template;
   final JobQuotesDao quote;
   final CompanyDao company;
+  final FleetEventDao fleetevent;
+  final ComplaintDao complaint;
+  final CustomersDao customer;
+  final TasksDao task;
+  final InjuryDao injury;
 
   AppDao(AppDatabase db)
       : user = UserDao(db),
         template = TemplatesDao(db),
         company = CompanyDao(db),
-        quote = JobQuotesDao(db);
+        quote = JobQuotesDao(db),
+        fleetevent = FleetEventDao(db),
+        complaint = ComplaintDao(db),
+        customer = CustomersDao(db),
+        task = TasksDao(db),
+        injury = InjuryDao(db);
 }

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/quote__craft/quote_craft.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/tool_tracker.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/job_manager.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/maintain_fleet.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/task_shield.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/flag_task.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/injury_log.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
@@ -171,16 +175,16 @@ class _DrawerMenu extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontSize: 24),
           ),
         ),
-        ListTile(
-          leading: const Icon(Icons.home),
-          title: const Text('Home'),
-          onTap: () => onNavigate(const DrawerSubPage(title: "Home Page")),
-        ),
-        ListTile(
-          leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
-          onTap: () => onNavigate(const DrawerSubPage(title: "Settings Page")),
-        ),
+        // ListTile(
+        //   leading: const Icon(Icons.home),
+        //   title: const Text('Home'),
+        //   onTap: () => onNavigate(const DrawerSubPage(title: "Home Page")),
+        // ),
+        // ListTile(
+        //   leading: const Icon(Icons.settings),
+        //   title: const Text('Settings'),
+        //   onTap: () => onNavigate(const DrawerSubPage(title: "Settings Page")),
+        // ),
         // ListTile(
         //   leading: const Icon(Icons.settings),
         //   title: const Text('QUOTE CRAFT'),
@@ -194,6 +198,36 @@ class _DrawerMenu extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.settings),
           title: const Text('JOB MANAGER'),
+          onTap: () => onNavigate(const JobManager()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('MAINTAIN FLEET'),
+          onTap: () => onNavigate(FleetMaintenanceScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('TASK SHIELD'),
+          onTap: () => onNavigate(AddEditComplaintScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('FLAG TASK'),
+          onTap: () => onNavigate(FlagTaskScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('INJURY LOG'),
+          onTap: () => onNavigate(InjuryFormScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('CHECKLIST'),
+          onTap: () => onNavigate(const JobManager()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('SATELLITE MAP'),
           onTap: () => onNavigate(const JobManager()),
         ),
       ],

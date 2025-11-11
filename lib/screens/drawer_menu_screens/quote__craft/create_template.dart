@@ -247,8 +247,8 @@ class _DynamicFieldsFormState extends State<DynamicFieldsForm> {
     // Call service to save template
     // int userid = service.user.getCurrentUser();
     // // int userid = 1; // replace with actual user id
-    final company = await service.company.addCompany("New Company");
-    final user = await service.user.addUser("johndoe", company);
+    // final company = await service.company.addCompany("New Company");
+    // final user = await service.user.addUser("johndoe", company);
     service.template.createTemplate(templateName.text, 1, names);
   }
 

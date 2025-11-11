@@ -45,6 +45,8 @@ dependencies:
   get_it: ^8.2.0
   qr_flutter: ^4.1.0
   qr_code_scanner: ^1.0.1
+  device_calendar: ^4.3.1
+  timezone: ^0.9.2
 
 dev_dependencies:
   drift_dev: ^2.20.0
