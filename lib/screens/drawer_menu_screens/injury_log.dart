@@ -134,23 +134,212 @@
 // }
 
 
-import 'package:drift/src/runtime/data_class.dart';
+// import 'package:drift/src/runtime/data_class.dart';
+// import 'package:flutter/material.dart';
+// import 'package:hammer_ops/di/injector.dart';
+// import 'package:hammer_ops/services/service.dart'; // AppService
+// import 'package:hammer_ops/database/database.dart';
+
+
+// class InjuryFormScreen extends StatefulWidget {
+//   final AppService service = getIt<AppService>();
+
+//   /// Optionally pass in the userId of the reporter if known.
+//   // final int reportedByUserId;
+
+//   InjuryFormScreen({
+//     super.key,
+//     // required this.reportedByUserId,
+//   });
+
+//   @override
+//   State<InjuryFormScreen> createState() => _InjuryFormScreenState();
+// }
+
+// class _InjuryFormScreenState extends State<InjuryFormScreen> {
+//   final _formKey = GlobalKey<FormState>();
+//   final _titleController = TextEditingController();
+//   final _descController = TextEditingController();
+//   DateTime _selectedDate = DateTime.now();
+
+//   bool _submitting = false;
+//   int? _selectedUserId;
+//   int? _selectedCustomerId;
+//   late Future<List<User>> _usersFuture;
+//   late Future<List<Customer>> _custFuture;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Query all users from DB
+//     _usersFuture = widget.service.user.getAllUsers(); // Assuming this exists
+//     _custFuture = widget.service.customer.getAllCustomers();
+//   }
+
+//   @override
+//   void dispose() {
+//     _titleController.dispose();
+//     _descController.dispose();
+//     super.dispose();
+//   }
+
+//   Future<void> _submit() async {
+//     if (!_formKey.currentState!.validate()) return;
+//     if (_selectedUserId == null) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('Please select a user')),
+//       );
+//       return;
+//     }
+
+//     setState(() => _submitting = true);
+
+//     try {
+//       await widget.service.injury.addInjury(
+//         _titleController.text,
+//         _descController.text as Value<String?>,
+//         _selectedDate,
+//         _selectedUserId! as Value<int?>,
+//         _selectedCustomerId! as Value<int?>,
+//       );
+
+//       if (!mounted) return;
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('Injury reported successfully')),
+//       );
+
+//       Navigator.pop(context, true);
+//     } catch (e) {
+//       if (!mounted) return;
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error submitting injury: $e')),
+//       );
+//     } finally {
+//       if (mounted) setState(() => _submitting = false);
+//     }
+//   }
+
+//   Future<void> _pickDate() async {
+//     final picked = await showDatePicker(
+//       context: context,
+//       initialDate: _selectedDate,
+//       firstDate: DateTime(2020),
+//       lastDate: DateTime.now(),
+//     );
+//     if (picked != null) setState(() => _selectedDate = picked);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Report Injury')),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Form(
+//           key: _formKey,
+//           child: ListView(
+//             children: [
+//               TextFormField(
+//                 controller: _titleController,
+//                 decoration: const InputDecoration(
+//                   labelText: 'Title',
+//                   border: OutlineInputBorder(),
+//                 ),
+//                 validator: (value) =>
+//                     (value == null || value.isEmpty) ? 'Title is required' : null,
+//               ),
+//               const SizedBox(height: 16),
+//               TextFormField(
+//                 controller: _descController,
+//                 maxLines: 4,
+//                 decoration: const InputDecoration(
+//                   labelText: 'Description',
+//                   border: OutlineInputBorder(),
+//                 ),
+//               ),
+//               const SizedBox(height: 16),
+//               ListTile(
+//                 contentPadding: EdgeInsets.zero,
+//                 title: const Text('Date of occurrence'),
+//                 subtitle: Text(
+//                   '${_selectedDate.toLocal()}'.split(' ')[0],
+//                   style: const TextStyle(fontWeight: FontWeight.bold),
+//                 ),
+//                 trailing: const Icon(Icons.calendar_today),
+//                 onTap: _pickDate,
+//               ),
+//               const SizedBox(height: 16),
+
+//               // === USER DROPDOWN ===
+//               FutureBuilder<List<User>>(
+//                 future: _usersFuture,
+//                 builder: (context, snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.waiting) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   } else if (snapshot.hasError) {
+//                     return Text('Error loading users: ${snapshot.error}');
+//                   }
+
+//                   final users = snapshot.data ?? [];
+//                   if (users.isEmpty) {
+//                     return const Text('No users found');
+//                   }
+
+//                   return DropdownButtonFormField<int>(
+//                     decoration: const InputDecoration(
+//                       labelText: 'Reported by',
+//                       border: OutlineInputBorder(),
+//                     ),
+//                     initialValue: _selectedUserId,
+//                     items: users
+//                         .map(
+//                           (u) => DropdownMenuItem<int>(
+//                             value: u.id,
+//                             child: Text(u.name ?? 'User ${u.id}'),
+//                           ),
+//                         )
+//                         .toList(),
+//                     onChanged: (val) => setState(() => _selectedUserId = val),
+//                     validator: (val) =>
+//                         val == null ? 'Please select a reporting user' : null,
+//                   );
+//                 },
+//               ),
+
+//               const SizedBox(height: 32),
+//               SizedBox(
+//                 width: double.infinity,
+//                 child: ElevatedButton.icon(
+//                   icon: _submitting
+//                       ? const SizedBox(
+//                           height: 18,
+//                           width: 18,
+//                           child: CircularProgressIndicator(strokeWidth: 2),
+//                         )
+//                       : const Icon(Icons.send),
+//                   label: Text(_submitting ? 'Submitting...' : 'Submit'),
+//                   onPressed: _submitting ? null : _submit,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:hammer_ops/di/injector.dart';
-import 'package:hammer_ops/services/service.dart'; // AppService
+import 'package:hammer_ops/services/service.dart';
 import 'package:hammer_ops/database/database.dart';
-
 
 class InjuryFormScreen extends StatefulWidget {
   final AppService service = getIt<AppService>();
 
-  /// Optionally pass in the userId of the reporter if known.
-  // final int reportedByUserId;
-
-  InjuryFormScreen({
-    super.key,
-    // required this.reportedByUserId,
-  });
+  InjuryFormScreen({super.key});
 
   @override
   State<InjuryFormScreen> createState() => _InjuryFormScreenState();
@@ -163,16 +352,20 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
   DateTime _selectedDate = DateTime.now();
 
   bool _submitting = false;
+
   int? _selectedUserId;
   int? _selectedCustomerId;
+
+  /// Which type is reporting the injury
+  String? _reporterType; // "user" or "customer"
+
   late Future<List<User>> _usersFuture;
   late Future<List<Customer>> _custFuture;
 
   @override
   void initState() {
     super.initState();
-    // Query all users from DB
-    _usersFuture = widget.service.user.getAllUsers(); // Assuming this exists
+    _usersFuture = widget.service.user.getAllUsers();
     _custFuture = widget.service.customer.getAllCustomers();
   }
 
@@ -183,50 +376,42 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
     super.dispose();
   }
 
+  bool get _canSubmit {
+    if (_submitting) return false;
+    if (_reporterType == "user" && _selectedUserId != null) return true;
+    if (_reporterType == "customer" && _selectedCustomerId != null) return true;
+    return false;
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedUserId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a user')),
-      );
-      return;
-    }
 
     setState(() => _submitting = true);
 
     try {
       await widget.service.injury.addInjury(
         _titleController.text,
-        _descController.text as Value<String?>,
+        Value(_descController.text),
         _selectedDate,
-        _selectedUserId! as Value<int?>,
-        _selectedCustomerId! as Value<int?>,
+        Value(_selectedUserId),
+        Value(_selectedCustomerId),
       );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Injury reported successfully')),
       );
-
       Navigator.pop(context, true);
+
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error submitting injury: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error submitting injury: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
-  }
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) setState(() => _selectedDate = picked);
   }
 
   @override
@@ -239,16 +424,20 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              // TITLE
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Title is required' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Title is required'
+                    : null,
               ),
               const SizedBox(height: 16),
+
+              // DESCRIPTION
               TextFormField(
                 controller: _descController,
                 maxLines: 4,
@@ -258,68 +447,134 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+
+              // DATE PICKER
               ListTile(
-                contentPadding: EdgeInsets.zero,
                 title: const Text('Date of occurrence'),
                 subtitle: Text(
                   '${_selectedDate.toLocal()}'.split(' ')[0],
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 trailing: const Icon(Icons.calendar_today),
-                onTap: _pickDate,
-              ),
-              const SizedBox(height: 16),
-
-              // === USER DROPDOWN ===
-              FutureBuilder<List<User>>(
-                future: _usersFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Text('Error loading users: ${snapshot.error}');
-                  }
-
-                  final users = snapshot.data ?? [];
-                  if (users.isEmpty) {
-                    return const Text('No users found');
-                  }
-
-                  return DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      labelText: 'Reported by',
-                      border: OutlineInputBorder(),
-                    ),
-                    value: _selectedUserId,
-                    items: users
-                        .map(
-                          (u) => DropdownMenuItem<int>(
-                            value: u.id,
-                            child: Text(u.name ?? 'User ${u.id}'),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (val) => setState(() => _selectedUserId = val),
-                    validator: (val) =>
-                        val == null ? 'Please select a reporting user' : null,
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _selectedDate,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime.now(),
                   );
+                  if (picked != null) {
+                    setState(() => _selectedDate = picked);
+                  }
                 },
               ),
 
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: _submitting
-                      ? const SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.send),
-                  label: Text(_submitting ? 'Submitting...' : 'Submit'),
-                  onPressed: _submitting ? null : _submit,
+              const SizedBox(height: 24),
+              const Text(
+                "Reported By",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+
+              // RADIO BUTTONS
+              RadioListTile<String>(
+                title: const Text("User"),
+                value: "user",
+                groupValue: _reporterType,
+                onChanged: (val) {
+                  setState(() {
+                    _reporterType = val;
+                    _selectedCustomerId = null; // reset customer
+                  });
+                },
+              ),
+
+              RadioListTile<String>(
+                title: const Text("Customer"),
+                value: "customer",
+                groupValue: _reporterType,
+                onChanged: (val) {
+                  setState(() {
+                    _reporterType = val;
+                    _selectedUserId = null; // reset user
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // === USER DROPDOWN ===
+              if (_reporterType == "user")
+                FutureBuilder<List<User>>(
+                  future: _usersFuture,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final users = snapshot.data!;
+                    return DropdownButtonFormField<int>(
+                      decoration: const InputDecoration(
+                        labelText: 'Select User',
+                        border: OutlineInputBorder(),
+                      ),
+                      value: _selectedUserId,
+                      items: users
+                          .map((u) => DropdownMenuItem(
+                                value: u.id,
+                                child: Text(u.name ?? 'User ${u.id}'),
+                              ))
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() => _selectedUserId = val);
+                      },
+                      validator: (val) =>
+                          val == null ? 'Please select a user' : null,
+                    );
+                  },
                 ),
+
+              // === CUSTOMER DROPDOWN ===
+              if (_reporterType == "customer")
+                FutureBuilder<List<Customer>>(
+                  future: _custFuture,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final customers = snapshot.data!;
+                    return DropdownButtonFormField<int>(
+                      decoration: const InputDecoration(
+                        labelText: 'Select Customer',
+                        border: OutlineInputBorder(),
+                      ),
+                      value: _selectedCustomerId,
+                      items: customers
+                          .map((c) => DropdownMenuItem(
+                                value: c.id,
+                                child: Text(c.name ?? 'Customer ${c.id}'),
+                              ))
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() => _selectedCustomerId = val);
+                      },
+                      validator: (val) =>
+                          val == null ? 'Please select a customer' : null,
+                    );
+                  },
+                ),
+
+              const SizedBox(height: 32),
+
+              // SUBMIT BUTTON
+              ElevatedButton.icon(
+                icon: _submitting
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.send),
+                label: Text(_submitting ? 'Submitting...' : 'Submit'),
+                onPressed: _canSubmit ? _submit : null,
               ),
             ],
           ),
