@@ -5908,6 +5908,1223 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
   }
 }
 
+class $ChecklistTemplatesTable extends ChecklistTemplates
+    with TableInfo<$ChecklistTemplatesTable, ChecklistTemplate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChecklistTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, code, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'checklist_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChecklistTemplate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ChecklistTemplate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChecklistTemplate(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $ChecklistTemplatesTable createAlias(String alias) {
+    return $ChecklistTemplatesTable(attachedDatabase, alias);
+  }
+}
+
+class ChecklistTemplate extends DataClass
+    implements Insertable<ChecklistTemplate> {
+  final int id;
+  final String code;
+  final String name;
+  const ChecklistTemplate({
+    required this.id,
+    required this.code,
+    required this.name,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['code'] = Variable<String>(code);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  ChecklistTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return ChecklistTemplatesCompanion(
+      id: Value(id),
+      code: Value(code),
+      name: Value(name),
+    );
+  }
+
+  factory ChecklistTemplate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChecklistTemplate(
+      id: serializer.fromJson<int>(json['id']),
+      code: serializer.fromJson<String>(json['code']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'code': serializer.toJson<String>(code),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  ChecklistTemplate copyWith({int? id, String? code, String? name}) =>
+      ChecklistTemplate(
+        id: id ?? this.id,
+        code: code ?? this.code,
+        name: name ?? this.name,
+      );
+  ChecklistTemplate copyWithCompanion(ChecklistTemplatesCompanion data) {
+    return ChecklistTemplate(
+      id: data.id.present ? data.id.value : this.id,
+      code: data.code.present ? data.code.value : this.code,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistTemplate(')
+          ..write('id: $id, ')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, code, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChecklistTemplate &&
+          other.id == this.id &&
+          other.code == this.code &&
+          other.name == this.name);
+}
+
+class ChecklistTemplatesCompanion extends UpdateCompanion<ChecklistTemplate> {
+  final Value<int> id;
+  final Value<String> code;
+  final Value<String> name;
+  const ChecklistTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  ChecklistTemplatesCompanion.insert({
+    this.id = const Value.absent(),
+    required String code,
+    required String name,
+  }) : code = Value(code),
+       name = Value(name);
+  static Insertable<ChecklistTemplate> custom({
+    Expression<int>? id,
+    Expression<String>? code,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+    });
+  }
+
+  ChecklistTemplatesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? code,
+    Value<String>? name,
+  }) {
+    return ChecklistTemplatesCompanion(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ChecklistItemsTable extends ChecklistItems
+    with TableInfo<$ChecklistItemsTable, ChecklistItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChecklistItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<int> templateId = GeneratedColumn<int>(
+    'template_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES checklist_templates (id)',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _requiredMeta = const VerificationMeta(
+    'required',
+  );
+  @override
+  late final GeneratedColumn<bool> required = GeneratedColumn<bool>(
+    'required',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("required" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, templateId, title, required];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'checklist_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChecklistItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_templateIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('required')) {
+      context.handle(
+        _requiredMeta,
+        required.isAcceptableOrUnknown(data['required']!, _requiredMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ChecklistItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChecklistItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}template_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      required: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}required'],
+      )!,
+    );
+  }
+
+  @override
+  $ChecklistItemsTable createAlias(String alias) {
+    return $ChecklistItemsTable(attachedDatabase, alias);
+  }
+}
+
+class ChecklistItem extends DataClass implements Insertable<ChecklistItem> {
+  final int id;
+  final int templateId;
+  final String title;
+  final bool required;
+  const ChecklistItem({
+    required this.id,
+    required this.templateId,
+    required this.title,
+    required this.required,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['template_id'] = Variable<int>(templateId);
+    map['title'] = Variable<String>(title);
+    map['required'] = Variable<bool>(required);
+    return map;
+  }
+
+  ChecklistItemsCompanion toCompanion(bool nullToAbsent) {
+    return ChecklistItemsCompanion(
+      id: Value(id),
+      templateId: Value(templateId),
+      title: Value(title),
+      required: Value(required),
+    );
+  }
+
+  factory ChecklistItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChecklistItem(
+      id: serializer.fromJson<int>(json['id']),
+      templateId: serializer.fromJson<int>(json['templateId']),
+      title: serializer.fromJson<String>(json['title']),
+      required: serializer.fromJson<bool>(json['required']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'templateId': serializer.toJson<int>(templateId),
+      'title': serializer.toJson<String>(title),
+      'required': serializer.toJson<bool>(required),
+    };
+  }
+
+  ChecklistItem copyWith({
+    int? id,
+    int? templateId,
+    String? title,
+    bool? required,
+  }) => ChecklistItem(
+    id: id ?? this.id,
+    templateId: templateId ?? this.templateId,
+    title: title ?? this.title,
+    required: required ?? this.required,
+  );
+  ChecklistItem copyWithCompanion(ChecklistItemsCompanion data) {
+    return ChecklistItem(
+      id: data.id.present ? data.id.value : this.id,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+      title: data.title.present ? data.title.value : this.title,
+      required: data.required.present ? data.required.value : this.required,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistItem(')
+          ..write('id: $id, ')
+          ..write('templateId: $templateId, ')
+          ..write('title: $title, ')
+          ..write('required: $required')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, templateId, title, required);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChecklistItem &&
+          other.id == this.id &&
+          other.templateId == this.templateId &&
+          other.title == this.title &&
+          other.required == this.required);
+}
+
+class ChecklistItemsCompanion extends UpdateCompanion<ChecklistItem> {
+  final Value<int> id;
+  final Value<int> templateId;
+  final Value<String> title;
+  final Value<bool> required;
+  const ChecklistItemsCompanion({
+    this.id = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.required = const Value.absent(),
+  });
+  ChecklistItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required int templateId,
+    required String title,
+    this.required = const Value.absent(),
+  }) : templateId = Value(templateId),
+       title = Value(title);
+  static Insertable<ChecklistItem> custom({
+    Expression<int>? id,
+    Expression<int>? templateId,
+    Expression<String>? title,
+    Expression<bool>? required,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (templateId != null) 'template_id': templateId,
+      if (title != null) 'title': title,
+      if (required != null) 'required': required,
+    });
+  }
+
+  ChecklistItemsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? templateId,
+    Value<String>? title,
+    Value<bool>? required,
+  }) {
+    return ChecklistItemsCompanion(
+      id: id ?? this.id,
+      templateId: templateId ?? this.templateId,
+      title: title ?? this.title,
+      required: required ?? this.required,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<int>(templateId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (required.present) {
+      map['required'] = Variable<bool>(required.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('templateId: $templateId, ')
+          ..write('title: $title, ')
+          ..write('required: $required')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ChecklistRunsTable extends ChecklistRuns
+    with TableInfo<$ChecklistRunsTable, ChecklistRun> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChecklistRunsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<int> templateId = GeneratedColumn<int>(
+    'template_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES checklist_templates (id)',
+    ),
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _completedByMeta = const VerificationMeta(
+    'completedBy',
+  );
+  @override
+  late final GeneratedColumn<int> completedBy = GeneratedColumn<int>(
+    'completed_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    templateId,
+    timestamp,
+    completedBy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'checklist_runs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChecklistRun> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_templateIdMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    }
+    if (data.containsKey('completed_by')) {
+      context.handle(
+        _completedByMeta,
+        completedBy.isAcceptableOrUnknown(
+          data['completed_by']!,
+          _completedByMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ChecklistRun map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChecklistRun(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}template_id'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      completedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}completed_by'],
+      ),
+    );
+  }
+
+  @override
+  $ChecklistRunsTable createAlias(String alias) {
+    return $ChecklistRunsTable(attachedDatabase, alias);
+  }
+}
+
+class ChecklistRun extends DataClass implements Insertable<ChecklistRun> {
+  final int id;
+  final int templateId;
+  final DateTime timestamp;
+  final int? completedBy;
+  const ChecklistRun({
+    required this.id,
+    required this.templateId,
+    required this.timestamp,
+    this.completedBy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['template_id'] = Variable<int>(templateId);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    if (!nullToAbsent || completedBy != null) {
+      map['completed_by'] = Variable<int>(completedBy);
+    }
+    return map;
+  }
+
+  ChecklistRunsCompanion toCompanion(bool nullToAbsent) {
+    return ChecklistRunsCompanion(
+      id: Value(id),
+      templateId: Value(templateId),
+      timestamp: Value(timestamp),
+      completedBy: completedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedBy),
+    );
+  }
+
+  factory ChecklistRun.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChecklistRun(
+      id: serializer.fromJson<int>(json['id']),
+      templateId: serializer.fromJson<int>(json['templateId']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      completedBy: serializer.fromJson<int?>(json['completedBy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'templateId': serializer.toJson<int>(templateId),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'completedBy': serializer.toJson<int?>(completedBy),
+    };
+  }
+
+  ChecklistRun copyWith({
+    int? id,
+    int? templateId,
+    DateTime? timestamp,
+    Value<int?> completedBy = const Value.absent(),
+  }) => ChecklistRun(
+    id: id ?? this.id,
+    templateId: templateId ?? this.templateId,
+    timestamp: timestamp ?? this.timestamp,
+    completedBy: completedBy.present ? completedBy.value : this.completedBy,
+  );
+  ChecklistRun copyWithCompanion(ChecklistRunsCompanion data) {
+    return ChecklistRun(
+      id: data.id.present ? data.id.value : this.id,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      completedBy: data.completedBy.present
+          ? data.completedBy.value
+          : this.completedBy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistRun(')
+          ..write('id: $id, ')
+          ..write('templateId: $templateId, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('completedBy: $completedBy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, templateId, timestamp, completedBy);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChecklistRun &&
+          other.id == this.id &&
+          other.templateId == this.templateId &&
+          other.timestamp == this.timestamp &&
+          other.completedBy == this.completedBy);
+}
+
+class ChecklistRunsCompanion extends UpdateCompanion<ChecklistRun> {
+  final Value<int> id;
+  final Value<int> templateId;
+  final Value<DateTime> timestamp;
+  final Value<int?> completedBy;
+  const ChecklistRunsCompanion({
+    this.id = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.completedBy = const Value.absent(),
+  });
+  ChecklistRunsCompanion.insert({
+    this.id = const Value.absent(),
+    required int templateId,
+    this.timestamp = const Value.absent(),
+    this.completedBy = const Value.absent(),
+  }) : templateId = Value(templateId);
+  static Insertable<ChecklistRun> custom({
+    Expression<int>? id,
+    Expression<int>? templateId,
+    Expression<DateTime>? timestamp,
+    Expression<int>? completedBy,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (templateId != null) 'template_id': templateId,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (completedBy != null) 'completed_by': completedBy,
+    });
+  }
+
+  ChecklistRunsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? templateId,
+    Value<DateTime>? timestamp,
+    Value<int?>? completedBy,
+  }) {
+    return ChecklistRunsCompanion(
+      id: id ?? this.id,
+      templateId: templateId ?? this.templateId,
+      timestamp: timestamp ?? this.timestamp,
+      completedBy: completedBy ?? this.completedBy,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<int>(templateId.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (completedBy.present) {
+      map['completed_by'] = Variable<int>(completedBy.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistRunsCompanion(')
+          ..write('id: $id, ')
+          ..write('templateId: $templateId, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('completedBy: $completedBy')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ChecklistRunItemsTable extends ChecklistRunItems
+    with TableInfo<$ChecklistRunItemsTable, ChecklistRunItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChecklistRunItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _runIdMeta = const VerificationMeta('runId');
+  @override
+  late final GeneratedColumn<int> runId = GeneratedColumn<int>(
+    'run_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES checklist_runs (id)',
+    ),
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<int> itemId = GeneratedColumn<int>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES checklist_items (id)',
+    ),
+  );
+  static const VerificationMeta _checkedMeta = const VerificationMeta(
+    'checked',
+  );
+  @override
+  late final GeneratedColumn<bool> checked = GeneratedColumn<bool>(
+    'checked',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("checked" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, runId, itemId, checked, notes];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'checklist_run_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChecklistRunItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('run_id')) {
+      context.handle(
+        _runIdMeta,
+        runId.isAcceptableOrUnknown(data['run_id']!, _runIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_runIdMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('checked')) {
+      context.handle(
+        _checkedMeta,
+        checked.isAcceptableOrUnknown(data['checked']!, _checkedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_checkedMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ChecklistRunItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChecklistRunItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      runId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}run_id'],
+      )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}item_id'],
+      )!,
+      checked: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}checked'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+    );
+  }
+
+  @override
+  $ChecklistRunItemsTable createAlias(String alias) {
+    return $ChecklistRunItemsTable(attachedDatabase, alias);
+  }
+}
+
+class ChecklistRunItem extends DataClass
+    implements Insertable<ChecklistRunItem> {
+  final int id;
+  final int runId;
+  final int itemId;
+  final bool checked;
+  final String? notes;
+  const ChecklistRunItem({
+    required this.id,
+    required this.runId,
+    required this.itemId,
+    required this.checked,
+    this.notes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['run_id'] = Variable<int>(runId);
+    map['item_id'] = Variable<int>(itemId);
+    map['checked'] = Variable<bool>(checked);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    return map;
+  }
+
+  ChecklistRunItemsCompanion toCompanion(bool nullToAbsent) {
+    return ChecklistRunItemsCompanion(
+      id: Value(id),
+      runId: Value(runId),
+      itemId: Value(itemId),
+      checked: Value(checked),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+    );
+  }
+
+  factory ChecklistRunItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChecklistRunItem(
+      id: serializer.fromJson<int>(json['id']),
+      runId: serializer.fromJson<int>(json['runId']),
+      itemId: serializer.fromJson<int>(json['itemId']),
+      checked: serializer.fromJson<bool>(json['checked']),
+      notes: serializer.fromJson<String?>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'runId': serializer.toJson<int>(runId),
+      'itemId': serializer.toJson<int>(itemId),
+      'checked': serializer.toJson<bool>(checked),
+      'notes': serializer.toJson<String?>(notes),
+    };
+  }
+
+  ChecklistRunItem copyWith({
+    int? id,
+    int? runId,
+    int? itemId,
+    bool? checked,
+    Value<String?> notes = const Value.absent(),
+  }) => ChecklistRunItem(
+    id: id ?? this.id,
+    runId: runId ?? this.runId,
+    itemId: itemId ?? this.itemId,
+    checked: checked ?? this.checked,
+    notes: notes.present ? notes.value : this.notes,
+  );
+  ChecklistRunItem copyWithCompanion(ChecklistRunItemsCompanion data) {
+    return ChecklistRunItem(
+      id: data.id.present ? data.id.value : this.id,
+      runId: data.runId.present ? data.runId.value : this.runId,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      checked: data.checked.present ? data.checked.value : this.checked,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistRunItem(')
+          ..write('id: $id, ')
+          ..write('runId: $runId, ')
+          ..write('itemId: $itemId, ')
+          ..write('checked: $checked, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, runId, itemId, checked, notes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChecklistRunItem &&
+          other.id == this.id &&
+          other.runId == this.runId &&
+          other.itemId == this.itemId &&
+          other.checked == this.checked &&
+          other.notes == this.notes);
+}
+
+class ChecklistRunItemsCompanion extends UpdateCompanion<ChecklistRunItem> {
+  final Value<int> id;
+  final Value<int> runId;
+  final Value<int> itemId;
+  final Value<bool> checked;
+  final Value<String?> notes;
+  const ChecklistRunItemsCompanion({
+    this.id = const Value.absent(),
+    this.runId = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.checked = const Value.absent(),
+    this.notes = const Value.absent(),
+  });
+  ChecklistRunItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required int runId,
+    required int itemId,
+    required bool checked,
+    this.notes = const Value.absent(),
+  }) : runId = Value(runId),
+       itemId = Value(itemId),
+       checked = Value(checked);
+  static Insertable<ChecklistRunItem> custom({
+    Expression<int>? id,
+    Expression<int>? runId,
+    Expression<int>? itemId,
+    Expression<bool>? checked,
+    Expression<String>? notes,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (runId != null) 'run_id': runId,
+      if (itemId != null) 'item_id': itemId,
+      if (checked != null) 'checked': checked,
+      if (notes != null) 'notes': notes,
+    });
+  }
+
+  ChecklistRunItemsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? runId,
+    Value<int>? itemId,
+    Value<bool>? checked,
+    Value<String?>? notes,
+  }) {
+    return ChecklistRunItemsCompanion(
+      id: id ?? this.id,
+      runId: runId ?? this.runId,
+      itemId: itemId ?? this.itemId,
+      checked: checked ?? this.checked,
+      notes: notes ?? this.notes,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (runId.present) {
+      map['run_id'] = Variable<int>(runId.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<int>(itemId.value);
+    }
+    if (checked.present) {
+      map['checked'] = Variable<bool>(checked.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChecklistRunItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('runId: $runId, ')
+          ..write('itemId: $itemId, ')
+          ..write('checked: $checked, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5927,6 +7144,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $InjuryTable injury = $InjuryTable(this);
   late final $DocumentTable document = $DocumentTable(this);
   late final $FleetEventsTable fleetEvents = $FleetEventsTable(this);
+  late final $ChecklistTemplatesTable checklistTemplates =
+      $ChecklistTemplatesTable(this);
+  late final $ChecklistItemsTable checklistItems = $ChecklistItemsTable(this);
+  late final $ChecklistRunsTable checklistRuns = $ChecklistRunsTable(this);
+  late final $ChecklistRunItemsTable checklistRunItems =
+      $ChecklistRunItemsTable(this);
   late final UserDao userDao = UserDao(this as AppDatabase);
   late final TemplatesDao templatesDao = TemplatesDao(this as AppDatabase);
   late final JobQuotesDao jobQuotesDao = JobQuotesDao(this as AppDatabase);
@@ -5934,6 +7157,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final JobsDao jobsDao = JobsDao(this as AppDatabase);
   late final CustomersDao customersDao = CustomersDao(this as AppDatabase);
   late final FleetEventDao fleetEventDao = FleetEventDao(this as AppDatabase);
+  late final ChecklistDao checklistDao = ChecklistDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5953,6 +7177,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     injury,
     document,
     fleetEvents,
+    checklistTemplates,
+    checklistItems,
+    checklistRuns,
+    checklistRunItems,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -6512,6 +7740,80 @@ final class $$UsersTableReferences
     );
   }
 
+  static MultiTypedResultKey<$ComplaintTable, List<ComplaintData>>
+  _userComplaintsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.complaint,
+    aliasName: $_aliasNameGenerator(db.users.id, db.complaint.reportedByUser),
+  );
+
+  $$ComplaintTableProcessedTableManager get userComplaints {
+    final manager = $$ComplaintTableTableManager(
+      $_db,
+      $_db.complaint,
+    ).filter((f) => f.reportedByUser.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_userComplaintsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ComplaintTable, List<ComplaintData>>
+  _complaintRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.complaint,
+    aliasName: $_aliasNameGenerator(db.users.id, db.complaint.assignedTo),
+  );
+
+  $$ComplaintTableProcessedTableManager get complaintRefs {
+    final manager = $$ComplaintTableTableManager(
+      $_db,
+      $_db.complaint,
+    ).filter((f) => f.assignedTo.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_complaintRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$InjuryTable, List<InjuryData>> _userInjuriesTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.injury,
+    aliasName: $_aliasNameGenerator(db.users.id, db.injury.reportedByUser),
+  );
+
+  $$InjuryTableProcessedTableManager get userInjuries {
+    final manager = $$InjuryTableTableManager(
+      $_db,
+      $_db.injury,
+    ).filter((f) => f.reportedByUser.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_userInjuriesTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$InjuryTable, List<InjuryData>> _injuryRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.injury,
+    aliasName: $_aliasNameGenerator(db.users.id, db.injury.assignedTo),
+  );
+
+  $$InjuryTableProcessedTableManager get injuryRefs {
+    final manager = $$InjuryTableTableManager(
+      $_db,
+      $_db.injury,
+    ).filter((f) => f.assignedTo.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_injuryRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$DocumentTable, List<DocumentData>>
   _documentRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.document,
@@ -6738,6 +8040,106 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
           }) => $$TasksTableFilterComposer(
             $db: $db,
             $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> userComplaints(
+    Expression<bool> Function($$ComplaintTableFilterComposer f) f,
+  ) {
+    final $$ComplaintTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.complaint,
+      getReferencedColumn: (t) => t.reportedByUser,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComplaintTableFilterComposer(
+            $db: $db,
+            $table: $db.complaint,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> complaintRefs(
+    Expression<bool> Function($$ComplaintTableFilterComposer f) f,
+  ) {
+    final $$ComplaintTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.complaint,
+      getReferencedColumn: (t) => t.assignedTo,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComplaintTableFilterComposer(
+            $db: $db,
+            $table: $db.complaint,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> userInjuries(
+    Expression<bool> Function($$InjuryTableFilterComposer f) f,
+  ) {
+    final $$InjuryTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.injury,
+      getReferencedColumn: (t) => t.reportedByUser,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InjuryTableFilterComposer(
+            $db: $db,
+            $table: $db.injury,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> injuryRefs(
+    Expression<bool> Function($$InjuryTableFilterComposer f) f,
+  ) {
+    final $$InjuryTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.injury,
+      getReferencedColumn: (t) => t.assignedTo,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InjuryTableFilterComposer(
+            $db: $db,
+            $table: $db.injury,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -7048,6 +8450,106 @@ class $$UsersTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> userComplaints<T extends Object>(
+    Expression<T> Function($$ComplaintTableAnnotationComposer a) f,
+  ) {
+    final $$ComplaintTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.complaint,
+      getReferencedColumn: (t) => t.reportedByUser,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComplaintTableAnnotationComposer(
+            $db: $db,
+            $table: $db.complaint,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> complaintRefs<T extends Object>(
+    Expression<T> Function($$ComplaintTableAnnotationComposer a) f,
+  ) {
+    final $$ComplaintTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.complaint,
+      getReferencedColumn: (t) => t.assignedTo,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ComplaintTableAnnotationComposer(
+            $db: $db,
+            $table: $db.complaint,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> userInjuries<T extends Object>(
+    Expression<T> Function($$InjuryTableAnnotationComposer a) f,
+  ) {
+    final $$InjuryTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.injury,
+      getReferencedColumn: (t) => t.reportedByUser,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InjuryTableAnnotationComposer(
+            $db: $db,
+            $table: $db.injury,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> injuryRefs<T extends Object>(
+    Expression<T> Function($$InjuryTableAnnotationComposer a) f,
+  ) {
+    final $$InjuryTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.injury,
+      getReferencedColumn: (t) => t.assignedTo,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InjuryTableAnnotationComposer(
+            $db: $db,
+            $table: $db.injury,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> documentRefs<T extends Object>(
     Expression<T> Function($$DocumentTableAnnotationComposer a) f,
   ) {
@@ -7095,6 +8597,10 @@ class $$UsersTableTableManager
             bool jobsRefs,
             bool toolsRefs,
             bool tasksRefs,
+            bool userComplaints,
+            bool complaintRefs,
+            bool userInjuries,
+            bool injuryRefs,
             bool documentRefs,
           })
         > {
@@ -7164,6 +8670,10 @@ class $$UsersTableTableManager
                 jobsRefs = false,
                 toolsRefs = false,
                 tasksRefs = false,
+                userComplaints = false,
+                complaintRefs = false,
+                userInjuries = false,
+                injuryRefs = false,
                 documentRefs = false,
               }) {
                 return PrefetchHooks(
@@ -7175,6 +8685,10 @@ class $$UsersTableTableManager
                     if (jobsRefs) db.jobs,
                     if (toolsRefs) db.tools,
                     if (tasksRefs) db.tasks,
+                    if (userComplaints) db.complaint,
+                    if (complaintRefs) db.complaint,
+                    if (userInjuries) db.injury,
+                    if (injuryRefs) db.injury,
                     if (documentRefs) db.document,
                   ],
                   addJoins:
@@ -7301,6 +8815,86 @@ class $$UsersTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (userComplaints)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          ComplaintData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._userComplaintsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).userComplaints,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.reportedByUser == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (complaintRefs)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          ComplaintData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._complaintRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).complaintRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.assignedTo == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (userInjuries)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          InjuryData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._userInjuriesTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).userInjuries,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.reportedByUser == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (injuryRefs)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          InjuryData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._injuryRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(db, table, p0).injuryRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.assignedTo == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (documentRefs)
                         await $_getPrefetchedData<
                           User,
@@ -7350,6 +8944,10 @@ typedef $$UsersTableProcessedTableManager =
         bool jobsRefs,
         bool toolsRefs,
         bool tasksRefs,
+        bool userComplaints,
+        bool complaintRefs,
+        bool userInjuries,
+        bool injuryRefs,
         bool documentRefs,
       })
     >;
@@ -13180,6 +14778,1608 @@ typedef $$FleetEventsTableProcessedTableManager =
       FleetEvent,
       PrefetchHooks Function()
     >;
+typedef $$ChecklistTemplatesTableCreateCompanionBuilder =
+    ChecklistTemplatesCompanion Function({
+      Value<int> id,
+      required String code,
+      required String name,
+    });
+typedef $$ChecklistTemplatesTableUpdateCompanionBuilder =
+    ChecklistTemplatesCompanion Function({
+      Value<int> id,
+      Value<String> code,
+      Value<String> name,
+    });
+
+final class $$ChecklistTemplatesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ChecklistTemplatesTable,
+          ChecklistTemplate
+        > {
+  $$ChecklistTemplatesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$ChecklistItemsTable, List<ChecklistItem>>
+  _checklistItemsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.checklistItems,
+    aliasName: $_aliasNameGenerator(
+      db.checklistTemplates.id,
+      db.checklistItems.templateId,
+    ),
+  );
+
+  $$ChecklistItemsTableProcessedTableManager get checklistItemsRefs {
+    final manager = $$ChecklistItemsTableTableManager(
+      $_db,
+      $_db.checklistItems,
+    ).filter((f) => f.templateId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_checklistItemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ChecklistRunsTable, List<ChecklistRun>>
+  _checklistRunsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.checklistRuns,
+    aliasName: $_aliasNameGenerator(
+      db.checklistTemplates.id,
+      db.checklistRuns.templateId,
+    ),
+  );
+
+  $$ChecklistRunsTableProcessedTableManager get checklistRunsRefs {
+    final manager = $$ChecklistRunsTableTableManager(
+      $_db,
+      $_db.checklistRuns,
+    ).filter((f) => f.templateId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_checklistRunsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ChecklistTemplatesTableFilterComposer
+    extends Composer<_$AppDatabase, $ChecklistTemplatesTable> {
+  $$ChecklistTemplatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> checklistItemsRefs(
+    Expression<bool> Function($$ChecklistItemsTableFilterComposer f) f,
+  ) {
+    final $$ChecklistItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checklistItems,
+      getReferencedColumn: (t) => t.templateId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> checklistRunsRefs(
+    Expression<bool> Function($$ChecklistRunsTableFilterComposer f) f,
+  ) {
+    final $$ChecklistRunsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checklistRuns,
+      getReferencedColumn: (t) => t.templateId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunsTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ChecklistTemplatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChecklistTemplatesTable> {
+  $$ChecklistTemplatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ChecklistTemplatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChecklistTemplatesTable> {
+  $$ChecklistTemplatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> checklistItemsRefs<T extends Object>(
+    Expression<T> Function($$ChecklistItemsTableAnnotationComposer a) f,
+  ) {
+    final $$ChecklistItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checklistItems,
+      getReferencedColumn: (t) => t.templateId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.checklistItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> checklistRunsRefs<T extends Object>(
+    Expression<T> Function($$ChecklistRunsTableAnnotationComposer a) f,
+  ) {
+    final $$ChecklistRunsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checklistRuns,
+      getReferencedColumn: (t) => t.templateId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.checklistRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ChecklistTemplatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChecklistTemplatesTable,
+          ChecklistTemplate,
+          $$ChecklistTemplatesTableFilterComposer,
+          $$ChecklistTemplatesTableOrderingComposer,
+          $$ChecklistTemplatesTableAnnotationComposer,
+          $$ChecklistTemplatesTableCreateCompanionBuilder,
+          $$ChecklistTemplatesTableUpdateCompanionBuilder,
+          (ChecklistTemplate, $$ChecklistTemplatesTableReferences),
+          ChecklistTemplate,
+          PrefetchHooks Function({
+            bool checklistItemsRefs,
+            bool checklistRunsRefs,
+          })
+        > {
+  $$ChecklistTemplatesTableTableManager(
+    _$AppDatabase db,
+    $ChecklistTemplatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChecklistTemplatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChecklistTemplatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChecklistTemplatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<String> name = const Value.absent(),
+              }) => ChecklistTemplatesCompanion(id: id, code: code, name: name),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String code,
+                required String name,
+              }) => ChecklistTemplatesCompanion.insert(
+                id: id,
+                code: code,
+                name: name,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChecklistTemplatesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({checklistItemsRefs = false, checklistRunsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (checklistItemsRefs) db.checklistItems,
+                    if (checklistRunsRefs) db.checklistRuns,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (checklistItemsRefs)
+                        await $_getPrefetchedData<
+                          ChecklistTemplate,
+                          $ChecklistTemplatesTable,
+                          ChecklistItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChecklistTemplatesTableReferences
+                              ._checklistItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChecklistTemplatesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).checklistItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.templateId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (checklistRunsRefs)
+                        await $_getPrefetchedData<
+                          ChecklistTemplate,
+                          $ChecklistTemplatesTable,
+                          ChecklistRun
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChecklistTemplatesTableReferences
+                              ._checklistRunsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChecklistTemplatesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).checklistRunsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.templateId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ChecklistTemplatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChecklistTemplatesTable,
+      ChecklistTemplate,
+      $$ChecklistTemplatesTableFilterComposer,
+      $$ChecklistTemplatesTableOrderingComposer,
+      $$ChecklistTemplatesTableAnnotationComposer,
+      $$ChecklistTemplatesTableCreateCompanionBuilder,
+      $$ChecklistTemplatesTableUpdateCompanionBuilder,
+      (ChecklistTemplate, $$ChecklistTemplatesTableReferences),
+      ChecklistTemplate,
+      PrefetchHooks Function({bool checklistItemsRefs, bool checklistRunsRefs})
+    >;
+typedef $$ChecklistItemsTableCreateCompanionBuilder =
+    ChecklistItemsCompanion Function({
+      Value<int> id,
+      required int templateId,
+      required String title,
+      Value<bool> required,
+    });
+typedef $$ChecklistItemsTableUpdateCompanionBuilder =
+    ChecklistItemsCompanion Function({
+      Value<int> id,
+      Value<int> templateId,
+      Value<String> title,
+      Value<bool> required,
+    });
+
+final class $$ChecklistItemsTableReferences
+    extends BaseReferences<_$AppDatabase, $ChecklistItemsTable, ChecklistItem> {
+  $$ChecklistItemsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ChecklistTemplatesTable _templateIdTable(_$AppDatabase db) =>
+      db.checklistTemplates.createAlias(
+        $_aliasNameGenerator(
+          db.checklistItems.templateId,
+          db.checklistTemplates.id,
+        ),
+      );
+
+  $$ChecklistTemplatesTableProcessedTableManager get templateId {
+    final $_column = $_itemColumn<int>('template_id')!;
+
+    final manager = $$ChecklistTemplatesTableTableManager(
+      $_db,
+      $_db.checklistTemplates,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_templateIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$ChecklistRunItemsTable, List<ChecklistRunItem>>
+  _checklistRunItemsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.checklistRunItems,
+        aliasName: $_aliasNameGenerator(
+          db.checklistItems.id,
+          db.checklistRunItems.itemId,
+        ),
+      );
+
+  $$ChecklistRunItemsTableProcessedTableManager get checklistRunItemsRefs {
+    final manager = $$ChecklistRunItemsTableTableManager(
+      $_db,
+      $_db.checklistRunItems,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _checklistRunItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ChecklistItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $ChecklistItemsTable> {
+  $$ChecklistItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get required => $composableBuilder(
+    column: $table.required,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChecklistTemplatesTableFilterComposer get templateId {
+    final $$ChecklistTemplatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.templateId,
+      referencedTable: $db.checklistTemplates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistTemplatesTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> checklistRunItemsRefs(
+    Expression<bool> Function($$ChecklistRunItemsTableFilterComposer f) f,
+  ) {
+    final $$ChecklistRunItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checklistRunItems,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistRunItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ChecklistItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChecklistItemsTable> {
+  $$ChecklistItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get required => $composableBuilder(
+    column: $table.required,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChecklistTemplatesTableOrderingComposer get templateId {
+    final $$ChecklistTemplatesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.templateId,
+      referencedTable: $db.checklistTemplates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistTemplatesTableOrderingComposer(
+            $db: $db,
+            $table: $db.checklistTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ChecklistItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChecklistItemsTable> {
+  $$ChecklistItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<bool> get required =>
+      $composableBuilder(column: $table.required, builder: (column) => column);
+
+  $$ChecklistTemplatesTableAnnotationComposer get templateId {
+    final $$ChecklistTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.templateId,
+          referencedTable: $db.checklistTemplates,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChecklistTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.checklistTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  Expression<T> checklistRunItemsRefs<T extends Object>(
+    Expression<T> Function($$ChecklistRunItemsTableAnnotationComposer a) f,
+  ) {
+    final $$ChecklistRunItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.checklistRunItems,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChecklistRunItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.checklistRunItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$ChecklistItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChecklistItemsTable,
+          ChecklistItem,
+          $$ChecklistItemsTableFilterComposer,
+          $$ChecklistItemsTableOrderingComposer,
+          $$ChecklistItemsTableAnnotationComposer,
+          $$ChecklistItemsTableCreateCompanionBuilder,
+          $$ChecklistItemsTableUpdateCompanionBuilder,
+          (ChecklistItem, $$ChecklistItemsTableReferences),
+          ChecklistItem,
+          PrefetchHooks Function({bool templateId, bool checklistRunItemsRefs})
+        > {
+  $$ChecklistItemsTableTableManager(
+    _$AppDatabase db,
+    $ChecklistItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChecklistItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChecklistItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChecklistItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> templateId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<bool> required = const Value.absent(),
+              }) => ChecklistItemsCompanion(
+                id: id,
+                templateId: templateId,
+                title: title,
+                required: required,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int templateId,
+                required String title,
+                Value<bool> required = const Value.absent(),
+              }) => ChecklistItemsCompanion.insert(
+                id: id,
+                templateId: templateId,
+                title: title,
+                required: required,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChecklistItemsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({templateId = false, checklistRunItemsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (checklistRunItemsRefs) db.checklistRunItems,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (templateId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.templateId,
+                                    referencedTable:
+                                        $$ChecklistItemsTableReferences
+                                            ._templateIdTable(db),
+                                    referencedColumn:
+                                        $$ChecklistItemsTableReferences
+                                            ._templateIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (checklistRunItemsRefs)
+                        await $_getPrefetchedData<
+                          ChecklistItem,
+                          $ChecklistItemsTable,
+                          ChecklistRunItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChecklistItemsTableReferences
+                              ._checklistRunItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChecklistItemsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).checklistRunItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ChecklistItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChecklistItemsTable,
+      ChecklistItem,
+      $$ChecklistItemsTableFilterComposer,
+      $$ChecklistItemsTableOrderingComposer,
+      $$ChecklistItemsTableAnnotationComposer,
+      $$ChecklistItemsTableCreateCompanionBuilder,
+      $$ChecklistItemsTableUpdateCompanionBuilder,
+      (ChecklistItem, $$ChecklistItemsTableReferences),
+      ChecklistItem,
+      PrefetchHooks Function({bool templateId, bool checklistRunItemsRefs})
+    >;
+typedef $$ChecklistRunsTableCreateCompanionBuilder =
+    ChecklistRunsCompanion Function({
+      Value<int> id,
+      required int templateId,
+      Value<DateTime> timestamp,
+      Value<int?> completedBy,
+    });
+typedef $$ChecklistRunsTableUpdateCompanionBuilder =
+    ChecklistRunsCompanion Function({
+      Value<int> id,
+      Value<int> templateId,
+      Value<DateTime> timestamp,
+      Value<int?> completedBy,
+    });
+
+final class $$ChecklistRunsTableReferences
+    extends BaseReferences<_$AppDatabase, $ChecklistRunsTable, ChecklistRun> {
+  $$ChecklistRunsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ChecklistTemplatesTable _templateIdTable(_$AppDatabase db) =>
+      db.checklistTemplates.createAlias(
+        $_aliasNameGenerator(
+          db.checklistRuns.templateId,
+          db.checklistTemplates.id,
+        ),
+      );
+
+  $$ChecklistTemplatesTableProcessedTableManager get templateId {
+    final $_column = $_itemColumn<int>('template_id')!;
+
+    final manager = $$ChecklistTemplatesTableTableManager(
+      $_db,
+      $_db.checklistTemplates,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_templateIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$ChecklistRunItemsTable, List<ChecklistRunItem>>
+  _checklistRunItemsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.checklistRunItems,
+        aliasName: $_aliasNameGenerator(
+          db.checklistRuns.id,
+          db.checklistRunItems.runId,
+        ),
+      );
+
+  $$ChecklistRunItemsTableProcessedTableManager get checklistRunItemsRefs {
+    final manager = $$ChecklistRunItemsTableTableManager(
+      $_db,
+      $_db.checklistRunItems,
+    ).filter((f) => f.runId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _checklistRunItemsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ChecklistRunsTableFilterComposer
+    extends Composer<_$AppDatabase, $ChecklistRunsTable> {
+  $$ChecklistRunsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get completedBy => $composableBuilder(
+    column: $table.completedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChecklistTemplatesTableFilterComposer get templateId {
+    final $$ChecklistTemplatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.templateId,
+      referencedTable: $db.checklistTemplates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistTemplatesTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> checklistRunItemsRefs(
+    Expression<bool> Function($$ChecklistRunItemsTableFilterComposer f) f,
+  ) {
+    final $$ChecklistRunItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.checklistRunItems,
+      getReferencedColumn: (t) => t.runId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistRunItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ChecklistRunsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChecklistRunsTable> {
+  $$ChecklistRunsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get completedBy => $composableBuilder(
+    column: $table.completedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChecklistTemplatesTableOrderingComposer get templateId {
+    final $$ChecklistTemplatesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.templateId,
+      referencedTable: $db.checklistTemplates,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistTemplatesTableOrderingComposer(
+            $db: $db,
+            $table: $db.checklistTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ChecklistRunsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChecklistRunsTable> {
+  $$ChecklistRunsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<int> get completedBy => $composableBuilder(
+    column: $table.completedBy,
+    builder: (column) => column,
+  );
+
+  $$ChecklistTemplatesTableAnnotationComposer get templateId {
+    final $$ChecklistTemplatesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.templateId,
+          referencedTable: $db.checklistTemplates,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChecklistTemplatesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.checklistTemplates,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  Expression<T> checklistRunItemsRefs<T extends Object>(
+    Expression<T> Function($$ChecklistRunItemsTableAnnotationComposer a) f,
+  ) {
+    final $$ChecklistRunItemsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.checklistRunItems,
+          getReferencedColumn: (t) => t.runId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChecklistRunItemsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.checklistRunItems,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$ChecklistRunsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChecklistRunsTable,
+          ChecklistRun,
+          $$ChecklistRunsTableFilterComposer,
+          $$ChecklistRunsTableOrderingComposer,
+          $$ChecklistRunsTableAnnotationComposer,
+          $$ChecklistRunsTableCreateCompanionBuilder,
+          $$ChecklistRunsTableUpdateCompanionBuilder,
+          (ChecklistRun, $$ChecklistRunsTableReferences),
+          ChecklistRun,
+          PrefetchHooks Function({bool templateId, bool checklistRunItemsRefs})
+        > {
+  $$ChecklistRunsTableTableManager(_$AppDatabase db, $ChecklistRunsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChecklistRunsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChecklistRunsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChecklistRunsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> templateId = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<int?> completedBy = const Value.absent(),
+              }) => ChecklistRunsCompanion(
+                id: id,
+                templateId: templateId,
+                timestamp: timestamp,
+                completedBy: completedBy,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int templateId,
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<int?> completedBy = const Value.absent(),
+              }) => ChecklistRunsCompanion.insert(
+                id: id,
+                templateId: templateId,
+                timestamp: timestamp,
+                completedBy: completedBy,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChecklistRunsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({templateId = false, checklistRunItemsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (checklistRunItemsRefs) db.checklistRunItems,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (templateId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.templateId,
+                                    referencedTable:
+                                        $$ChecklistRunsTableReferences
+                                            ._templateIdTable(db),
+                                    referencedColumn:
+                                        $$ChecklistRunsTableReferences
+                                            ._templateIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (checklistRunItemsRefs)
+                        await $_getPrefetchedData<
+                          ChecklistRun,
+                          $ChecklistRunsTable,
+                          ChecklistRunItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ChecklistRunsTableReferences
+                              ._checklistRunItemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ChecklistRunsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).checklistRunItemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.runId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ChecklistRunsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChecklistRunsTable,
+      ChecklistRun,
+      $$ChecklistRunsTableFilterComposer,
+      $$ChecklistRunsTableOrderingComposer,
+      $$ChecklistRunsTableAnnotationComposer,
+      $$ChecklistRunsTableCreateCompanionBuilder,
+      $$ChecklistRunsTableUpdateCompanionBuilder,
+      (ChecklistRun, $$ChecklistRunsTableReferences),
+      ChecklistRun,
+      PrefetchHooks Function({bool templateId, bool checklistRunItemsRefs})
+    >;
+typedef $$ChecklistRunItemsTableCreateCompanionBuilder =
+    ChecklistRunItemsCompanion Function({
+      Value<int> id,
+      required int runId,
+      required int itemId,
+      required bool checked,
+      Value<String?> notes,
+    });
+typedef $$ChecklistRunItemsTableUpdateCompanionBuilder =
+    ChecklistRunItemsCompanion Function({
+      Value<int> id,
+      Value<int> runId,
+      Value<int> itemId,
+      Value<bool> checked,
+      Value<String?> notes,
+    });
+
+final class $$ChecklistRunItemsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ChecklistRunItemsTable,
+          ChecklistRunItem
+        > {
+  $$ChecklistRunItemsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ChecklistRunsTable _runIdTable(_$AppDatabase db) =>
+      db.checklistRuns.createAlias(
+        $_aliasNameGenerator(db.checklistRunItems.runId, db.checklistRuns.id),
+      );
+
+  $$ChecklistRunsTableProcessedTableManager get runId {
+    final $_column = $_itemColumn<int>('run_id')!;
+
+    final manager = $$ChecklistRunsTableTableManager(
+      $_db,
+      $_db.checklistRuns,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_runIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $ChecklistItemsTable _itemIdTable(_$AppDatabase db) =>
+      db.checklistItems.createAlias(
+        $_aliasNameGenerator(db.checklistRunItems.itemId, db.checklistItems.id),
+      );
+
+  $$ChecklistItemsTableProcessedTableManager get itemId {
+    final $_column = $_itemColumn<int>('item_id')!;
+
+    final manager = $$ChecklistItemsTableTableManager(
+      $_db,
+      $_db.checklistItems,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_itemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ChecklistRunItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $ChecklistRunItemsTable> {
+  $$ChecklistRunItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get checked => $composableBuilder(
+    column: $table.checked,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChecklistRunsTableFilterComposer get runId {
+    final $$ChecklistRunsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.runId,
+      referencedTable: $db.checklistRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunsTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ChecklistItemsTableFilterComposer get itemId {
+    final $$ChecklistItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.checklistItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.checklistItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ChecklistRunItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChecklistRunItemsTable> {
+  $$ChecklistRunItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get checked => $composableBuilder(
+    column: $table.checked,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChecklistRunsTableOrderingComposer get runId {
+    final $$ChecklistRunsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.runId,
+      referencedTable: $db.checklistRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunsTableOrderingComposer(
+            $db: $db,
+            $table: $db.checklistRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ChecklistItemsTableOrderingComposer get itemId {
+    final $$ChecklistItemsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.checklistItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistItemsTableOrderingComposer(
+            $db: $db,
+            $table: $db.checklistItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ChecklistRunItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChecklistRunItemsTable> {
+  $$ChecklistRunItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get checked =>
+      $composableBuilder(column: $table.checked, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  $$ChecklistRunsTableAnnotationComposer get runId {
+    final $$ChecklistRunsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.runId,
+      referencedTable: $db.checklistRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistRunsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.checklistRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ChecklistItemsTableAnnotationComposer get itemId {
+    final $$ChecklistItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.checklistItems,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChecklistItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.checklistItems,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ChecklistRunItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChecklistRunItemsTable,
+          ChecklistRunItem,
+          $$ChecklistRunItemsTableFilterComposer,
+          $$ChecklistRunItemsTableOrderingComposer,
+          $$ChecklistRunItemsTableAnnotationComposer,
+          $$ChecklistRunItemsTableCreateCompanionBuilder,
+          $$ChecklistRunItemsTableUpdateCompanionBuilder,
+          (ChecklistRunItem, $$ChecklistRunItemsTableReferences),
+          ChecklistRunItem,
+          PrefetchHooks Function({bool runId, bool itemId})
+        > {
+  $$ChecklistRunItemsTableTableManager(
+    _$AppDatabase db,
+    $ChecklistRunItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChecklistRunItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChecklistRunItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChecklistRunItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> runId = const Value.absent(),
+                Value<int> itemId = const Value.absent(),
+                Value<bool> checked = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+              }) => ChecklistRunItemsCompanion(
+                id: id,
+                runId: runId,
+                itemId: itemId,
+                checked: checked,
+                notes: notes,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int runId,
+                required int itemId,
+                required bool checked,
+                Value<String?> notes = const Value.absent(),
+              }) => ChecklistRunItemsCompanion.insert(
+                id: id,
+                runId: runId,
+                itemId: itemId,
+                checked: checked,
+                notes: notes,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChecklistRunItemsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({runId = false, itemId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (runId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.runId,
+                                referencedTable:
+                                    $$ChecklistRunItemsTableReferences
+                                        ._runIdTable(db),
+                                referencedColumn:
+                                    $$ChecklistRunItemsTableReferences
+                                        ._runIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (itemId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.itemId,
+                                referencedTable:
+                                    $$ChecklistRunItemsTableReferences
+                                        ._itemIdTable(db),
+                                referencedColumn:
+                                    $$ChecklistRunItemsTableReferences
+                                        ._itemIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ChecklistRunItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChecklistRunItemsTable,
+      ChecklistRunItem,
+      $$ChecklistRunItemsTableFilterComposer,
+      $$ChecklistRunItemsTableOrderingComposer,
+      $$ChecklistRunItemsTableAnnotationComposer,
+      $$ChecklistRunItemsTableCreateCompanionBuilder,
+      $$ChecklistRunItemsTableUpdateCompanionBuilder,
+      (ChecklistRunItem, $$ChecklistRunItemsTableReferences),
+      ChecklistRunItem,
+      PrefetchHooks Function({bool runId, bool itemId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -13211,6 +16411,14 @@ class $AppDatabaseManager {
       $$DocumentTableTableManager(_db, _db.document);
   $$FleetEventsTableTableManager get fleetEvents =>
       $$FleetEventsTableTableManager(_db, _db.fleetEvents);
+  $$ChecklistTemplatesTableTableManager get checklistTemplates =>
+      $$ChecklistTemplatesTableTableManager(_db, _db.checklistTemplates);
+  $$ChecklistItemsTableTableManager get checklistItems =>
+      $$ChecklistItemsTableTableManager(_db, _db.checklistItems);
+  $$ChecklistRunsTableTableManager get checklistRuns =>
+      $$ChecklistRunsTableTableManager(_db, _db.checklistRuns);
+  $$ChecklistRunItemsTableTableManager get checklistRunItems =>
+      $$ChecklistRunItemsTableTableManager(_db, _db.checklistRunItems);
 }
 
 mixin _$UserDaoMixin on DatabaseAccessor<AppDatabase> {
@@ -13250,6 +16458,14 @@ mixin _$CustomersDaoMixin on DatabaseAccessor<AppDatabase> {
 }
 mixin _$FleetEventDaoMixin on DatabaseAccessor<AppDatabase> {
   $FleetEventsTable get fleetEvents => attachedDatabase.fleetEvents;
+}
+mixin _$ChecklistDaoMixin on DatabaseAccessor<AppDatabase> {
+  $ChecklistTemplatesTable get checklistTemplates =>
+      attachedDatabase.checklistTemplates;
+  $ChecklistItemsTable get checklistItems => attachedDatabase.checklistItems;
+  $ChecklistRunsTable get checklistRuns => attachedDatabase.checklistRuns;
+  $ChecklistRunItemsTable get checklistRunItems =>
+      attachedDatabase.checklistRunItems;
 }
 mixin _$TasksDaoMixin on DatabaseAccessor<AppDatabase> {
   $CompanyTable get company => attachedDatabase.company;

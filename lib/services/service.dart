@@ -478,6 +478,22 @@ class FleetEventService {
   }
 }
 
+class ChecklistService {
+  final ChecklistRepository repo;
+
+  ChecklistService(this.repo);
+
+  Future<ChecklistTemplateWithItems> getChecklist(String code) =>
+      repo.loadChecklist(code);
+
+  Future<int> submit(
+      String code, int userId, List<ChecklistItemRunInput> items) async {
+
+    final template = await repo.loadChecklist(code);
+    return repo.submitChecklist(template.template.id, userId, items);
+  }
+}
+
 // task, complaint, injury, document, 
 
 
@@ -491,6 +507,7 @@ class AppService {
   final CustomerService customer;
   final TaskService task;
   final InjuryService injury;
+  final ChecklistService checklist;
 
   AppService(AppRepository repo)
       : template = TemplateService(repo.template),
@@ -501,5 +518,6 @@ class AppService {
         complaint = ComplaintService(repo.complaint),
         customer = CustomerService(repo.customer),
         task = TaskService(repo.task),
-        injury = InjuryService(repo.injury);
+        injury = InjuryService(repo.injury),
+        checklist = ChecklistService(repo.checklist);
 }

@@ -246,6 +246,73 @@ class FleetEventDao extends DatabaseAccessor<AppDatabase> with _$FleetEventDaoMi
       (delete(fleetEvents)..where((t) => t.id.equals(id))).go();
 }
 
+@DriftAccessor(
+  tables: [ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems]
+)
+class ChecklistDao extends DatabaseAccessor<AppDatabase>
+    with _$ChecklistDaoMixin {
+  ChecklistDao(super.db);
+
+  // Load templates with items
+  Future<ChecklistTemplateWithItems> getTemplateWithItems(String code) async {
+    final template = await (select(checklistTemplates)
+          ..where((t) => t.code.equals(code)))
+        .getSingle();
+
+    final items = await (select(checklistItems)
+          ..where((i) => i.templateId.equals(template.id)))
+        .get();
+
+    return ChecklistTemplateWithItems(template, items);
+  }
+
+  // Save a completed checklist
+  Future<int> insertChecklistRun(
+      int templateId, int userId, List<ChecklistItemRunInput> items) async {
+
+    return transaction(() async {
+      final runId = await into(checklistRuns).insert(
+        ChecklistRunsCompanion.insert(
+          templateId: templateId,
+          completedBy: Value(userId),
+        ),
+      );
+
+      for (final item in items) {
+        await into(checklistRunItems).insert(
+          ChecklistRunItemsCompanion.insert(
+            runId: runId,
+            itemId: item.itemId,
+            checked: item.checked,
+            notes: Value(item.notes),
+          ),
+        );
+      }
+
+      return runId;
+    });
+  }
+}
+
+class ChecklistTemplateWithItems {
+  final ChecklistTemplate template;
+  final List<ChecklistItem> items;
+
+  ChecklistTemplateWithItems(this.template, this.items);
+}
+
+class ChecklistItemRunInput {
+  final int itemId;
+  final bool checked;
+  final String? notes;
+
+  ChecklistItemRunInput({
+    required this.itemId,
+    required this.checked,
+    this.notes,
+  });
+}
+
 class TemplateWithFields {
   final Template template;
   final List<TemplateField> fields;
@@ -280,6 +347,7 @@ class AppDao {
   final CustomersDao customer;
   final TasksDao task;
   final InjuryDao injury;
+  final ChecklistDao checklist;
 
   AppDao(AppDatabase db)
       : user = UserDao(db),
@@ -290,5 +358,6 @@ class AppDao {
         complaint = ComplaintDao(db),
         customer = CustomersDao(db),
         task = TasksDao(db),
-        injury = InjuryDao(db);
+        injury = InjuryDao(db),
+        checklist = ChecklistDao(db);
 }

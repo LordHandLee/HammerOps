@@ -353,11 +353,15 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
 
   bool _submitting = false;
 
+  /// Reported By
+  String? _reporterType; // "user", "customer"
   int? _selectedUserId;
   int? _selectedCustomerId;
 
-  /// Which type is reporting the injury
-  String? _reporterType; // "user" or "customer"
+  /// Person Injured
+  String? _injuredType; // "user", "customer"
+  int? _injuredUserId;
+  int? _injuredCustomerId;
 
   late Future<List<User>> _usersFuture;
   late Future<List<Customer>> _custFuture;
@@ -378,9 +382,14 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
 
   bool get _canSubmit {
     if (_submitting) return false;
-    if (_reporterType == "user" && _selectedUserId != null) return true;
-    if (_reporterType == "customer" && _selectedCustomerId != null) return true;
-    return false;
+
+    final reporterValid = (_reporterType == "user" && _selectedUserId != null) ||
+        (_reporterType == "customer" && _selectedCustomerId != null);
+
+    final injuredValid = (_injuredType == "user" && _injuredUserId != null) ||
+        (_injuredType == "customer" && _injuredCustomerId != null);
+
+    return reporterValid && injuredValid;
   }
 
   Future<void> _submit() async {
@@ -393,8 +402,10 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
         _titleController.text,
         Value(_descController.text),
         _selectedDate,
-        Value(_selectedUserId),
-        Value(_selectedCustomerId),
+        Value(_selectedUserId),      // reporter user
+        Value(_selectedCustomerId),  // reporter customer
+        // injuredUserId: Value(_injuredUserId),
+        // injuredCustomerId: Value(_injuredCustomerId),
       );
 
       if (!mounted) return;
@@ -431,9 +442,8 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
                   labelText: 'Title',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Title is required'
-                    : null,
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Title is required' : null,
               ),
               const SizedBox(height: 16),
 
@@ -475,7 +485,7 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
 
-              // RADIO BUTTONS
+              // REPORTER RADIO BUTTONS
               RadioListTile<String>(
                 title: const Text("User"),
                 value: "user",
@@ -483,11 +493,10 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
                 onChanged: (val) {
                   setState(() {
                     _reporterType = val;
-                    _selectedCustomerId = null; // reset customer
+                    _selectedCustomerId = null;
                   });
                 },
               ),
-
               RadioListTile<String>(
                 title: const Text("Customer"),
                 value: "customer",
@@ -495,71 +504,71 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
                 onChanged: (val) {
                   setState(() {
                     _reporterType = val;
-                    _selectedUserId = null; // reset user
+                    _selectedUserId = null;
                   });
                 },
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
-              // === USER DROPDOWN ===
+              // REPORTER DROPDOWNS
               if (_reporterType == "user")
-                FutureBuilder<List<User>>(
-                  future: _usersFuture,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final users = snapshot.data!;
-                    return DropdownButtonFormField<int>(
-                      decoration: const InputDecoration(
-                        labelText: 'Select User',
-                        border: OutlineInputBorder(),
-                      ),
-                      value: _selectedUserId,
-                      items: users
-                          .map((u) => DropdownMenuItem(
-                                value: u.id,
-                                child: Text(u.name ?? 'User ${u.id}'),
-                              ))
-                          .toList(),
-                      onChanged: (val) {
-                        setState(() => _selectedUserId = val);
-                      },
-                      validator: (val) =>
-                          val == null ? 'Please select a user' : null,
-                    );
-                  },
+                _buildUserDropdown(
+                  selected: _selectedUserId,
+                  onChanged: (val) => setState(() => _selectedUserId = val),
                 ),
 
-              // === CUSTOMER DROPDOWN ===
               if (_reporterType == "customer")
-                FutureBuilder<List<Customer>>(
-                  future: _custFuture,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final customers = snapshot.data!;
-                    return DropdownButtonFormField<int>(
-                      decoration: const InputDecoration(
-                        labelText: 'Select Customer',
-                        border: OutlineInputBorder(),
-                      ),
-                      value: _selectedCustomerId,
-                      items: customers
-                          .map((c) => DropdownMenuItem(
-                                value: c.id,
-                                child: Text(c.name ?? 'Customer ${c.id}'),
-                              ))
-                          .toList(),
-                      onChanged: (val) {
-                        setState(() => _selectedCustomerId = val);
-                      },
-                      validator: (val) =>
-                          val == null ? 'Please select a customer' : null,
-                    );
-                  },
+                _buildCustomerDropdown(
+                  selected: _selectedCustomerId,
+                  onChanged: (val) => setState(() => _selectedCustomerId = val),
+                ),
+
+              const SizedBox(height: 32),
+
+              const Text(
+                "Person Injured",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+
+              // INJURED RADIO BUTTONS
+              RadioListTile<String>(
+                title: const Text("User"),
+                value: "user",
+                groupValue: _injuredType,
+                onChanged: (val) {
+                  setState(() {
+                    _injuredType = val;
+                    _injuredCustomerId = null;
+                  });
+                },
+              ),
+              RadioListTile<String>(
+                title: const Text("Customer"),
+                value: "customer",
+                groupValue: _injuredType,
+                onChanged: (val) {
+                  setState(() {
+                    _injuredType = val;
+                    _injuredUserId = null;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 12),
+
+              // INJURED DROPDOWNS
+              if (_injuredType == "user")
+                _buildUserDropdown(
+                  selected: _injuredUserId,
+                  onChanged: (val) => setState(() => _injuredUserId = val),
+                ),
+
+              if (_injuredType == "customer")
+                _buildCustomerDropdown(
+                  selected: _injuredCustomerId,
+                  onChanged: (val) =>
+                      setState(() => _injuredCustomerId = val),
                 ),
 
               const SizedBox(height: 32),
@@ -582,4 +591,67 @@ class _InjuryFormScreenState extends State<InjuryFormScreen> {
       ),
     );
   }
+
+  // --- REUSABLE DROPDOWNS ---
+
+  Widget _buildUserDropdown({
+    required int? selected,
+    required Function(int?) onChanged,
+  }) {
+    return FutureBuilder<List<User>>(
+      future: _usersFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final users = snapshot.data!;
+        return DropdownButtonFormField<int>(
+          decoration: const InputDecoration(
+            labelText: 'Select User',
+            border: OutlineInputBorder(),
+          ),
+          value: selected,
+          items: users
+              .map((u) => DropdownMenuItem(
+                    value: u.id,
+                    child: Text(u.name ?? 'User ${u.id}'),
+                  ))
+              .toList(),
+          onChanged: onChanged,
+          validator: (val) => val == null ? 'Please select a user' : null,
+        );
+      },
+    );
+  }
+
+  Widget _buildCustomerDropdown({
+    required int? selected,
+    required Function(int?) onChanged,
+  }) {
+    return FutureBuilder<List<Customer>>(
+      future: _custFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final customers = snapshot.data!;
+        return DropdownButtonFormField<int>(
+          decoration: const InputDecoration(
+            labelText: 'Select Customer',
+            border: OutlineInputBorder(),
+          ),
+          value: selected,
+          items: customers
+              .map((c) => DropdownMenuItem(
+                    value: c.id,
+                    child: Text(c.name ?? 'Customer ${c.id}'),
+                  ))
+              .toList(),
+          onChanged: onChanged,
+          validator: (val) => val == null ? 'Please select a customer' : null,
+        );
+      },
+    );
+  }
 }
+

@@ -157,6 +157,7 @@ class Complaint extends Table {
   BoolColumn get isResolved => boolean().withDefault(const Constant(false))();
 
   // Foreign key to Users table (assuming a user reports the complaint)
+  @ReferenceName('userComplaints')
   IntColumn get reportedByUser => integer().references(Users, #id, onDelete: KeyAction.cascade)();
   
   // Foreign key to Users table (assuming a user is assigned to resolve the complaint)
@@ -178,6 +179,7 @@ class Injury extends Table {
   BoolColumn get isResolved => boolean().withDefault(const Constant(false))();
 
   // Foreign key to Users table (assuming a user reports the injury)
+  @ReferenceName('userInjuries')
   IntColumn get reportedByUser => integer().nullable().references(Users, #id, onDelete: KeyAction.cascade)();
   
   // Foreign key to Users table (assuming a user is assigned to resolve the injury)
@@ -219,6 +221,48 @@ class FleetEvents extends Table {
   DateTimeColumn get date => dateTime()();
   TextColumn get notes => text().nullable()();
 
-  @override
-  Set<Column> get primaryKey => {id};
+  // @override
+  // Set<Column> get primaryKey => {id};
 }
+
+
+// ------------------
+// ChecklistTemplates (TABLE)
+// ------------------
+class ChecklistTemplates extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get code => text()();       // e.g. "BOD"
+  TextColumn get name => text()();       // e.g. "Beginning of Day"
+}
+
+// ------------------
+// ChecklistItems (TABLE)
+// ------------------
+class ChecklistItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get templateId => integer().references(ChecklistTemplates, #id)();
+  TextColumn get title => text()();
+  BoolColumn get required => boolean().withDefault(const Constant(false))();
+}
+
+// ------------------
+// ChecklistRuns (TABLE)
+// ------------------
+class ChecklistRuns extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get templateId => integer().references(ChecklistTemplates, #id)();
+  DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get completedBy => integer().nullable()();  // user ID optional
+}
+
+// ------------------
+// ChecklistRunItems (TABLE)
+// ------------------
+class ChecklistRunItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get runId => integer().references(ChecklistRuns, #id)();
+  IntColumn get itemId => integer().references(ChecklistItems, #id)();
+  BoolColumn get checked => boolean()();
+  TextColumn get notes => text().nullable()();
+}
+

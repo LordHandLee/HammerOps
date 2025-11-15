@@ -255,6 +255,20 @@ class FleetEventRepository {
   Future<void> deleteEvent(int id) => fleetDao.deleteEvent(id);
 }
 
+class ChecklistRepository {
+  final ChecklistDao dao;
+
+  ChecklistRepository(this.dao);
+
+  Future<ChecklistTemplateWithItems> loadChecklist(String code) =>
+      dao.getTemplateWithItems(code);
+
+  Future<int> submitChecklist(
+      int templateId, int userId, List<ChecklistItemRunInput> items) {
+    return dao.insertChecklistRun(templateId, userId, items);
+  }
+}
+
 // task, complaint, injury repositories
 
 class AppRepository {
@@ -267,6 +281,7 @@ class AppRepository {
   final CustomerRepository customer;
   final TaskRepository task;
   final InjuryRepository injury;
+  final ChecklistRepository checklist;
 
   AppRepository(AppDao dao)
       : user = UserRepository(dao.user),
@@ -277,5 +292,6 @@ class AppRepository {
         complaint = ComplaintRepository(dao.complaint),
         customer = CustomerRepository(dao.customer),
         task = TaskRepository(dao.task),
-        injury = InjuryRepository(dao.injury);
+        injury = InjuryRepository(dao.injury),
+        checklist = ChecklistRepository(dao.checklist);
 }
