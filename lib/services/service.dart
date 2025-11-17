@@ -492,7 +492,20 @@ class ChecklistService {
     final template = await repo.loadChecklist(code);
     return repo.submitChecklist(template.template.id, userId, items);
   }
+
+  Future<void> addTemplate(
+    String code, String name) async {
+      final template = ChecklistTemplatesCompanion.insert(
+        // id: Value(id),
+        code: code,
+        name: name,
+      );
+    await repo.addTemplate(template);
+  }
+  Future<void> deleteTemplate(int id) => repo.deleteTemplate(id);
+  Future<List<ChecklistTemplate>> getAllTemplates() => repo.getAllTemplates();
 }
+
 
 // task, complaint, injury, document, 
 

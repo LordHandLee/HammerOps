@@ -292,6 +292,14 @@ class ChecklistDao extends DatabaseAccessor<AppDatabase>
       return runId;
     });
   }
+
+  Future<void> deleteTemplate(int id) => 
+    (delete(checklistTemplates)..where((t) => t.id.equals(id))).go();
+
+  Future<List<ChecklistTemplate>> getAllTemplates() =>
+    select(checklistTemplates).get();
+
+  Future<int> insertTemplate(ChecklistTemplatesCompanion checklistTemplate) => into(checklistTemplates).insert(checklistTemplate);
 }
 
 class ChecklistTemplateWithItems {

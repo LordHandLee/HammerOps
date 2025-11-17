@@ -7,6 +7,7 @@ import 'package:hammer_ops/screens/drawer_menu_screens/task_shield.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/flag_task.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/injury_log.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/custom_checklist.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/admin_checklist.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
@@ -225,6 +226,11 @@ class _DrawerMenu extends StatelessWidget {
           leading: const Icon(Icons.settings),
           title: const Text('CHECKLIST'),
           onTap: () => onNavigate(const ChecklistScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('ADMIN CHECKLIST'),
+          onTap: () => onNavigate(const AdminChecklistScreen()),
         ),
         ListTile(
           leading: const Icon(Icons.settings),
