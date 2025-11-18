@@ -483,8 +483,15 @@ class ChecklistService {
 
   ChecklistService(this.repo);
 
-  Future<ChecklistTemplateWithItems> getChecklist(String code) =>
-      repo.loadChecklist(code);
+  Future<ChecklistTemplateWithItems> getChecklist(int id) =>
+    repo.loadChecklistById(id);
+
+  Future<ChecklistTemplateWithItems> getChecklistByCode(String code) =>
+      repo.loadChecklistByCode(code);
+
+  // Debug helpers
+  Future<List<ChecklistItem>> getItemsForTemplateId(int id) => repo.getItemsForTemplateId(id);
+  Future<ChecklistTemplate> getTemplateRawById(int id) => repo.getTemplateRawById(id);
 
   Future<int> submit(
       String code, int userId, List<ChecklistItemRunInput> items) async {
@@ -504,6 +511,8 @@ class ChecklistService {
   }
   Future<void> deleteTemplate(int id) => repo.deleteTemplate(id);
   Future<List<ChecklistTemplate>> getAllTemplates() => repo.getAllTemplates();
+  Future<void> updateTemplateItems(int templateId, List<ChecklistItem> items) => repo.updateTemplateItems(templateId, items);
+
 }
 
 

@@ -260,6 +260,15 @@ class ChecklistRepository {
 
   ChecklistRepository(this.dao);
   
+  Future<ChecklistTemplateWithItems> loadChecklistById(int id) =>
+    dao.getTemplateWithItemsById(id);
+
+  Future<ChecklistTemplateWithItems> loadChecklistByCode(String code) =>
+      dao.getTemplateWithItems(code);
+
+  // debug helpers
+  Future<List<ChecklistItem>> getItemsForTemplateId(int id) => dao.getItemsForTemplateId(id);
+  Future<ChecklistTemplate> getTemplateRawById(int id) => dao.getTemplateRawById(id);
   //get single template
   Future<ChecklistTemplateWithItems> loadChecklist(String code) =>
       dao.getTemplateWithItems(code);
@@ -274,6 +283,7 @@ class ChecklistRepository {
   Future<void> deleteTemplate(int id) => dao.deleteTemplate(id);
   Future<List<ChecklistTemplate>> getAllTemplates() => dao.getAllTemplates();
 
+  Future<void> updateTemplateItems(int templateId, List<ChecklistItem> items) => dao.updateTemplateItems(templateId, items);
 
 }
 

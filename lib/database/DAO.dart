@@ -266,6 +266,29 @@ class ChecklistDao extends DatabaseAccessor<AppDatabase>
     return ChecklistTemplateWithItems(template, items);
   }
 
+  Future<ChecklistTemplateWithItems> getTemplateWithItemsById(int templateId) async {
+    final template = await (select(checklistTemplates)
+          ..where((t) => t.id.equals(templateId)))
+        .getSingle();
+
+    final items = await (select(checklistItems)
+          ..where((i) => i.templateId.equals(template.id)))
+        .get();
+
+    return ChecklistTemplateWithItems(template, items);
+
+  
+  }
+
+  Future<List<ChecklistItem>> getItemsForTemplateId(int templateId) {
+    return (select(checklistItems)..where((t) => t.templateId.equals(templateId))).get();
+  }
+
+
+  Future<ChecklistTemplate> getTemplateRawById(int templateId) {
+    return (select(checklistTemplates)..where((t) => t.id.equals(templateId))).getSingle();
+  }
+
   // Save a completed checklist
   Future<int> insertChecklistRun(
       int templateId, int userId, List<ChecklistItemRunInput> items) async {
@@ -300,6 +323,49 @@ class ChecklistDao extends DatabaseAccessor<AppDatabase>
     select(checklistTemplates).get();
 
   Future<int> insertTemplate(ChecklistTemplatesCompanion checklistTemplate) => into(checklistTemplates).insert(checklistTemplate);
+
+  Future<void> updateTemplateItems(
+    int templateId,
+    List<ChecklistItem> newItems,
+  ) async {
+    return transaction(() async {
+      // Load existing DB items
+      final existingItems = await (select(checklistItems)
+            ..where((i) => i.templateId.equals(templateId)))
+          .get();
+
+      // Map by id for easy lookup
+      final existingById = {for (var i in existingItems) i.id: i};
+      final newById = {for (var i in newItems) i.id: i};
+
+      // 1. Delete items that no longer exist in the UI
+      for (final old in existingItems) {
+        if (!newById.containsKey(old.id)) {
+          await (delete(checklistItems)
+                ..where((tbl) => tbl.id.equals(old.id)))
+              .go();
+        }
+      }
+
+      // 2. Insert or update items
+      for (final item in newItems) {
+        if (item.id == 0 || !existingById.containsKey(item.id)) {
+          // New item → insert
+          await into(checklistItems).insert(
+            ChecklistItemsCompanion.insert(
+              templateId: item.templateId,
+              title: item.title,
+              required: Value(item.required),
+            ),
+          );
+        } else {
+          // Existing item → update
+          await update(checklistItems).replace(item);
+        }
+      }
+    });
+}
+
 }
 
 class ChecklistTemplateWithItems {

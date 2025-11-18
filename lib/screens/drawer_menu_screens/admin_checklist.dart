@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hammer_ops/database/database.dart';
 import 'package:hammer_ops/di/injector.dart';
 import 'package:hammer_ops/services/service.dart';
-//import 'package:hammer_ops/screens/drawer_menu_screens/edit_checklist_template.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/edit_checklist_template.dart';
 
 class AdminChecklistScreen extends StatefulWidget {
   const AdminChecklistScreen({super.key});
@@ -28,55 +28,72 @@ class _AdminChecklistScreenState extends State<AdminChecklistScreen> {
     setState(() {});
   }
 
-  Future<void> _createTemplateDialog() async {
-    final nameCtrl = TextEditingController();
-    final codeCtrl = TextEditingController();
+Future<void> _createTemplateDialog() async {
+  final nameCtrl = TextEditingController();
+  String? selectedCode;
 
-    final created = await showDialog<bool>(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: const Text("Create New Checklist Template"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(labelText: "Template Name"),
+  final created = await showDialog<bool>(
+    context: context,
+    builder: (_) {
+      return StatefulBuilder(
+        builder: (context, setStateSB) {
+          return AlertDialog(
+            title: const Text("Create New Checklist Template"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(labelText: "Template Name"),
+                ),
+                const SizedBox(height: 16),
+
+                // ----------- DROPDOWN -----------
+                DropdownButtonFormField<String>(
+                  value: selectedCode,
+                  decoration: const InputDecoration(labelText: "Template Type"),
+                  items: const [
+                    DropdownMenuItem(value: "BOD", child: Text("BOD")),
+                    DropdownMenuItem(value: "EOD", child: Text("EOD")),
+                    DropdownMenuItem(value: "SAFETY", child: Text("SAFETY")),
+                  ],
+                  onChanged: (val) => setStateSB(() => selectedCode = val),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
               ),
-              TextField(
-                controller: codeCtrl,
-                decoration: const InputDecoration(labelText: "Template Code"),
+              ElevatedButton(
+                onPressed: (nameCtrl.text.isNotEmpty && selectedCode != null)
+                    ? () async {
+                        await service.checklist.addTemplate(
+                          selectedCode!,       // dropdown result
+                          nameCtrl.text.trim(), 
+                        );
+
+                        Navigator.pop(context, true);
+                      }
+                    : null, // disable button if incomplete
+                child: const Text("Create"),
               ),
             ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
-            ElevatedButton(
-              onPressed: () async {
-                if (nameCtrl.text.isEmpty || codeCtrl.text.isEmpty) return;
-
-                await service.checklist.addTemplate(
-                  nameCtrl.text.trim(),
-                  codeCtrl.text.trim(),
-                );
-
-                Navigator.pop(context, true);
-              },
-              child: const Text("Create"),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (created == true) {
-      _loadTemplates();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Template created")),
+          );
+        },
       );
-    }
+    },
+  );
+
+  if (created == true) {
+    _loadTemplates();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Template created")),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +114,7 @@ class _AdminChecklistScreenState extends State<AdminChecklistScreen> {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          final templates = snapshot.data!;
+          final templates = snapshot.data ?? [];//!;
 
           // -------------------------------
           // EMPTY STATE
@@ -114,7 +131,16 @@ class _AdminChecklistScreenState extends State<AdminChecklistScreen> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  const Text("Tap + to create your first template."),
+                  const Text(
+                    "Create your first template to begin.",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 25),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text("Create Template"),
+                    onPressed: _createTemplateDialog,
+                  )
                 ],
               ),
             );
@@ -127,22 +153,28 @@ class _AdminChecklistScreenState extends State<AdminChecklistScreen> {
             itemCount: templates.length,
             itemBuilder: (context, index) {
               final tpl = templates[index];
+
               return Card(
-                margin: const EdgeInsets.all(10),
+                margin: const EdgeInsets.symmetric(
+                    vertical: 8, horizontal: 12),
                 child: ListTile(
                   title: Text(
                     tpl.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text("Code: ${tpl.code} "),
+                  subtitle: Text("Code: ${tpl.code}"),
                   trailing: const Icon(Icons.edit),
                   onTap: () async {
+                    // Navigate to edit template screen
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => Text("Fart"), //EditChecklistTemplateScreen(template: tpl),
+                        builder: (_) => EditChecklistTemplateScreen(
+                          template: tpl,
+                        ),
                       ),
                     );
+
                     _loadTemplates();
                   },
                 ),

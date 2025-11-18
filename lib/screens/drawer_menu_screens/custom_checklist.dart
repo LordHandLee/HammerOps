@@ -226,9 +226,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
-    _bodFuture = service.checklist.getChecklist("BOD");
-    _eodFuture = service.checklist.getChecklist("EOD");
-    _safetyFuture = service.checklist.getChecklist("SAFETY");
+    _bodFuture = service.checklist.getChecklistByCode("BOD");
+    _eodFuture = service.checklist.getChecklistByCode("EOD");
+    _safetyFuture = service.checklist.getChecklistByCode("SAFETY");
   }
 
   @override
