@@ -1,117 +1,182 @@
 import 'package:flutter/material.dart';
+import 'package:hammer_ops/di/injector.dart';
+import 'package:hammer_ops/services/service.dart';
+import 'package:hammer_ops/database/database.dart';
+import 'package:hammer_ops/database/repository.dart';
 
-class Job extends StatefulWidget {
-  const Job({super.key});
+class JobScreen extends StatefulWidget {
+  final int jobId;
+
+  const JobScreen({super.key, required this.jobId});
 
   @override
-  State<Job> createState() => _JobCreatorState();
+  State<JobScreen> createState() => _JobScreenState();
 }
 
-class _JobCreatorState extends State<Job> {
-  final TextEditingController _jobTitleController = TextEditingController();
-  final TextEditingController _customerNameController = TextEditingController();
+class _JobScreenState extends State<JobScreen> {
+  final AppService service = getIt<AppService>();
 
-  String? _selectedQuote;
-  String? _selectedUser;
+  Job? _job;
+  List<JobQuote> _quotes = [];
+  List<User> _users = [];
+  List<Customer> _customers = [];
 
-  // Mock data for dropdowns
-  final List<String> _quotes = ['Quote A', 'Quote B', 'Quote C'];
-  final List<String> _users = ['User 1', 'User 2', 'User 3'];
+  JobQuote? _selectedQuote;
+  User? _selectedUser;
+  Customer? _selectedCustomer;
 
-  void _saveJob() {
-    final jobTitle = _jobTitleController.text.trim();
-    final customerName = _customerNameController.text.trim();
+  String? _selectedStatus;
 
-    if (jobTitle.isEmpty || customerName.isEmpty || _selectedQuote == null || _selectedUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+  final List<String> jobStatusOptions = [
+    "Not Started",
+    "In Progress",
+    "Complete"
+  ];
+
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final job = await service.jobs.getJobById(widget.jobId);
+    final quotes = await service.quote.getAllQuotes();
+    final users = await service.user.getAllUsers();
+    final customers = await service.customer.getAllCustomers();
+
+    setState(() {
+      _job = job;
+      _quotes = quotes;
+      _users = users;
+      _customers = customers;
+
+      _selectedQuote =
+          quotes.firstWhere((q) => q.id == job?.quoteId, orElse: () => quotes.first);
+
+      _selectedUser =
+          users.firstWhere((u) => u.id == job?.assignedTo, orElse: () => users.first);
+
+      _selectedCustomer = customers.firstWhere(
+          (c) => c.id == job?.customer,
+          orElse: () => customers.first);
+
+      _selectedStatus = job?.jobStatus; // nullable
+      _loading = false;
+    });
+  }
+
+  Future<void> _saveJob() async {
+    if (_selectedQuote == null ||
+        _selectedUser == null ||
+        _selectedCustomer == null ||
+        _job == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Missing fields")));
       return;
     }
 
-    // TODO: Save the job to database or perform necessary logic
-    print('Saving job...');
-    print('Title: $jobTitle');
-    print('Customer: $customerName');
-    print('Quote: $_selectedQuote');
-    print('Assigned to: $_selectedUser');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Job saved successfully')),
+    await service.jobs.updateJob(
+      widget.jobId,
+      _selectedQuote!.id,
+      _job!.name,
+      _selectedStatus, // nullable field
+      _selectedCustomer!.id,
+      _selectedUser!.id,
     );
 
-    Navigator.pop(context); // Go back after saving
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Job Updated")));
+
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(
+          body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => Navigator.pop(context)),
-        backgroundColor: const Color.fromARGB(255, 195, 189, 170),
-        title: const Text("Job"),
+        title: Text("Edit Job"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            // TextField(
-            //   controller: _jobTitleController,
-            //   decoration: const InputDecoration(
-            //     labelText: 'Job Title',
-            //     border: OutlineInputBorder(),
-            //   ),
-            // ),
-            Text("Job Name: Job 1"),
+            Text("Job Name: ${_job!.name}",
+                style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 16),
-            Text("Customer name: Cindy Sue"),
-            // TextField(
-            //   controller: _customerNameController,
-            //   decoration: const InputDecoration(
-            //     labelText: 'Customer Name',
-            //     border: OutlineInputBorder(),
-            //   ),
-            // ),
+
+            /// CUSTOMER DROPDOWN
+            DropdownButtonFormField<Customer>(
+              value: _selectedCustomer,
+              items: _customers.map((c) {
+                return DropdownMenuItem(
+                    value: c, child: Text(c.name));
+              }).toList(),
+              onChanged: (c) => setState(() => _selectedCustomer = c),
+              decoration: const InputDecoration(
+                  labelText: "Customer",
+                  border: OutlineInputBorder()),
+            ),
+
             const SizedBox(height: 16),
-            Text("Assigned to: Mark"),
+
+            /// ASSIGNED USER DROPDOWN
+            DropdownButtonFormField<User>(
+              value: _selectedUser,
+              items: _users.map((u) {
+                return DropdownMenuItem(
+                    value: u, child: Text(u.name));
+              }).toList(),
+              onChanged: (u) => setState(() => _selectedUser = u),
+              decoration: const InputDecoration(
+                  labelText: "Assigned To",
+                  border: OutlineInputBorder()),
+            ),
+
             const SizedBox(height: 16),
-            Text("Quote: Quote 1 - \$15,000"),
-            // DropdownButtonFormField<String>(
-            //   value: _selectedQuote,
-            //   items: _quotes.map((quote) {
-            //     return DropdownMenuItem(value: quote, child: Text(quote));
-            //   }).toList(),
-            //   onChanged: (value) {
-            //     setState(() {
-            //       _selectedQuote = value;
-            //     });
-            //   },
-            //   decoration: const InputDecoration(
-            //     labelText: 'Select Quote',
-            //     border: OutlineInputBorder(),
-            //   ),
-            // ),
-            // const SizedBox(height: 16),
-            // DropdownButtonFormField<String>(
-            //   value: _selectedUser,
-            //   items: _users.map((user) {
-            //     return DropdownMenuItem(value: user, child: Text(user));
-            //   }).toList(),
-            //   onChanged: (value) {
-            //     setState(() {
-            //       _selectedUser = value;
-            //     });
-            //   },
-            //   decoration: const InputDecoration(
-            //     labelText: 'Assign to User',
-            //     border: OutlineInputBorder(),
-            //   ),
-            // ),
+
+            /// QUOTE DROPDOWN
+            DropdownButtonFormField<JobQuote>(
+              value: _selectedQuote,
+              items: _quotes.map((q) {
+                return DropdownMenuItem(
+                    value: q,
+                    child: Text("${q.customerName} - \$${q.totalAmount}"));
+              }).toList(),
+              onChanged: (q) => setState(() => _selectedQuote = q),
+              decoration: const InputDecoration(
+                  labelText: "Quote",
+                  border: OutlineInputBorder()),
+            ),
+
+            const SizedBox(height: 16),
+
+            /// JOB STATUS DROPDOWN (OPTIONAL)
+            DropdownButtonFormField<String>(
+              value: _selectedStatus,
+              items: jobStatusOptions.map((s) {
+                return DropdownMenuItem(value: s, child: Text(s));
+              }).toList(),
+              onChanged: (s) => setState(() => _selectedStatus = s),
+              decoration: const InputDecoration(
+                labelText: "Job Status (optional)",
+                border: OutlineInputBorder(),
+              ),
+            ),
+
             const SizedBox(height: 32),
-            // ElevatedButton(
-            //   onPressed: _saveJob,
-            //   child: const Text('Save Job'),
-            // ),
+
+            ElevatedButton(
+              onPressed: _saveJob,
+              child: const Text("Save Changes"),
+            ),
           ],
         ),
       ),

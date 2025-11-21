@@ -2646,13 +2646,13 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
   late final GeneratedColumn<String> jobStatus = GeneratedColumn<String>(
     'job_status',
     aliasedName,
-    false,
+    true,
     additionalChecks: GeneratedColumn.checkTextLength(
       minTextLength: 1,
       maxTextLength: 50,
     ),
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _startDateMeta = const VerificationMeta(
     'startDate',
@@ -2683,9 +2683,9 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
   late final GeneratedColumn<int> assignedTo = GeneratedColumn<int>(
     'assigned_to',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES users (id) ON DELETE CASCADE',
     ),
@@ -2751,8 +2751,6 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
         _jobStatusMeta,
         jobStatus.isAcceptableOrUnknown(data['job_status']!, _jobStatusMeta),
       );
-    } else if (isInserting) {
-      context.missing(_jobStatusMeta);
     }
     if (data.containsKey('start_date')) {
       context.handle(
@@ -2771,8 +2769,6 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
         _assignedToMeta,
         assignedTo.isAcceptableOrUnknown(data['assigned_to']!, _assignedToMeta),
       );
-    } else if (isInserting) {
-      context.missing(_assignedToMeta);
     }
     if (data.containsKey('customer')) {
       context.handle(
@@ -2806,7 +2802,7 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
       jobStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}job_status'],
-      )!,
+      ),
       startDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}start_date'],
@@ -2818,7 +2814,7 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
       assignedTo: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}assigned_to'],
-      )!,
+      ),
       customer: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}customer'],
@@ -2836,19 +2832,19 @@ class Job extends DataClass implements Insertable<Job> {
   final int id;
   final int quoteId;
   final String name;
-  final String jobStatus;
+  final String? jobStatus;
   final DateTime? startDate;
   final DateTime? endDate;
-  final int assignedTo;
+  final int? assignedTo;
   final int customer;
   const Job({
     required this.id,
     required this.quoteId,
     required this.name,
-    required this.jobStatus,
+    this.jobStatus,
     this.startDate,
     this.endDate,
-    required this.assignedTo,
+    this.assignedTo,
     required this.customer,
   });
   @override
@@ -2857,14 +2853,18 @@ class Job extends DataClass implements Insertable<Job> {
     map['id'] = Variable<int>(id);
     map['quote_id'] = Variable<int>(quoteId);
     map['name'] = Variable<String>(name);
-    map['job_status'] = Variable<String>(jobStatus);
+    if (!nullToAbsent || jobStatus != null) {
+      map['job_status'] = Variable<String>(jobStatus);
+    }
     if (!nullToAbsent || startDate != null) {
       map['start_date'] = Variable<DateTime>(startDate);
     }
     if (!nullToAbsent || endDate != null) {
       map['end_date'] = Variable<DateTime>(endDate);
     }
-    map['assigned_to'] = Variable<int>(assignedTo);
+    if (!nullToAbsent || assignedTo != null) {
+      map['assigned_to'] = Variable<int>(assignedTo);
+    }
     map['customer'] = Variable<int>(customer);
     return map;
   }
@@ -2874,14 +2874,18 @@ class Job extends DataClass implements Insertable<Job> {
       id: Value(id),
       quoteId: Value(quoteId),
       name: Value(name),
-      jobStatus: Value(jobStatus),
+      jobStatus: jobStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobStatus),
       startDate: startDate == null && nullToAbsent
           ? const Value.absent()
           : Value(startDate),
       endDate: endDate == null && nullToAbsent
           ? const Value.absent()
           : Value(endDate),
-      assignedTo: Value(assignedTo),
+      assignedTo: assignedTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignedTo),
       customer: Value(customer),
     );
   }
@@ -2895,10 +2899,10 @@ class Job extends DataClass implements Insertable<Job> {
       id: serializer.fromJson<int>(json['id']),
       quoteId: serializer.fromJson<int>(json['quoteId']),
       name: serializer.fromJson<String>(json['name']),
-      jobStatus: serializer.fromJson<String>(json['jobStatus']),
+      jobStatus: serializer.fromJson<String?>(json['jobStatus']),
       startDate: serializer.fromJson<DateTime?>(json['startDate']),
       endDate: serializer.fromJson<DateTime?>(json['endDate']),
-      assignedTo: serializer.fromJson<int>(json['assignedTo']),
+      assignedTo: serializer.fromJson<int?>(json['assignedTo']),
       customer: serializer.fromJson<int>(json['customer']),
     );
   }
@@ -2909,10 +2913,10 @@ class Job extends DataClass implements Insertable<Job> {
       'id': serializer.toJson<int>(id),
       'quoteId': serializer.toJson<int>(quoteId),
       'name': serializer.toJson<String>(name),
-      'jobStatus': serializer.toJson<String>(jobStatus),
+      'jobStatus': serializer.toJson<String?>(jobStatus),
       'startDate': serializer.toJson<DateTime?>(startDate),
       'endDate': serializer.toJson<DateTime?>(endDate),
-      'assignedTo': serializer.toJson<int>(assignedTo),
+      'assignedTo': serializer.toJson<int?>(assignedTo),
       'customer': serializer.toJson<int>(customer),
     };
   }
@@ -2921,19 +2925,19 @@ class Job extends DataClass implements Insertable<Job> {
     int? id,
     int? quoteId,
     String? name,
-    String? jobStatus,
+    Value<String?> jobStatus = const Value.absent(),
     Value<DateTime?> startDate = const Value.absent(),
     Value<DateTime?> endDate = const Value.absent(),
-    int? assignedTo,
+    Value<int?> assignedTo = const Value.absent(),
     int? customer,
   }) => Job(
     id: id ?? this.id,
     quoteId: quoteId ?? this.quoteId,
     name: name ?? this.name,
-    jobStatus: jobStatus ?? this.jobStatus,
+    jobStatus: jobStatus.present ? jobStatus.value : this.jobStatus,
     startDate: startDate.present ? startDate.value : this.startDate,
     endDate: endDate.present ? endDate.value : this.endDate,
-    assignedTo: assignedTo ?? this.assignedTo,
+    assignedTo: assignedTo.present ? assignedTo.value : this.assignedTo,
     customer: customer ?? this.customer,
   );
   Job copyWithCompanion(JobsCompanion data) {
@@ -2995,10 +2999,10 @@ class JobsCompanion extends UpdateCompanion<Job> {
   final Value<int> id;
   final Value<int> quoteId;
   final Value<String> name;
-  final Value<String> jobStatus;
+  final Value<String?> jobStatus;
   final Value<DateTime?> startDate;
   final Value<DateTime?> endDate;
-  final Value<int> assignedTo;
+  final Value<int?> assignedTo;
   final Value<int> customer;
   const JobsCompanion({
     this.id = const Value.absent(),
@@ -3014,15 +3018,13 @@ class JobsCompanion extends UpdateCompanion<Job> {
     this.id = const Value.absent(),
     required int quoteId,
     required String name,
-    required String jobStatus,
+    this.jobStatus = const Value.absent(),
     this.startDate = const Value.absent(),
     this.endDate = const Value.absent(),
-    required int assignedTo,
+    this.assignedTo = const Value.absent(),
     required int customer,
   }) : quoteId = Value(quoteId),
        name = Value(name),
-       jobStatus = Value(jobStatus),
-       assignedTo = Value(assignedTo),
        customer = Value(customer);
   static Insertable<Job> custom({
     Expression<int>? id,
@@ -3050,10 +3052,10 @@ class JobsCompanion extends UpdateCompanion<Job> {
     Value<int>? id,
     Value<int>? quoteId,
     Value<String>? name,
-    Value<String>? jobStatus,
+    Value<String?>? jobStatus,
     Value<DateTime?>? startDate,
     Value<DateTime?>? endDate,
-    Value<int>? assignedTo,
+    Value<int?>? assignedTo,
     Value<int>? customer,
   }) {
     return JobsCompanion(
@@ -11612,10 +11614,10 @@ typedef $$JobsTableCreateCompanionBuilder =
       Value<int> id,
       required int quoteId,
       required String name,
-      required String jobStatus,
+      Value<String?> jobStatus,
       Value<DateTime?> startDate,
       Value<DateTime?> endDate,
-      required int assignedTo,
+      Value<int?> assignedTo,
       required int customer,
     });
 typedef $$JobsTableUpdateCompanionBuilder =
@@ -11623,10 +11625,10 @@ typedef $$JobsTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> quoteId,
       Value<String> name,
-      Value<String> jobStatus,
+      Value<String?> jobStatus,
       Value<DateTime?> startDate,
       Value<DateTime?> endDate,
-      Value<int> assignedTo,
+      Value<int?> assignedTo,
       Value<int> customer,
     });
 
@@ -11655,9 +11657,9 @@ final class $$JobsTableReferences
     $_aliasNameGenerator(db.jobs.assignedTo, db.users.id),
   );
 
-  $$UsersTableProcessedTableManager get assignedTo {
-    final $_column = $_itemColumn<int>('assigned_to')!;
-
+  $$UsersTableProcessedTableManager? get assignedTo {
+    final $_column = $_itemColumn<int>('assigned_to');
+    if ($_column == null) return null;
     final manager = $$UsersTableTableManager(
       $_db,
       $_db.users,
@@ -12091,10 +12093,10 @@ class $$JobsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> quoteId = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> jobStatus = const Value.absent(),
+                Value<String?> jobStatus = const Value.absent(),
                 Value<DateTime?> startDate = const Value.absent(),
                 Value<DateTime?> endDate = const Value.absent(),
-                Value<int> assignedTo = const Value.absent(),
+                Value<int?> assignedTo = const Value.absent(),
                 Value<int> customer = const Value.absent(),
               }) => JobsCompanion(
                 id: id,
@@ -12111,10 +12113,10 @@ class $$JobsTableTableManager
                 Value<int> id = const Value.absent(),
                 required int quoteId,
                 required String name,
-                required String jobStatus,
+                Value<String?> jobStatus = const Value.absent(),
                 Value<DateTime?> startDate = const Value.absent(),
                 Value<DateTime?> endDate = const Value.absent(),
-                required int assignedTo,
+                Value<int?> assignedTo = const Value.absent(),
                 required int customer,
               }) => JobsCompanion.insert(
                 id: id,

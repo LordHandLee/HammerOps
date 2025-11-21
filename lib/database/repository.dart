@@ -112,22 +112,44 @@ class CompanyRepository {
   Future<List<CompanyData>> getAllCompanies() => companyDao.getAllCompanies();
 }
 
-// class JobRepository {
-//   final JobsDao jobsDao;
+class JobRepository {
+  final JobsDao jobsDao;
 
-//   JobRepository(this.jobsDao);
+  JobRepository(this.jobsDao);
 
-//   Future<int> addJob(String title, String description, int assignedTo) {
-//     final job = JobsCompanion.insert(
-//       title: title,
-//       description: Value(description),
-//       assignedTo: assignedTo,
-//     );
-//     return jobsDao.insertJob(job);
-//   }
+  Future<int> addJob(int quoteId, String name, String? jobStatus, int customer, int? assignedTo) {
+    final job = JobsCompanion.insert(
+      quoteId: quoteId,
+      name: name,
+      jobStatus: Value(jobStatus),
+      customer: customer,
+      assignedTo: Value(assignedTo),
+    );
+    return jobsDao.insertJob(job);
+  }
+  Future<Job?> getJobById(int id) => jobsDao.getJobById(id);
 
-//   Future<List<Job>> getAllJobs() => jobsDao.getAllJobs();
-// }
+  Future<int> updateJob(
+      int id,
+      int quoteId,
+      String name,
+      String? status,
+      int customerId,
+      int assignedTo) {
+    return jobsDao.updateJob(
+      id: id,
+      quoteId: quoteId,
+      name: name,
+      jobStatus: status,
+      customerId: customerId,
+      assignedTo: assignedTo,
+    );
+  }
+
+  Future<List<Job>> getAllJobs() => jobsDao.getAllJobs();
+
+
+}
 
 class CustomerRepository {
   final CustomersDao customerDao;
@@ -300,6 +322,7 @@ class AppRepository {
   final TaskRepository task;
   final InjuryRepository injury;
   final ChecklistRepository checklist;
+  final JobRepository jobs;
 
   AppRepository(AppDao dao)
       : user = UserRepository(dao.user),
@@ -311,5 +334,6 @@ class AppRepository {
         customer = CustomerRepository(dao.customer),
         task = TaskRepository(dao.task),
         injury = InjuryRepository(dao.injury),
-        checklist = ChecklistRepository(dao.checklist);
+        checklist = ChecklistRepository(dao.checklist),
+        jobs = JobRepository(dao.jobs);
 }

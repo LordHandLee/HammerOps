@@ -75,12 +75,12 @@ class Jobs extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get quoteId => integer().references(JobQuotes, #id, onDelete: KeyAction.cascade)(); // each job is linked to a quote
   TextColumn get name => text().withLength(min: 1, max: 50)();
-  TextColumn get jobStatus => text().withLength(min: 1, max: 50)(); // e.g., pending, in-progress, completed
+  TextColumn get jobStatus => text().nullable().withLength(min: 1, max: 50)(); // e.g., pending, in-progress, completed
   DateTimeColumn get startDate => dateTime().nullable()();
   DateTimeColumn get endDate => dateTime().nullable()();
 
   // Foreign key to Users table (assuming a user is assigned the job)
-  IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  IntColumn get assignedTo => integer().nullable().references(Users, #id, onDelete: KeyAction.cascade)();
 
   // Foreign key to Customers table (assuming a job is for a specific customer)
   IntColumn get customer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();

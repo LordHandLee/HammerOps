@@ -262,19 +262,37 @@ class CompanyService {
   }
 }
 
-// class JobService {
-//   final JobRepository jobRepository;
+class JobService {
+  final JobRepository jobRepository;
 
-//   JobService(this.jobRepository);
+  JobService(this.jobRepository);
 
-//   Future<int> addJob(String title, String description, int assignedTo) {
-//     return jobRepository.addJob(title, description, assignedTo);
-//   }
+  Future<int> addJob(int quoteId, String name, String? jobStatus, int customer, int? assignedTo) {
+    return jobRepository.addJob(quoteId, name, jobStatus, customer, assignedTo);
+  }
+  Future<Job?> getJobById(int id) => jobRepository.getJobById(id);
 
-//   Future<List<JobData>> getAllJobs() {
-//     return jobRepository.getAllJobs();
-//   }
-// }
+  Future<int> updateJob(
+      int id,
+      int quoteId,
+      String name,
+      String? status,
+      int customerId,
+      int assignedTo) {
+    return jobRepository.updateJob(
+      id,
+      quoteId,
+      name,
+      status,
+      customerId,
+      assignedTo,
+    );
+  }
+
+  Future<List<Job>> getAllJobs() {
+    return jobRepository.getAllJobs();
+  }
+}
 
 class CustomerService {
   final CustomerRepository customerRepository;
@@ -530,6 +548,7 @@ class AppService {
   final TaskService task;
   final InjuryService injury;
   final ChecklistService checklist;
+  final JobService jobs;
 
   AppService(AppRepository repo)
       : template = TemplateService(repo.template),
@@ -541,5 +560,6 @@ class AppService {
         customer = CustomerService(repo.customer),
         task = TaskService(repo.task),
         injury = InjuryService(repo.injury),
-        checklist = ChecklistService(repo.checklist);
+        checklist = ChecklistService(repo.checklist),
+        jobs = JobService(repo.jobs);
 }

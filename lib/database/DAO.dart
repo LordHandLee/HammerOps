@@ -129,6 +129,33 @@ class JobsDao extends DatabaseAccessor<AppDatabase> with _$JobsDaoMixin {
   Future<int> insertJob(JobsCompanion job) => into(jobs).insert(job);
 
   Future<List<Job>> getAllJobs() => select(jobs).get();
+
+  /// Get a job by its ID
+  Future<Job?> getJobById(int id) {
+    return (select(jobs)..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  /// Update an existing job
+  Future<int> updateJob({
+    required int id,
+    required int quoteId,
+    required String name,
+    String? jobStatus,
+    required int customerId,
+    required int assignedTo,
+    }) {
+      return (update(jobs)..where((tbl) => tbl.id.equals(id)))
+          .write(
+        JobsCompanion(
+          quoteId: Value(quoteId),
+          name: Value(name),
+          jobStatus: Value(jobStatus),
+          customer: Value(customerId),
+          assignedTo: Value(assignedTo),
+        ),
+      );
+    }
 }
 
 @DriftAccessor(tables: [Customers])
@@ -422,6 +449,7 @@ class AppDao {
   final TasksDao task;
   final InjuryDao injury;
   final ChecklistDao checklist;
+  final JobsDao jobs;
 
   AppDao(AppDatabase db)
       : user = UserDao(db),
@@ -433,5 +461,6 @@ class AppDao {
         customer = CustomersDao(db),
         task = TasksDao(db),
         injury = InjuryDao(db),
-        checklist = ChecklistDao(db);
+        checklist = ChecklistDao(db),
+        jobs = JobsDao(db);
 }
