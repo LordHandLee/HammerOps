@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
-                    // Navigate to registration page
+                    Navigator.pushNamed(context, '/signup');
                   },
                   child: const Text("CREATE ACCOUNT"),
                 )

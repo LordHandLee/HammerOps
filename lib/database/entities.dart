@@ -1,10 +1,43 @@
 import 'package:drift/drift.dart';
 
 // ------------------
+// ACCOUNTS & AUTH
+// ------------------
+class Accounts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get email => text()(); // unique
+  TextColumn get passwordHash => text()(); // hashed (bcrypt/PBKDF2)
+  TextColumn get passwordSalt => text().nullable()(); // optional depending on hash
+  BoolColumn get isEmailVerified => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get lastSeen => dateTime().nullable()();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {email},
+      ];
+}
+
+class AccountSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get accountId => integer().references(Accounts, #id, onDelete: KeyAction.cascade)();
+  TextColumn get refreshTokenHash => text()();
+  DateTimeColumn get expiresAt => dateTime()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get revokedAt => dateTime().nullable()();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+}
+
+// ------------------
 // ENTITY (TABLE)
 // ------------------
 class Users extends Table {
   IntColumn get id => integer().autoIncrement()();
+  IntColumn get accountId => integer().references(Accounts, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text().withLength(min: 1, max: 50)();
   IntColumn get age => integer().nullable()();
   TextColumn get role => text().withLength(min: 1, max: 20).withDefault(const Constant('user'))(); // e.g., user, admin
@@ -16,6 +49,9 @@ class Users extends Table {
 
   // Foreign key to Company table (nullable for users without a company)
   IntColumn get companyId => integer().references(Company, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -26,6 +62,9 @@ class Templates extends Table {
   TextColumn get name => text().withLength(min: 1, max: 100)();
   IntColumn get createdBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -38,6 +77,9 @@ class TemplateFields extends Table {
   // TextColumn get fieldType => text().withLength(min: 1, max: 50)(); // e.g., text, number, date
   BoolColumn get isRequired => boolean().withDefault(const Constant(false))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))(); // For ordering fields within a template
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -55,6 +97,9 @@ class JobQuotes extends Table {
 
   // Foreign key to Users table (assuming a user creates the quote)
   IntColumn get createdBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -65,6 +110,9 @@ class QuoteFieldValues extends Table {
   IntColumn get quoteId => integer().references(JobQuotes, #id, onDelete: KeyAction.cascade)();
   IntColumn get fieldId => integer().references(TemplateFields, #id, onDelete: KeyAction.cascade)();
   TextColumn get fieldValue => text().nullable()(); // store as text, cast as needed
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 
@@ -84,6 +132,9 @@ class Jobs extends Table {
 
   // Foreign key to Customers table (assuming a job is for a specific customer)
   IntColumn get customer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -97,6 +148,9 @@ class Customers extends Table {
   
   // Foreign key to Users table (assuming a user manages the customer)
   IntColumn get managedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -106,6 +160,26 @@ class Company extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 100)();
   TextColumn get address => text().nullable()();
+  IntColumn get adminAccountId => integer().references(Accounts, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+}
+
+class CompanyMembers extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get companyId => integer().references(Company, #id, onDelete: KeyAction.cascade)();
+  IntColumn get accountId => integer().references(Accounts, #id, onDelete: KeyAction.cascade)();
+  TextColumn get role => text().withLength(min: 1, max: 20)(); // admin|employee
+  IntColumn get invitedBy => integer().nullable().references(Accounts, #id)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {companyId, accountId},
+      ];
 }
 
 // ------------------
@@ -121,6 +195,9 @@ class Tools extends Table {
 
   // Foreign key to Users table (assuming a user manages the tool)
   IntColumn get managedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 
 
 }
@@ -142,6 +219,9 @@ class Tasks extends Table {
 
   // Foreign key to Users table (assuming a user is assigned the task)
   IntColumn get assignedTo => integer().references(Users, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 
@@ -165,6 +245,9 @@ class Complaint extends Table {
 
   // Foreign key to Customers table (if complaint is from a customer)
   IntColumn get reportedByCustomer => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 
 }
 
@@ -187,6 +270,9 @@ class Injury extends Table {
 
   // Foreign key to Customers table (if injury is from a customer)
   IntColumn get reportedByCustomer => integer().nullable().references(Customers, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -206,6 +292,9 @@ class Document extends Table {
 
   // Foreign key to Jobs table (if document is related to a job)
   IntColumn get jobId => integer().references(Jobs, #id, onDelete: KeyAction.cascade)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 
 
 }
@@ -220,6 +309,9 @@ class FleetEvents extends Table {
   TextColumn get eventType => text()(); // maintenance, repair, inspection
   DateTimeColumn get date => dateTime()();
   TextColumn get notes => text().nullable()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 
   // @override
   // Set<Column> get primaryKey => {id};
@@ -233,6 +325,9 @@ class ChecklistTemplates extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get code => text()();       // e.g. "BOD"
   TextColumn get name => text()();       // e.g. "Beginning of Day"
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -243,6 +338,9 @@ class ChecklistItems extends Table {
   IntColumn get templateId => integer().references(ChecklistTemplates, #id)();
   TextColumn get title => text()();
   BoolColumn get required => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -253,6 +351,9 @@ class ChecklistRuns extends Table {
   IntColumn get templateId => integer().references(ChecklistTemplates, #id)();
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
   IntColumn get completedBy => integer().nullable()();  // user ID optional
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 // ------------------
@@ -264,5 +365,7 @@ class ChecklistRunItems extends Table {
   IntColumn get itemId => integer().references(ChecklistItems, #id)();
   BoolColumn get checked => boolean()();
   TextColumn get notes => text().nullable()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
-

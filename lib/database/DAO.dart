@@ -10,6 +10,43 @@ part of 'database.dart';
 // DAO
 // ------------------
 
+@DriftAccessor(tables: [Accounts])
+class AccountDao extends DatabaseAccessor<AppDatabase> with _$AccountDaoMixin {
+  AccountDao(super.db);
+
+  Future<int> insertAccount(AccountsCompanion account) => into(accounts).insert(account);
+  Future<Account?> findByEmail(String email) {
+    return (select(accounts)..where((a) => a.email.equals(email))).getSingleOrNull();
+  }
+
+  Future<int> updateLastSeen(int accountId, DateTime timestamp) {
+    return (update(accounts)..where((a) => a.id.equals(accountId)))
+        .write(AccountsCompanion(lastSeen: Value(timestamp), updatedAt: Value(timestamp)));
+  }
+}
+
+@DriftAccessor(tables: [AccountSessions])
+class AccountSessionDao extends DatabaseAccessor<AppDatabase> with _$AccountSessionDaoMixin {
+  AccountSessionDao(super.db);
+
+  Future<int> insertSession(AccountSessionsCompanion session) => into(accountSessions).insert(session);
+
+  Future<int> revokeSession(int sessionId) {
+    return (update(accountSessions)..where((s) => s.id.equals(sessionId)))
+        .write(AccountSessionsCompanion(revokedAt: Value(DateTime.now())));
+  }
+}
+
+@DriftAccessor(tables: [CompanyMembers])
+class CompanyMemberDao extends DatabaseAccessor<AppDatabase> with _$CompanyMemberDaoMixin {
+  CompanyMemberDao(super.db);
+
+  Future<int> insertMember(CompanyMembersCompanion member) => into(companyMembers).insert(member, mode: InsertMode.insertOrReplace);
+  Future<List<CompanyMember>> membersForCompany(int companyId) {
+    return (select(companyMembers)..where((m) => m.companyId.equals(companyId))).get();
+  }
+}
+
 @DriftAccessor(tables: [Users])
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   // final AppDatabase db;
@@ -450,6 +487,9 @@ class AppDao {
   final InjuryDao injury;
   final ChecklistDao checklist;
   final JobsDao jobs;
+  final AccountDao account;
+  final AccountSessionDao accountSession;
+  final CompanyMemberDao companyMember;
 
   AppDao(AppDatabase db)
       : user = UserDao(db),
@@ -462,5 +502,8 @@ class AppDao {
         task = TasksDao(db),
         injury = InjuryDao(db),
         checklist = ChecklistDao(db),
-        jobs = JobsDao(db);
+        jobs = JobsDao(db),
+        account = AccountDao(db),
+        accountSession = AccountSessionDao(db),
+        companyMember = CompanyMemberDao(db);
 }

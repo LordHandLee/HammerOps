@@ -15,6 +15,24 @@ class UserRepository {
   // }
 
   Future<int> addUser(UsersCompanion user) => userDao.insertUser(user);
+  Future<int> addUserWithAccount({
+    required String name,
+    required int accountId,
+    required int companyId,
+    int? age,
+    String? employer,
+    String? role,
+  }) {
+    final companion = UsersCompanion.insert(
+      accountId: accountId,
+      name: name,
+      companyId: companyId,
+      age: Value(age),
+      employer: Value(employer),
+      role: Value(role!),
+    );
+    return userDao.insertUser(companion);
+  }
   Future<bool> editUser(User user) => userDao.updateUser(user);
   Future<int> removeUser(User user) => userDao.deleteUser(user);
 }
@@ -104,8 +122,12 @@ class CompanyRepository {
 
   CompanyRepository(this.companyDao);
 
-  Future<int> addCompany(String name) {
-    final company = CompanyCompanion.insert(name: name);
+  Future<int> addCompany(String name, int adminAccountId, {String? address}) {
+    final company = CompanyCompanion.insert(
+      name: name,
+      adminAccountId: adminAccountId,
+      address: Value(address),
+    );
     return companyDao.insertCompany(company);
   }
 
@@ -309,6 +331,65 @@ class ChecklistRepository {
 
 }
 
+class AccountRepository {
+  final AccountDao accounts;
+  final AccountSessionDao sessions;
+  final CompanyMemberDao members;
+
+  AccountRepository(this.accounts, this.sessions, this.members);
+
+  Future<int> createAccount({
+    required String email,
+    required String passwordHash,
+    required String passwordSalt,
+  }) {
+    final companion = AccountsCompanion.insert(
+      email: email,
+      passwordHash: passwordHash,
+      passwordSalt: Value(passwordSalt),
+    );
+    return accounts.insertAccount(companion);
+  }
+
+  Future<Account?> findAccountByEmail(String email) => accounts.findByEmail(email);
+
+  Future<int> updateLastSeen(int accountId, DateTime timestamp) =>
+      accounts.updateLastSeen(accountId, timestamp);
+
+  Future<int> createSession({
+    required int accountId,
+    required String refreshTokenHash,
+    required DateTime expiresAt,
+  }) {
+    final companion = AccountSessionsCompanion.insert(
+      accountId: accountId,
+      refreshTokenHash: refreshTokenHash,
+      expiresAt: expiresAt,
+    );
+    return sessions.insertSession(companion);
+  }
+
+  Future<int> revokeSession(int sessionId) => sessions.revokeSession(sessionId);
+
+  Future<int> addCompanyMember({
+    required int companyId,
+    required int accountId,
+    required String role,
+    int? invitedBy,
+  }) {
+    final companion = CompanyMembersCompanion.insert(
+      companyId: companyId,
+      accountId: accountId,
+      role: role,
+      invitedBy: Value(invitedBy),
+    );
+    return members.insertMember(companion);
+  }
+
+  Future<List<CompanyMember>> getMembersForCompany(int companyId) =>
+      members.membersForCompany(companyId);
+}
+
 // task, complaint, injury repositories
 
 class AppRepository {
@@ -323,6 +404,7 @@ class AppRepository {
   final InjuryRepository injury;
   final ChecklistRepository checklist;
   final JobRepository jobs;
+  final AccountRepository account;
 
   AppRepository(AppDao dao)
       : user = UserRepository(dao.user),
@@ -335,5 +417,6 @@ class AppRepository {
         task = TaskRepository(dao.task),
         injury = InjuryRepository(dao.injury),
         checklist = ChecklistRepository(dao.checklist),
-        jobs = JobRepository(dao.jobs);
+        jobs = JobRepository(dao.jobs),
+        account = AccountRepository(dao.account, dao.accountSession, dao.companyMember);
 }

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/database/database.dart';
 import 'package:drift/drift.dart';
@@ -210,6 +214,126 @@ class QuoteService {
   // }
 }
 
+class AuthResult {
+  final Account account;
+  final int? companyId;
+
+  AuthResult({required this.account, this.companyId});
+}
+
+class AuthService {
+  final AccountRepository accountRepository;
+  final CompanyRepository companyRepository;
+  final UserRepository userRepository;
+
+  AuthService(this.accountRepository, this.companyRepository, this.userRepository);
+
+  Future<AuthResult> signUp({
+    required String email,
+    required String password,
+    String? companyName,
+  }) async {
+    final salt = _generateSalt();
+    final hashed = _hashPassword(password, salt);
+    final accountId = await accountRepository.createAccount(
+      email: email,
+      passwordHash: hashed,
+      passwordSalt: salt,
+    );
+
+    int? companyId;
+    if (companyName != null && companyName.isNotEmpty) {
+      companyId = await companyRepository.addCompany(companyName, accountId);
+      await accountRepository.addCompanyMember(
+        companyId: companyId,
+        accountId: accountId,
+        role: 'admin',
+      );
+    }
+
+    final account = await accountRepository.findAccountByEmail(email);
+    return AuthResult(account: account!, companyId: companyId);
+  }
+
+  Future<Account> login({
+    required String email,
+    required String password,
+  }) async {
+    final account = await accountRepository.findAccountByEmail(email);
+    if (account == null) {
+      throw StateError('Invalid credentials');
+    }
+
+    final salt = account.passwordSalt;
+    // Legacy fallback if salt was not stored.
+    final hashed = salt == null
+        ? base64Encode(utf8.encode(password))
+        : _hashPassword(password, salt);
+
+    if (account.passwordHash != hashed) {
+      throw StateError('Invalid credentials');
+    }
+
+    await accountRepository.updateLastSeen(account.id, DateTime.now());
+    return account;
+  }
+
+  String _generateSalt({int length = 16}) {
+    final random = Random.secure();
+    final bytes = List<int>.generate(length, (_) => random.nextInt(256));
+    return base64Encode(bytes);
+  }
+
+  String _hashPassword(String password, String saltBase64,
+      {int iterations = 100000, int keyLength = 32}) {
+    final salt = base64Decode(saltBase64);
+    final derived = _pbkdf2(password, salt, iterations: iterations, keyLength: keyLength);
+    return base64Encode(derived);
+  }
+
+  Uint8List _pbkdf2(
+    String password,
+    List<int> salt, {
+    int iterations = 100000,
+    int keyLength = 32,
+  }) {
+    final hmac = Hmac(sha256, utf8.encode(password));
+    final hashLength = hmac.convert(<int>[]).bytes.length;
+    final blockCount = (keyLength + hashLength - 1) ~/ hashLength;
+    final output = BytesBuilder();
+
+    for (var blockIndex = 1; blockIndex <= blockCount; blockIndex++) {
+      final blockInput = Uint8List.fromList([
+        ...salt,
+        ..._int32BigEndian(blockIndex),
+      ]);
+
+      var u = hmac.convert(blockInput).bytes;
+      final t = Uint8List.fromList(u);
+
+      for (var i = 1; i < iterations; i++) {
+        u = hmac.convert(u).bytes;
+        for (var j = 0; j < t.length; j++) {
+          t[j] ^= u[j];
+        }
+      }
+
+      output.add(t);
+    }
+
+    final derived = output.takeBytes();
+    return Uint8List.fromList(derived.sublist(0, keyLength));
+  }
+
+  List<int> _int32BigEndian(int i) => [
+        (i >> 24) & 0xff,
+        (i >> 16) & 0xff,
+        (i >> 8) & 0xff,
+        i & 0xff,
+      ];
+  }
+
+
 
 class UserService {
   final UserRepository userRepository;
@@ -230,9 +354,22 @@ class UserService {
     return _currentUserId!;
   }
 
-  Future<int> addUser(String name, int companyId) {
-    final user = UsersCompanion.insert(name: name, companyId: companyId);
-    return userRepository.addUser(user);
+  Future<int> addUser({
+    required String name,
+    required int companyId,
+    required int accountId,
+    int? age,
+    String? employer,
+    String? role,
+  }) {
+    return userRepository.addUserWithAccount(
+      name: name,
+      accountId: accountId,
+      companyId: companyId,
+      age: age,
+      employer: employer,
+      role: role,
+    );
   }
   // Future<User?> getUserById(int id) {
   //   return userRepository.getUserById(id);
@@ -248,9 +385,16 @@ class CompanyService {
 
   CompanyService(this.companyRepository);
 
-  Future<int> addCompany(String name) {
-    // CompanyCompanion.insert(name: name);
-    return companyRepository.addCompany(name);
+  Future<int> addCompany({
+    required String name,
+    required int adminAccountId,
+    String? address,
+  }) {
+    return companyRepository.addCompany(
+      name,
+      adminAccountId,
+      address: address,
+    );
   }
 
   // Future<Company?> getCompanyById(int id) {
@@ -549,6 +693,7 @@ class AppService {
   final InjuryService injury;
   final ChecklistService checklist;
   final JobService jobs;
+  final AuthService auth;
 
   AppService(AppRepository repo)
       : template = TemplateService(repo.template),
@@ -561,5 +706,6 @@ class AppService {
         task = TaskService(repo.task),
         injury = InjuryService(repo.injury),
         checklist = ChecklistService(repo.checklist),
-        jobs = JobService(repo.jobs);
+        jobs = JobService(repo.jobs),
+        auth = AuthService(repo.account, repo.company, repo.user);
 }

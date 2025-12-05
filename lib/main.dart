@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'screens/login_screen.dart';
 import 'screens/favorite_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/quote_screen.dart';
 import 'screens/dashboard.dart';
 import 'screens/drawer.dart';
+import 'screens/signup_screen.dart';
+import 'screens/web_landing.dart';
 import 'di/injector.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -24,6 +27,7 @@ class HammerOps extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final initialRoute = kIsWeb ? '/landing' : '/login';
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -58,9 +62,11 @@ class HammerOps extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const MyHomePage(title: 'Hammer Ops Demo Home Page'),
-      initialRoute: '/login',
+      initialRoute: initialRoute,
       routes: {
+        '/landing': (context) => const LandingPage(),
         '/login': (context) => const LoginScreen(),
+        '/signup': (context) => const SignupScreen(),
         '/home': (context) => const MyHomePage(title: 'Hammer Ops Home Page'),
         '/favorite': (context) => const FavoriteScreen(),
       },
@@ -486,5 +492,4 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
     );
   }
 }
-
 

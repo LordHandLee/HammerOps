@@ -18,14 +18,36 @@ part 'database.g.dart';
 // ------------------
 @DriftDatabase(
   tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company, Tools, Tasks, Complaint,
-  Injury, Document, FleetEvents, ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems], 
-  daos: [UserDao, TemplatesDao, JobQuotesDao, CompanyDao, JobsDao, CustomersDao, FleetEventDao, ChecklistDao])
+  Injury, Document, FleetEvents, ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems, Accounts, AccountSessions, CompanyMembers], 
+  daos: [
+    UserDao,
+    TemplatesDao,
+    JobQuotesDao,
+    CompanyDao,
+    JobsDao,
+    CustomersDao,
+    FleetEventDao,
+    ChecklistDao,
+    AccountDao,
+    AccountSessionDao,
+    CompanyMemberDao,
+  ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        // Development reset: drop all tables and recreate to align with schema changes.
+        onUpgrade: (m, from, to) async {
+          for (final table in allTables) {
+            await m.deleteTable(table.actualTableName);
+          }
+          await m.createAllTables();
+        },
+      );
   
 }
 
