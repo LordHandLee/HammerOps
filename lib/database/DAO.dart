@@ -47,6 +47,34 @@ class CompanyMemberDao extends DatabaseAccessor<AppDatabase> with _$CompanyMembe
   }
 }
 
+@DriftAccessor(tables: [LocalChanges])
+class LocalChangeDao extends DatabaseAccessor<AppDatabase> with _$LocalChangeDaoMixin {
+  LocalChangeDao(super.db);
+
+  Future<int> queueUpsert(String tableName, Map<String, dynamic> row) {
+    return into(localChanges).insert(
+      LocalChangesCompanion.insert(
+        targetTable: tableName,
+        changeType: 'upsert',
+        payload: jsonEncode(row),
+      ),
+    );
+  }
+
+  Future<int> queueDelete(String tableName, dynamic id) {
+    return into(localChanges).insert(
+      LocalChangesCompanion.insert(
+        targetTable: tableName,
+        changeType: 'delete',
+        payload: jsonEncode({'id': id}),
+      ),
+    );
+  }
+
+  Future<List<LocalChange>> pending() => select(localChanges).get();
+  Future<int> clear() => delete(localChanges).go();
+}
+
 @DriftAccessor(tables: [Users])
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   // final AppDatabase db;
@@ -490,6 +518,7 @@ class AppDao {
   final AccountDao account;
   final AccountSessionDao accountSession;
   final CompanyMemberDao companyMember;
+  final LocalChangeDao localChanges;
 
   AppDao(AppDatabase db)
       : user = UserDao(db),
@@ -505,5 +534,6 @@ class AppDao {
         jobs = JobsDao(db),
         account = AccountDao(db),
         accountSession = AccountSessionDao(db),
-        companyMember = CompanyMemberDao(db);
+        companyMember = CompanyMemberDao(db),
+        localChanges = LocalChangeDao(db);
 }

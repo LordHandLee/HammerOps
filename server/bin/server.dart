@@ -5,10 +5,10 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 
-import '../lib/routes/auth_routes.dart';
-import '../lib/routes/sync_routes.dart';
-import '../lib/server_database.dart';
-import '../lib/middleware/jwt_middleware.dart';
+import 'package:hammer_ops_server/routes/auth_routes.dart';
+import 'package:hammer_ops_server/routes/sync_routes.dart';
+import 'package:hammer_ops_server/server_database.dart';
+import 'package:hammer_ops_server/middleware/jwt_middleware.dart';
 
 Future<void> main(List<String> args) async {
   final port = int.parse(Platform.environment['PORT'] ?? '8080');

@@ -16,6 +16,9 @@ dependencies:
   path: ^1.9.0
   crypto: ^3.0.6
   jose: ^0.3.3
+  hammer_ops:
+    path: ..
+  mailer: ^6.1.2
 
 dev_dependencies:
   drift_dev: ^2.28.2

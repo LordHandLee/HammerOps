@@ -15,7 +15,7 @@ Future<void> setupDependencies() async {
   final db = AppDatabase(executor);
   final dao = AppDao(db);
   final repo = AppRepository(dao);
-  final service = AppService(repo);
+  final service = AppService(repo, db);
   getIt.registerSingleton<AppService>(service);
 
 
@@ -55,4 +55,3 @@ Future<void> setupDependencies() async {
 
   // getIt.registerSingleton<AppService>(appService);
 }
-

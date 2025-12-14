@@ -1,6 +1,5 @@
-// library hammer_ops.database;
-
 import 'dart:io';
+import 'dart:convert';
 import 'package:drift/drift.dart';
 // import 'package:drift/native.dart';
 // import 'package:path_provider/path_provider.dart';
@@ -18,7 +17,7 @@ part 'database.g.dart';
 // ------------------
 @DriftDatabase(
   tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company, Tools, Tasks, Complaint,
-  Injury, Document, FleetEvents, ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems, Accounts, AccountSessions, CompanyMembers], 
+  Injury, Document, FleetEvents, ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems, Accounts, AccountSessions, CompanyMembers, LocalChanges], 
   daos: [
     UserDao,
     TemplatesDao,
@@ -31,12 +30,13 @@ part 'database.g.dart';
     AccountDao,
     AccountSessionDao,
     CompanyMemberDao,
+    LocalChangeDao,
   ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

@@ -11539,6 +11539,364 @@ class CompanyMembersCompanion extends UpdateCompanion<CompanyMember> {
   }
 }
 
+class $LocalChangesTable extends LocalChanges
+    with TableInfo<$LocalChangesTable, LocalChange> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalChangesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _targetTableMeta = const VerificationMeta(
+    'targetTable',
+  );
+  @override
+  late final GeneratedColumn<String> targetTable = GeneratedColumn<String>(
+    'target_table',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changeTypeMeta = const VerificationMeta(
+    'changeType',
+  );
+  @override
+  late final GeneratedColumn<String> changeType = GeneratedColumn<String>(
+    'change_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    targetTable,
+    changeType,
+    payload,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_changes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalChange> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('target_table')) {
+      context.handle(
+        _targetTableMeta,
+        targetTable.isAcceptableOrUnknown(
+          data['target_table']!,
+          _targetTableMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetTableMeta);
+    }
+    if (data.containsKey('change_type')) {
+      context.handle(
+        _changeTypeMeta,
+        changeType.isAcceptableOrUnknown(data['change_type']!, _changeTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_changeTypeMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalChange map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalChange(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      targetTable: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_table'],
+      )!,
+      changeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}change_type'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalChangesTable createAlias(String alias) {
+    return $LocalChangesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalChange extends DataClass implements Insertable<LocalChange> {
+  final int id;
+  final String targetTable;
+  final String changeType;
+  final String payload;
+  final DateTime createdAt;
+  const LocalChange({
+    required this.id,
+    required this.targetTable,
+    required this.changeType,
+    required this.payload,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['target_table'] = Variable<String>(targetTable);
+    map['change_type'] = Variable<String>(changeType);
+    map['payload'] = Variable<String>(payload);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  LocalChangesCompanion toCompanion(bool nullToAbsent) {
+    return LocalChangesCompanion(
+      id: Value(id),
+      targetTable: Value(targetTable),
+      changeType: Value(changeType),
+      payload: Value(payload),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory LocalChange.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalChange(
+      id: serializer.fromJson<int>(json['id']),
+      targetTable: serializer.fromJson<String>(json['targetTable']),
+      changeType: serializer.fromJson<String>(json['changeType']),
+      payload: serializer.fromJson<String>(json['payload']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'targetTable': serializer.toJson<String>(targetTable),
+      'changeType': serializer.toJson<String>(changeType),
+      'payload': serializer.toJson<String>(payload),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  LocalChange copyWith({
+    int? id,
+    String? targetTable,
+    String? changeType,
+    String? payload,
+    DateTime? createdAt,
+  }) => LocalChange(
+    id: id ?? this.id,
+    targetTable: targetTable ?? this.targetTable,
+    changeType: changeType ?? this.changeType,
+    payload: payload ?? this.payload,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  LocalChange copyWithCompanion(LocalChangesCompanion data) {
+    return LocalChange(
+      id: data.id.present ? data.id.value : this.id,
+      targetTable: data.targetTable.present
+          ? data.targetTable.value
+          : this.targetTable,
+      changeType: data.changeType.present
+          ? data.changeType.value
+          : this.changeType,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalChange(')
+          ..write('id: $id, ')
+          ..write('targetTable: $targetTable, ')
+          ..write('changeType: $changeType, ')
+          ..write('payload: $payload, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, targetTable, changeType, payload, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalChange &&
+          other.id == this.id &&
+          other.targetTable == this.targetTable &&
+          other.changeType == this.changeType &&
+          other.payload == this.payload &&
+          other.createdAt == this.createdAt);
+}
+
+class LocalChangesCompanion extends UpdateCompanion<LocalChange> {
+  final Value<int> id;
+  final Value<String> targetTable;
+  final Value<String> changeType;
+  final Value<String> payload;
+  final Value<DateTime> createdAt;
+  const LocalChangesCompanion({
+    this.id = const Value.absent(),
+    this.targetTable = const Value.absent(),
+    this.changeType = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  LocalChangesCompanion.insert({
+    this.id = const Value.absent(),
+    required String targetTable,
+    required String changeType,
+    required String payload,
+    this.createdAt = const Value.absent(),
+  }) : targetTable = Value(targetTable),
+       changeType = Value(changeType),
+       payload = Value(payload);
+  static Insertable<LocalChange> custom({
+    Expression<int>? id,
+    Expression<String>? targetTable,
+    Expression<String>? changeType,
+    Expression<String>? payload,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (targetTable != null) 'target_table': targetTable,
+      if (changeType != null) 'change_type': changeType,
+      if (payload != null) 'payload': payload,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  LocalChangesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? targetTable,
+    Value<String>? changeType,
+    Value<String>? payload,
+    Value<DateTime>? createdAt,
+  }) {
+    return LocalChangesCompanion(
+      id: id ?? this.id,
+      targetTable: targetTable ?? this.targetTable,
+      changeType: changeType ?? this.changeType,
+      payload: payload ?? this.payload,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (targetTable.present) {
+      map['target_table'] = Variable<String>(targetTable.value);
+    }
+    if (changeType.present) {
+      map['change_type'] = Variable<String>(changeType.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalChangesCompanion(')
+          ..write('id: $id, ')
+          ..write('targetTable: $targetTable, ')
+          ..write('changeType: $changeType, ')
+          ..write('payload: $payload, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11569,6 +11927,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $CompanyMembersTable companyMembers = $CompanyMembersTable(this);
+  late final $LocalChangesTable localChanges = $LocalChangesTable(this);
   late final UserDao userDao = UserDao(this as AppDatabase);
   late final TemplatesDao templatesDao = TemplatesDao(this as AppDatabase);
   late final JobQuotesDao jobQuotesDao = JobQuotesDao(this as AppDatabase);
@@ -11582,6 +11941,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final CompanyMemberDao companyMemberDao = CompanyMemberDao(
+    this as AppDatabase,
+  );
+  late final LocalChangeDao localChangeDao = LocalChangeDao(
     this as AppDatabase,
   );
   @override
@@ -11610,6 +11972,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     checklistRunItems,
     accountSessions,
     companyMembers,
+    localChanges,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -23786,6 +24149,204 @@ typedef $$CompanyMembersTableProcessedTableManager =
       CompanyMember,
       PrefetchHooks Function({bool companyId, bool accountId, bool invitedBy})
     >;
+typedef $$LocalChangesTableCreateCompanionBuilder =
+    LocalChangesCompanion Function({
+      Value<int> id,
+      required String targetTable,
+      required String changeType,
+      required String payload,
+      Value<DateTime> createdAt,
+    });
+typedef $$LocalChangesTableUpdateCompanionBuilder =
+    LocalChangesCompanion Function({
+      Value<int> id,
+      Value<String> targetTable,
+      Value<String> changeType,
+      Value<String> payload,
+      Value<DateTime> createdAt,
+    });
+
+class $$LocalChangesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalChangesTable> {
+  $$LocalChangesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get targetTable => $composableBuilder(
+    column: $table.targetTable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changeType => $composableBuilder(
+    column: $table.changeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalChangesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalChangesTable> {
+  $$LocalChangesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get targetTable => $composableBuilder(
+    column: $table.targetTable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changeType => $composableBuilder(
+    column: $table.changeType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalChangesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalChangesTable> {
+  $$LocalChangesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get targetTable => $composableBuilder(
+    column: $table.targetTable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get changeType => $composableBuilder(
+    column: $table.changeType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$LocalChangesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalChangesTable,
+          LocalChange,
+          $$LocalChangesTableFilterComposer,
+          $$LocalChangesTableOrderingComposer,
+          $$LocalChangesTableAnnotationComposer,
+          $$LocalChangesTableCreateCompanionBuilder,
+          $$LocalChangesTableUpdateCompanionBuilder,
+          (
+            LocalChange,
+            BaseReferences<_$AppDatabase, $LocalChangesTable, LocalChange>,
+          ),
+          LocalChange,
+          PrefetchHooks Function()
+        > {
+  $$LocalChangesTableTableManager(_$AppDatabase db, $LocalChangesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalChangesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalChangesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalChangesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> targetTable = const Value.absent(),
+                Value<String> changeType = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => LocalChangesCompanion(
+                id: id,
+                targetTable: targetTable,
+                changeType: changeType,
+                payload: payload,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String targetTable,
+                required String changeType,
+                required String payload,
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => LocalChangesCompanion.insert(
+                id: id,
+                targetTable: targetTable,
+                changeType: changeType,
+                payload: payload,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalChangesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalChangesTable,
+      LocalChange,
+      $$LocalChangesTableFilterComposer,
+      $$LocalChangesTableOrderingComposer,
+      $$LocalChangesTableAnnotationComposer,
+      $$LocalChangesTableCreateCompanionBuilder,
+      $$LocalChangesTableUpdateCompanionBuilder,
+      (
+        LocalChange,
+        BaseReferences<_$AppDatabase, $LocalChangesTable, LocalChange>,
+      ),
+      LocalChange,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -23831,6 +24392,8 @@ class $AppDatabaseManager {
       $$AccountSessionsTableTableManager(_db, _db.accountSessions);
   $$CompanyMembersTableTableManager get companyMembers =>
       $$CompanyMembersTableTableManager(_db, _db.companyMembers);
+  $$LocalChangesTableTableManager get localChanges =>
+      $$LocalChangesTableTableManager(_db, _db.localChanges);
 }
 
 mixin _$UserDaoMixin on DatabaseAccessor<AppDatabase> {
@@ -23896,6 +24459,9 @@ mixin _$CompanyMemberDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
   $CompanyMembersTable get companyMembers => attachedDatabase.companyMembers;
+}
+mixin _$LocalChangeDaoMixin on DatabaseAccessor<AppDatabase> {
+  $LocalChangesTable get localChanges => attachedDatabase.localChanges;
 }
 mixin _$TasksDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;

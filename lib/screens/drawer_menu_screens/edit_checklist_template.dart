@@ -481,6 +481,9 @@ class EditableChecklistItem {
       templateId: templateId,
       title: title,
       required: required,
+      updatedAt: DateTime.now(),
+      version: 0,
+      deletedAt: null,
     );
   }
 }

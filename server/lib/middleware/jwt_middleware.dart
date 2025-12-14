@@ -22,22 +22,19 @@ Middleware jwtMiddleware(String secret) {
 
       final token = header.substring(7).trim();
       try {
-        final jws = JsonWebSignature.fromCompactSerialization(token);
-        final verified = await jws.verify(keyStore);
-        final payload =
-            jsonDecode(utf8.decode(verified.unverifiedPayload))
-                as Map<String, dynamic>;
+        final jwt = JsonWebToken.unverified(token);
+        final ok = await jwt.verify(keyStore);
+        if (!ok) return Response(401, body: 'Invalid token');
+
+        final payload = jwt.claims.toJson();
         final exp = payload['exp'] as int?;
         if (exp == null ||
-            DateTime.fromMillisecondsSinceEpoch(
-              exp * 1000,
-            ).isBefore(DateTime.now())) {
+            DateTime.fromMillisecondsSinceEpoch(exp * 1000)
+                .isBefore(DateTime.now())) {
           return Response(401, body: 'Token expired');
         }
         final updatedContext = req.context['auth'] is Map<String, dynamic>
-            ? Map<String, dynamic>.from(
-                req.context['auth'] as Map<String, dynamic>,
-              )
+            ? Map<String, dynamic>.from(req.context['auth'] as Map<String, dynamic>)
             : <String, dynamic>{};
         updatedContext['accountId'] = payload['sub'];
         updatedContext['companyId'] = payload['companyId'];

@@ -3,10 +3,19 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
-
-import '../../lib/database/entities.dart';
+import 'schema/entities.dart';
 
 part 'server_database.g.dart';
+
+class EmailVerifications extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get accountId =>
+      integer().references(Accounts, #id, onDelete: KeyAction.cascade)();
+  TextColumn get code => text()();
+  DateTimeColumn get expiresAt => dateTime()();
+  DateTimeColumn get usedAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
 
 @DriftDatabase(
   tables: [
@@ -31,6 +40,7 @@ part 'server_database.g.dart';
     ChecklistItems,
     ChecklistRuns,
     ChecklistRunItems,
+    EmailVerifications,
   ],
 )
 class AppServerDatabase extends _$AppServerDatabase {

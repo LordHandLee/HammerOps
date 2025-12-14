@@ -38,7 +38,7 @@ class _HeroSection extends StatelessWidget {
           height: 420,
           width: double.infinity,
           child: Image.asset(
-            'images/hero.png',
+            'images/hero.jpg',
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => Container(
               color: const Color(0xFF111827),
@@ -64,11 +64,11 @@ class _HeroSection extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset(
-                    'images/logo1.png',
-                    height: 90,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                  ),
+                  // Image.asset(
+                  //   'images/logo1.png',
+                  //   height: 90,
+                  //   errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  // ),
                   const SizedBox(height: 12),
                   const Text(
                     'The Ultimate Tradesman',

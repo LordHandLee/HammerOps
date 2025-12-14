@@ -405,6 +405,7 @@ class AppRepository {
   final ChecklistRepository checklist;
   final JobRepository jobs;
   final AccountRepository account;
+  final LocalChangeDao localChanges;
 
   AppRepository(AppDao dao)
       : user = UserRepository(dao.user),
@@ -418,5 +419,6 @@ class AppRepository {
         injury = InjuryRepository(dao.injury),
         checklist = ChecklistRepository(dao.checklist),
         jobs = JobRepository(dao.jobs),
-        account = AccountRepository(dao.account, dao.accountSession, dao.companyMember);
+        account = AccountRepository(dao.account, dao.accountSession, dao.companyMember),
+        localChanges = dao.localChanges;
 }

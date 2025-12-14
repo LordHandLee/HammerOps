@@ -4,28 +4,37 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:drift/drift.dart';
 import 'package:jose/jose.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 import '../server_database.dart';
 
 class AuthRoutes {
   final AppServerDatabase db;
-  late final JwtSigner _signer;
-  late final String secret;
+  final String secret;
+  final JsonWebKey _hmacKey;
 
-  AuthRoutes(this.db) {
-    // Demo signer; replace with env secret/keys.
-    secret = Platform.environment['JWT_SECRET'] ?? 'dev-secret-change-me';
-    _signer = JwtSigner.withHmacSha256(secret.codeUnits);
-  }
+  AuthRoutes(this.db)
+      : secret = Platform.environment['JWT_SECRET'] ?? 'dev-secret-change-me',
+        _hmacKey = JsonWebKey.fromJson({
+          'kty': 'oct',
+          'k': base64Url.encode(
+            (Platform.environment['JWT_SECRET'] ?? 'dev-secret-change-me')
+                .codeUnits,
+          ),
+          'alg': 'HS256',
+        });
 
   Router get router {
     final r = Router();
     r.post('/signup', _signup);
     r.post('/login', _login);
     r.post('/refresh', _refresh);
+    r.get('/verify', _verify);
     return r;
   }
 
@@ -36,10 +45,7 @@ class AuthRoutes {
     final password = data['password'] as String?;
     final companyName = (data['companyName'] as String?)?.trim();
 
-    if (email == null ||
-        password == null ||
-        email.isEmpty ||
-        password.isEmpty) {
+    if (email == null || password == null || email.isEmpty || password.isEmpty) {
       return Response(400, body: 'email and password required');
     }
 
@@ -47,16 +53,14 @@ class AuthRoutes {
     final hash = _hashPassword(password, salt);
 
     return db.transaction(() async {
-      final existing = await (db.select(
-        db.accounts,
-      )..where((a) => a.email.equals(email))).getSingleOrNull();
+      final existing = await (db.select(db.accounts)
+            ..where((a) => a.email.equals(email)))
+          .getSingleOrNull();
       if (existing != null) {
         return Response(409, body: 'email already exists');
       }
 
-      final accountId = await db
-          .into(db.accounts)
-          .insert(
+      final accountId = await db.into(db.accounts).insert(
             AccountsCompanion.insert(
               email: email,
               passwordHash: hash,
@@ -66,17 +70,13 @@ class AuthRoutes {
 
       int? companyId;
       if (companyName != null && companyName.isNotEmpty) {
-        companyId = await db
-            .into(db.company)
-            .insert(
+        companyId = await db.into(db.company).insert(
               CompanyCompanion.insert(
                 name: companyName,
                 adminAccountId: accountId,
               ),
             );
-        await db
-            .into(db.companyMembers)
-            .insert(
+        await db.into(db.companyMembers).insert(
               CompanyMembersCompanion.insert(
                 companyId: companyId,
                 accountId: accountId,
@@ -85,16 +85,16 @@ class AuthRoutes {
             );
       }
 
-      final session = await _createRefreshSession(
-        accountId,
-        companyId: companyId,
-      );
+      final session =
+          await _createRefreshSession(accountId, companyId: companyId);
       final tokens = _issueTokens(
         accountId,
         session.refreshToken,
         companyId: companyId,
         refreshSessionId: session.sessionId,
       );
+      // Send verification email
+      await _sendVerificationEmail(accountId, email);
       return Response.ok(
         jsonEncode(tokens),
         headers: {'content-type': 'application/json'},
@@ -108,16 +108,13 @@ class AuthRoutes {
     final email = (data['email'] as String?)?.trim();
     final password = data['password'] as String?;
 
-    if (email == null ||
-        password == null ||
-        email.isEmpty ||
-        password.isEmpty) {
+    if (email == null || password == null || email.isEmpty || password.isEmpty) {
       return Response(400, body: 'email and password required');
     }
 
-    final account = await (db.select(
-      db.accounts,
-    )..where((a) => a.email.equals(email))).getSingleOrNull();
+    final account = await (db.select(db.accounts)
+          ..where((a) => a.email.equals(email)))
+        .getSingleOrNull();
     if (account == null) {
       return Response(401, body: 'invalid credentials');
     }
@@ -135,14 +132,11 @@ class AuthRoutes {
       ),
     );
 
-    // Load company membership (first membership, if any)
-    final member = await (db.select(
-      db.companyMembers,
-    )..where((m) => m.accountId.equals(account.id))).getSingleOrNull();
-    final session = await _createRefreshSession(
-      account.id,
-      companyId: member?.companyId,
-    );
+    final member = await (db.select(db.companyMembers)
+          ..where((m) => m.accountId.equals(account.id)))
+        .getSingleOrNull();
+    final session =
+        await _createRefreshSession(account.id, companyId: member?.companyId);
     final tokens = _issueTokens(
       account.id,
       session.refreshToken,
@@ -150,10 +144,32 @@ class AuthRoutes {
       refreshSessionId: session.sessionId,
     );
 
-    return Response.ok(
-      jsonEncode(tokens),
-      headers: {'content-type': 'application/json'},
-    );
+    return Response.ok(jsonEncode(tokens), headers: {'content-type': 'application/json'});
+  }
+
+  Future<Response> _verify(Request req) async {
+    final code = req.url.queryParameters['code'];
+    if (code == null || code.isEmpty) {
+      return Response(400, body: 'code required');
+    }
+
+    final now = DateTime.now();
+    final record = await (db.select(db.emailVerifications)
+          ..where((v) => v.code.equals(code))
+          ..where((v) => v.usedAt.isNull())
+          ..where((v) => v.expiresAt.isBiggerThanValue(now)))
+        .getSingleOrNull();
+
+    if (record == null) return Response(400, body: 'invalid or expired code');
+
+    await db.transaction(() async {
+      await (db.update(db.emailVerifications)..where((v) => v.id.equals(record.id)))
+          .write(EmailVerificationsCompanion(usedAt: Value(now)));
+      await (db.update(db.accounts)..where((a) => a.id.equals(record.accountId)))
+          .write(const AccountsCompanion(isEmailVerified: Value(true)));
+    });
+
+    return Response.ok('Email verified');
   }
 
   Future<Response> _refresh(Request req) async {
@@ -166,20 +182,11 @@ class AuthRoutes {
     }
 
     try {
-      final keyStore = JsonWebKeyStore()
-        ..addKey(
-          JsonWebKey.fromJson({
-            'kty': 'oct',
-            'k': base64Url.encode(secret.codeUnits),
-            'alg': 'HS256',
-          }),
-        );
-
-      final jws = JsonWebSignature.fromCompactSerialization(refreshToken);
-      final verified = await jws.verify(keyStore);
-      final payload =
-          jsonDecode(utf8.decode(verified.unverifiedPayload))
-              as Map<String, dynamic>;
+      final keyStore = JsonWebKeyStore()..addKey(_hmacKey);
+      final jwt = JsonWebToken.unverified(refreshToken);
+      final ok = await jwt.verify(keyStore);
+      if (!ok) return Response(401, body: 'Invalid token');
+      final payload = jwt.claims.toJson();
       if (payload['type'] != 'refresh') {
         return Response(401, body: 'Invalid token type');
       }
@@ -189,44 +196,34 @@ class AuthRoutes {
       if (exp == null || accountId == null) {
         return Response(401, body: 'Invalid token');
       }
-      if (DateTime.fromMillisecondsSinceEpoch(
-        exp * 1000,
-      ).isBefore(DateTime.now())) {
+      if (DateTime.fromMillisecondsSinceEpoch(exp * 1000)
+          .isBefore(DateTime.now())) {
         return Response(401, body: 'Token expired');
       }
 
       final hash = sha256.convert(utf8.encode(refreshToken)).toString();
-      final session =
-          await (db.select(db.accountSessions)
-                ..where((s) => s.accountId.equals(accountId))
-                ..where((s) => s.refreshTokenHash.equals(hash))
-                ..where((s) => s.revokedAt.isNull())
-                ..where((s) => s.expiresAt.isBiggerThanValue(DateTime.now())))
-              .getSingleOrNull();
+      final session = await (db.select(db.accountSessions)
+            ..where((s) => s.accountId.equals(accountId))
+            ..where((s) => s.refreshTokenHash.equals(hash))
+            ..where((s) => s.revokedAt.isNull())
+            ..where((s) => s.expiresAt.isBiggerThanValue(DateTime.now())))
+          .getSingleOrNull();
 
       if (session == null) {
         return Response(401, body: 'Invalid or revoked session');
       }
 
-      // Rotate session
-      await (db.update(db.accountSessions)
-            ..where((s) => s.id.equals(session.id)))
+      await (db.update(db.accountSessions)..where((s) => s.id.equals(session.id)))
           .write(AccountSessionsCompanion(revokedAt: Value(DateTime.now())));
 
-      final newSession = await _createRefreshSession(
-        accountId,
-        companyId: companyId,
-      );
+      final newSession = await _createRefreshSession(accountId, companyId: companyId);
       final tokens = _issueTokens(
         accountId,
         newSession.refreshToken,
         companyId: companyId,
         refreshSessionId: newSession.sessionId,
       );
-      return Response.ok(
-        jsonEncode(tokens),
-        headers: {'content-type': 'application/json'},
-      );
+      return Response.ok(jsonEncode(tokens), headers: {'content-type': 'application/json'});
     } catch (_) {
       return Response(401, body: 'Invalid token');
     }
@@ -238,25 +235,22 @@ class AuthRoutes {
     int? companyId,
     int? refreshSessionId,
   }) {
-    final access = JsonWebSignatureBuilder()
+    final accessBuilder = JsonWebSignatureBuilder()
       ..jsonContent = {
         'sub': accountId,
         'companyId': companyId,
         'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        'exp':
-            DateTime.now()
-                .add(const Duration(minutes: 15))
-                .millisecondsSinceEpoch ~/
-            1000,
+        'exp': DateTime.now().add(const Duration(minutes: 15)).millisecondsSinceEpoch ~/ 1000,
       }
-      ..addRecipient(_signer);
+      ..addRecipient(_hmacKey, algorithm: 'HS256');
 
     return {
-      'accessToken': access.build().toCompactSerialization(),
+      'accessToken': accessBuilder.build().toCompactSerialization(),
       'refreshToken': refreshToken,
       'accountId': accountId,
       'companyId': companyId,
       'refreshSessionId': refreshSessionId,
+      'isEmailVerified': true,
     };
   }
 
@@ -269,22 +263,16 @@ class AuthRoutes {
         'sub': accountId,
         'companyId': companyId,
         'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        'exp':
-            DateTime.now()
-                .add(const Duration(days: 30))
-                .millisecondsSinceEpoch ~/
-            1000,
+        'exp': DateTime.now().add(const Duration(days: 30)).millisecondsSinceEpoch ~/ 1000,
         'type': 'refresh',
       }
-      ..addRecipient(_signer);
+      ..addRecipient(_hmacKey, algorithm: 'HS256');
 
     final refresh = refreshBuilder.build().toCompactSerialization();
     final hash = sha256.convert(utf8.encode(refresh)).toString();
     final exp = DateTime.now().add(const Duration(days: 30));
 
-    final sessionId = await db
-        .into(db.accountSessions)
-        .insert(
+    final sessionId = await db.into(db.accountSessions).insert(
           AccountSessionsCompanion.insert(
             accountId: accountId,
             refreshTokenHash: hash,
@@ -296,30 +284,20 @@ class AuthRoutes {
   }
 
   String _generateSalt({int length = 16}) {
-    final bytes = List<int>.generate(
-      length,
-      (i) => Random.secure().nextInt(256),
-    );
+    final random = Random.secure();
+    final bytes = List<int>.generate(length, (_) => random.nextInt(256));
     return base64Encode(bytes);
   }
 
-  String _hashPassword(
-    String password,
-    String saltBase64, {
-    int iterations = 100000,
-    int keyLength = 32,
-  }) {
+  String _hashPassword(String password, String saltBase64,
+      {int iterations = 100000, int keyLength = 32}) {
     final salt = base64Decode(saltBase64);
-    final derived = _pbkdf2(
-      password,
-      salt,
-      iterations: iterations,
-      keyLength: keyLength,
-    );
+    final derived = _pbkdf2(password, salt,
+        iterations: iterations, keyLength: keyLength);
     return base64Encode(derived);
   }
 
-  List<int> _pbkdf2(
+  Uint8List _pbkdf2(
     String password,
     List<int> salt, {
     int iterations = 100000,
@@ -350,15 +328,55 @@ class AuthRoutes {
     }
 
     final derived = output.takeBytes();
-    return derived.sublist(0, keyLength);
+    return Uint8List.fromList(derived.sublist(0, keyLength));
   }
 
   List<int> _int32BigEndian(int i) => [
-    (i >> 24) & 0xff,
-    (i >> 16) & 0xff,
-    (i >> 8) & 0xff,
-    i & 0xff,
-  ];
+        (i >> 24) & 0xff,
+        (i >> 16) & 0xff,
+        (i >> 8) & 0xff,
+        i & 0xff,
+      ];
+
+  Future<void> _sendVerificationEmail(int accountId, String email) async {
+    final code = _generateSalt(length: 32);
+    final expires = DateTime.now().add(const Duration(hours: 2));
+
+    await db.into(db.emailVerifications).insert(
+          EmailVerificationsCompanion.insert(
+            accountId: accountId,
+            code: code,
+            expiresAt: expires,
+          ),
+        );
+
+    final verifyBase = Platform.environment['VERIFY_BASE_URL'] ?? 'http://localhost:8080';
+    final link = '$verifyBase/auth/verify?code=$code';
+
+    final host = Platform.environment['SMTP_HOST'];
+    final port = int.tryParse(Platform.environment['SMTP_PORT'] ?? '587') ?? 587;
+    final user = Platform.environment['SMTP_USER'];
+    final pass = Platform.environment['SMTP_PASS'];
+    final from = Platform.environment['SMTP_FROM'] ?? user;
+
+    if (host == null || user == null || pass == null) {
+      // Skip send if SMTP not configured.
+      return;
+    }
+
+    final smtp = SmtpServer(host, port: port, username: user, password: pass, ssl: port == 465);
+    final message = Message()
+      ..from = Address(from!)
+      ..recipients.add(email)
+      ..subject = 'Verify your Hammer Ops email'
+      ..text = 'Click to verify: $link';
+
+    try {
+      await send(message, smtp);
+    } catch (_) {
+      // swallow send errors for now
+    }
+  }
 }
 
 class _RefreshSession {

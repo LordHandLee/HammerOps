@@ -48,6 +48,7 @@ dependencies:
   device_calendar: ^4.3.1
   timezone: ^0.9.2
   crypto: ^3.0.3
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   drift_dev: ^2.20.0
@@ -80,9 +81,9 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - images/logo.png
-    - images/logo1.png
-    - images/hero.png
+    - images/logo.jpg
+    - images/logo1.jpg
+    - images/hero.jpg
     - web/assets/sqlite3.wasm
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
