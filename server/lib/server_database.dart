@@ -61,8 +61,7 @@ class AppServerDatabase extends _$AppServerDatabase {
 
     final endpoint = Endpoint(
       host: uri.host,
-      database:
-          uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null,
+      database: uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'postgres',
       username: username,
       password: password,
       port: uri.hasPort ? uri.port : 5432,
