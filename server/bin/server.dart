@@ -12,9 +12,12 @@ import 'package:hammer_ops_server/middleware/jwt_middleware.dart';
 
 Future<void> main(List<String> args) async {
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
-  final dbPath = Platform.environment['DB_PATH'];
+  final dbUrl = Platform.environment['DATABASE_URL'];
+  if (dbUrl == null) {
+    throw StateError('DATABASE_URL is required for Postgres connection');
+  }
 
-  final db = await AppServerDatabase.open(dbPath);
+  final db = await AppServerDatabase.openFromUrl(dbUrl);
   final auth = AuthRoutes(db);
   final sync = SyncRoutes(db);
 

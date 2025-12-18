@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
+import 'package:drift_postgres/drift_postgres.dart';
 import 'schema/entities.dart';
 
 part 'server_database.g.dart';
@@ -44,16 +41,23 @@ class EmailVerifications extends Table {
   ],
 )
 class AppServerDatabase extends _$AppServerDatabase {
-  AppServerDatabase(super.e);
+  AppServerDatabase(PgDatabase db) : super(db);
 
   @override
   int get schemaVersion => 1;
 
-  static Future<AppServerDatabase> open(String? dbPath) async {
-    final resolved =
-        dbPath ?? p.join(Directory.current.path, 'data', 'server.sqlite');
-    await Directory(p.dirname(resolved)).create(recursive: true);
-    final executor = NativeDatabase(File(resolved));
-    return AppServerDatabase(executor);
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) async => m.createAll(),
+        // TODO: add onUpgrade steps when bumping schemaVersion in prod
+      );
+
+  static Future<AppServerDatabase> openFromUrl(String url) async {
+    final uri = Uri.parse(url);
+    final db = PgDatabase(
+      uri,
+      settings: const PgSettings(sslMode: SslMode.require),
+    );
+    return AppServerDatabase(db);
   }
 }
