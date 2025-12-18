@@ -55,8 +55,9 @@ class AppServerDatabase extends _$AppServerDatabase {
   static Future<AppServerDatabase> openFromUrl(String url) async {
     final uri = Uri.parse(url);
     final db = PgDatabase(
-      uri,
-      settings: const PgSettings(sslMode: SslMode.require),
+      connectionUri: uri,
+      sslMode: SslMode.require,
+      logStatements: false,
     );
     return AppServerDatabase(db);
   }

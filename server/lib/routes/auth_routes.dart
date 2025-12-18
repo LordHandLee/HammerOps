@@ -64,7 +64,7 @@ class AuthRoutes {
             AccountsCompanion.insert(
               email: email,
               passwordHash: hash,
-              passwordSalt: salt,
+              passwordSalt: Value(salt),
             ),
           );
 
