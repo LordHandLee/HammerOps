@@ -6,7 +6,7 @@ COPY . .
 WORKDIR /app/server
 RUN dart pub get
 RUN dart run build_runner build --delete-conflicting-outputs
-RUN dart compile exe bin/server.dart -o /app/server/bin/server
+RUN dart compile exe server/bin/server.dart -o /app/server/bin/server
 
 FROM dart:stable AS runtime
 WORKDIR /app
