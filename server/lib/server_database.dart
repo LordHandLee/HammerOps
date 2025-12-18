@@ -66,7 +66,6 @@ class AppServerDatabase extends _$AppServerDatabase {
       username: username,
       password: password,
       port: uri.hasPort ? uri.port : 5432,
-      sslMode: SslMode.require,
     );
 
     final settings = ConnectionSettings(sslMode: SslMode.require);
