@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_postgres/drift_postgres.dart';
+import 'package:postgres/postgres.dart';
 import 'schema/entities.dart';
 
 part 'server_database.g.dart';
@@ -54,9 +55,25 @@ class AppServerDatabase extends _$AppServerDatabase {
 
   static Future<AppServerDatabase> openFromUrl(String url) async {
     final uri = Uri.parse(url);
-    final db = PgDatabase(
-      connectionUri: uri,
+    final userInfo = uri.userInfo.split(':');
+    final username = userInfo.isNotEmpty ? userInfo.first : '';
+    final password = userInfo.length > 1 ? userInfo[1] : '';
+
+    final endpoint = Endpoint(
+      host: uri.host,
+      database:
+          uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null,
+      username: username,
+      password: password,
+      port: uri.hasPort ? uri.port : 5432,
       sslMode: SslMode.require,
+    );
+
+    final settings = ConnectionSettings(sslMode: SslMode.require);
+
+    final db = PgDatabase(
+      endpoint: endpoint,
+      settings: settings,
       logStatements: false,
     );
     return AppServerDatabase(db);
