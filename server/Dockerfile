@@ -14,6 +14,8 @@ FROM dart:stable AS runtime
 WORKDIR /app
 COPY --from=build /app/server/bin/server /app/bin/server
 COPY --from=build /app/web_build /app/web_build
+# Ensure sqlite3.wasm is available for Flutter web (Drift)
+COPY web/assets/sqlite3.wasm /app/web_build/web/assets/sqlite3.wasm
 
 ENV PORT=8080
 EXPOSE 8080
