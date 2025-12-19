@@ -13,6 +13,7 @@ RUN dart compile exe bin/server.dart -o /app/server/bin/server
 FROM dart:stable AS runtime
 WORKDIR /app
 COPY --from=build /app/server/bin/server /app/bin/server
+COPY --from=build /app/web_build /app/web_build
 
 ENV PORT=8080
 EXPOSE 8080
