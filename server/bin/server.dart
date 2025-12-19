@@ -4,6 +4,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
+import 'package:shelf_static/shelf_static.dart';
 
 import 'package:hammer_ops_server/routes/auth_routes.dart';
 import 'package:hammer_ops_server/routes/sync_routes.dart';
@@ -21,7 +22,11 @@ Future<void> main(List<String> args) async {
   final auth = AuthRoutes(db);
   final sync = SyncRoutes(db);
 
+  final staticHandler =
+      createStaticHandler('web_build', defaultDocument: 'index.html');
+
   final router = Router()
+    ..mount('/', staticHandler)
     ..get('/health', (Request req) => Response.ok('ok'))
     ..mount('/auth/', auth.router)
     ..mount(
