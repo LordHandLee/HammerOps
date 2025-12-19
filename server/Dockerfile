@@ -6,7 +6,7 @@ COPY . .
 WORKDIR /app/server
 RUN dart pub get
 # Copy prebuilt Flutter web assets (place your build output into server/web_build before building)
-COPY /build/web /app/server/web_build
+COPY build/web /app/server/web_build
 RUN dart run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/server.dart -o /app/server/bin/server
 
