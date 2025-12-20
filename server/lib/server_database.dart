@@ -16,7 +16,6 @@ class EmailVerifications extends Table {
 }
 
 @DriftDatabase(
-  dialect: SqlDialect.postgres,
   tables: [
     Accounts,
     AccountSessions,
@@ -47,6 +46,9 @@ class AppServerDatabase extends _$AppServerDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  SqlDialect get dialect => SqlDialect.postgres;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
