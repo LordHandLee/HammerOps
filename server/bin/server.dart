@@ -28,8 +28,7 @@ Future<void> main(List<String> args) async {
   final staticHandler =
       createStaticHandler(staticDir, defaultDocument: 'index.html');
 
-  final router = Router()
-    ..mount('/', staticHandler)
+  final api = Router()
     ..get('/health', (Request req) => Response.ok('ok'))
     ..mount('/auth/', auth.router)
     ..mount(
@@ -39,10 +38,16 @@ Future<void> main(List<String> args) async {
           .addHandler(sync.router),
     );
 
+  // API first, then fall back to static files for everything else.
+  final cascaded = Cascade()
+      .add(api)
+      .add(staticHandler)
+      .handler;
+
   final handler = const Pipeline()
       .addMiddleware(logRequests())
       .addMiddleware(corsHeaders())
-      .addHandler(router);
+      .addHandler(cascaded);
 
   final server = await serve(handler, InternetAddress.anyIPv4, port);
   stdout.writeln('Server running on port ${server.port}');
