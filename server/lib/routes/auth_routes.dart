@@ -85,19 +85,11 @@ class AuthRoutes {
             );
       }
 
-      final session =
-          await _createRefreshSession(accountId, companyId: companyId);
-      final tokens = _issueTokens(
-        accountId,
-        session.refreshToken,
-        companyId: companyId,
-        refreshSessionId: session.sessionId,
-      );
-      // Send verification email
       await _sendVerificationEmail(accountId, email);
-      return Response.ok(
-        jsonEncode(tokens),
-        headers: {'content-type': 'application/json'},
+      return Response(
+        202,
+        body:
+            'Account created. Please check your email to verify before logging in.',
       );
     });
   }
@@ -125,6 +117,10 @@ class AuthRoutes {
       return Response(401, body: 'invalid credentials');
     }
 
+    if (account.isEmailVerified != true) {
+      return Response(403, body: 'email not verified');
+    }
+
     await (db.update(db.accounts)..where((a) => a.id.equals(account.id))).write(
       AccountsCompanion(
         lastSeen: Value(DateTime.now()),
@@ -142,6 +138,7 @@ class AuthRoutes {
       session.refreshToken,
       companyId: member?.companyId,
       refreshSessionId: session.sessionId,
+      isEmailVerified: true,
     );
 
     return Response.ok(jsonEncode(tokens), headers: {'content-type': 'application/json'});
@@ -213,6 +210,13 @@ class AuthRoutes {
         return Response(401, body: 'Invalid or revoked session');
       }
 
+      final account =
+          await (db.select(db.accounts)..where((a) => a.id.equals(accountId)))
+              .getSingle();
+      if (account.isEmailVerified != true) {
+        return Response(403, body: 'email not verified');
+      }
+
       await (db.update(db.accountSessions)..where((s) => s.id.equals(session.id)))
           .write(AccountSessionsCompanion(revokedAt: Value(DateTime.now())));
 
@@ -222,6 +226,7 @@ class AuthRoutes {
         newSession.refreshToken,
         companyId: companyId,
         refreshSessionId: newSession.sessionId,
+        isEmailVerified: true,
       );
       return Response.ok(jsonEncode(tokens), headers: {'content-type': 'application/json'});
     } catch (_) {
@@ -234,6 +239,7 @@ class AuthRoutes {
     String refreshToken, {
     int? companyId,
     int? refreshSessionId,
+    bool isEmailVerified = true,
   }) {
     final accessBuilder = JsonWebSignatureBuilder()
       ..jsonContent = {
@@ -250,7 +256,7 @@ class AuthRoutes {
       'accountId': accountId,
       'companyId': companyId,
       'refreshSessionId': refreshSessionId,
-      'isEmailVerified': true,
+      'isEmailVerified': isEmailVerified,
     };
   }
 
@@ -360,11 +366,18 @@ class AuthRoutes {
     final from = Platform.environment['SMTP_FROM'] ?? user;
 
     if (host == null || user == null || pass == null) {
-      // Skip send if SMTP not configured.
+      stderr.writeln('SMTP not configured; skipping verification email for $email');
       return;
     }
 
-    final smtp = SmtpServer(host, port: port, username: user, password: pass, ssl: port == 465);
+    final smtp = SmtpServer(
+      host,
+      port: port,
+      username: user,
+      password: pass,
+      ssl: port == 465,
+      allowInsecure: port == 587, // STARTTLS upgrade
+    );
     final message = Message()
       ..from = Address(from!)
       ..recipients.add(email)
@@ -373,8 +386,9 @@ class AuthRoutes {
 
     try {
       await send(message, smtp);
-    } catch (_) {
-      // swallow send errors for now
+      stderr.writeln('Verification email sent to $email');
+    } catch (e, st) {
+      stderr.writeln('Failed to send verification email to $email: $e\n$st');
     }
   }
 }
