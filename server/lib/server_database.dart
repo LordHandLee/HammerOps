@@ -75,7 +75,7 @@ class AppServerDatabase extends _$AppServerDatabase {
     final db = PgDatabase(
       endpoint: endpoint,
       settings: settings,
-      logStatements: false,
+      logStatements: true,
     );
     return AppServerDatabase(db);
   }

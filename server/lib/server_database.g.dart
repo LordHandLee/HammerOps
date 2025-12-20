@@ -77,7 +77,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -89,7 +89,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _lastSeenMeta = const VerificationMeta(
     'lastSeen',
@@ -680,7 +680,7 @@ class $AccountSessionsTable extends AccountSessions
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _revokedAtMeta = const VerificationMeta(
     'revokedAt',
@@ -1189,7 +1189,7 @@ class $CompanyTable extends Company with TableInfo<$CompanyTable, CompanyData> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -1668,7 +1668,7 @@ class $CompanyMembersTable extends CompanyMembers
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -1680,7 +1680,7 @@ class $CompanyMembersTable extends CompanyMembers
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -2274,7 +2274,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -2909,7 +2909,7 @@ class $TemplatesTable extends Templates
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -2921,7 +2921,7 @@ class $TemplatesTable extends Templates
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -3392,7 +3392,7 @@ class $TemplateFieldsTable extends TemplateFields
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -3889,7 +3889,7 @@ class $JobQuotesTable extends JobQuotes
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _totalAmountMeta = const VerificationMeta(
     'totalAmount',
@@ -3927,7 +3927,7 @@ class $JobQuotesTable extends JobQuotes
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -4506,7 +4506,7 @@ class $QuoteFieldValuesTable extends QuoteFieldValues
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -4980,7 +4980,7 @@ class $CustomersTable extends Customers
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -5532,7 +5532,7 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, Job> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -6156,7 +6156,7 @@ class $ToolsTable extends Tools with TableInfo<$ToolsTable, Tool> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -6708,7 +6708,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -7314,7 +7314,7 @@ class $ComplaintTable extends Complaint
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _isResolvedMeta = const VerificationMeta(
     'isResolved',
@@ -7382,7 +7382,7 @@ class $ComplaintTable extends Complaint
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -7988,7 +7988,7 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _isResolvedMeta = const VerificationMeta(
     'isResolved',
@@ -8056,7 +8056,7 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -8670,7 +8670,7 @@ class $DocumentTable extends Document
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _uploadedByMeta = const VerificationMeta(
     'uploadedBy',
@@ -8722,7 +8722,7 @@ class $DocumentTable extends Document
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -9294,7 +9294,7 @@ class $FleetEventsTable extends FleetEvents
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -9773,7 +9773,7 @@ class $ChecklistTemplatesTable extends ChecklistTemplates
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -10187,7 +10187,7 @@ class $ChecklistItemsTable extends ChecklistItems
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -10618,7 +10618,7 @@ class $ChecklistRunsTable extends ChecklistRuns
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _completedByMeta = const VerificationMeta(
     'completedBy',
@@ -10641,7 +10641,7 @@ class $ChecklistRunsTable extends ChecklistRuns
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
@@ -11111,7 +11111,7 @@ class $ChecklistRunItemsTable extends ChecklistRunItems
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now(),
   );
   static const VerificationMeta _versionMeta = const VerificationMeta(
     'version',
