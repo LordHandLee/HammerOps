@@ -12,7 +12,8 @@ class EmailVerifications extends Table {
   TextColumn get code => text()();
   DateTimeColumn get expiresAt => dateTime()();
   DateTimeColumn get usedAt => dateTime().nullable()();
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt =>
+      dateTime().clientDefault(() => DateTime.now())();
 }
 
 @DriftDatabase(
