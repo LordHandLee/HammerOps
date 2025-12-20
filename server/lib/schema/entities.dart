@@ -8,8 +8,9 @@ class Accounts extends Table {
   TextColumn get email => text()(); // unique
   TextColumn get passwordHash => text()(); // hashed (bcrypt/PBKDF2)
   TextColumn get passwordSalt => text().nullable()(); // optional depending on hash
-  BoolColumn get isEmailVerified =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isEmailVerified => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
   DateTimeColumn get createdAt => dateTime().clientDefault(() => DateTime.now())();
   DateTimeColumn get updatedAt => dateTime().clientDefault(() => DateTime.now())();
   DateTimeColumn get lastSeen => dateTime().nullable()();
@@ -46,8 +47,9 @@ class Users extends Table {
 
   // Admin-specific fields (nullable for regular users)
   TextColumn get permissions => text().nullable()(); // e.g., JSON string of permissions
-  BoolColumn get canManageUsers =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get canManageUsers => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
 
   // Foreign key to Company table (nullable for users without a company)
   IntColumn get companyId => integer().references(Company, #id, onDelete: KeyAction.cascade)();
@@ -77,8 +79,9 @@ class TemplateFields extends Table {
   IntColumn get templateId => integer().references(Templates, #id, onDelete: KeyAction.cascade)();
   TextColumn get fieldName => text().withLength(min: 1, max: 100)();
   // TextColumn get fieldType => text().withLength(min: 1, max: 50)(); // e.g., text, number, date
-  BoolColumn get isRequired =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isRequired => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))(); // For ordering fields within a template
   DateTimeColumn get updatedAt => dateTime().clientDefault(() => DateTime.now())();
   IntColumn get version => integer().withDefault(const Constant(0))();
@@ -194,8 +197,9 @@ class Tools extends Table {
   TextColumn get description => text().nullable()();
   
   // Is available for use or currently in use by someone
-  BoolColumn get isAvailable =>
-      boolean().withDefault(const Constant(true))();
+  BoolColumn get isAvailable => boolean()
+      .withDefault(const Constant(true))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT TRUE')();
 
   // Foreign key to Users table (assuming a user manages the tool)
   IntColumn get managedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
@@ -214,12 +218,14 @@ class Tasks extends Table {
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get description => text().nullable()();
   DateTimeColumn get dueDate => dateTime().nullable()();
-  BoolColumn get isCompleted =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isCompleted => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
 
   // Is flagged for review or important
-  BoolColumn get isFlagged =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isFlagged => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
 
   TextColumn get reasonForFlag => text().nullable()();
 
@@ -240,8 +246,9 @@ class Complaint extends Table {
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get description => text().nullable()();
   DateTimeColumn get reportedAt => dateTime().clientDefault(() => DateTime.now())();
-  BoolColumn get isResolved =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isResolved => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
 
   // Foreign key to Users table (assuming a user reports the complaint)
   @ReferenceName('userComplaints')
@@ -266,8 +273,9 @@ class Injury extends Table {
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get description => text().nullable()();
   DateTimeColumn get occurredAt => dateTime().clientDefault(() => DateTime.now())();
-  BoolColumn get isResolved =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isResolved => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
 
   // Foreign key to Users table (assuming a user reports the injury)
   @ReferenceName('userInjuries')
@@ -345,8 +353,9 @@ class ChecklistItems extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get templateId => integer().references(ChecklistTemplates, #id)();
   TextColumn get title => text()();
-  BoolColumn get required =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get required => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
   DateTimeColumn get updatedAt => dateTime().clientDefault(() => DateTime.now())();
   IntColumn get version => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();
@@ -372,7 +381,9 @@ class ChecklistRunItems extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get runId => integer().references(ChecklistRuns, #id)();
   IntColumn get itemId => integer().references(ChecklistItems, #id)();
-  BoolColumn get checked => boolean()();
+  BoolColumn get checked => boolean()
+      .withDefault(const Constant(false))
+      .customConstraint('BOOLEAN NOT NULL DEFAULT FALSE')();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get updatedAt => dateTime().clientDefault(() => DateTime.now())();
   IntColumn get version => integer().withDefault(const Constant(0))();

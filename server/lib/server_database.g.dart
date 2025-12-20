@@ -62,9 +62,7 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_email_verified" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
@@ -2245,9 +2243,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("can_manage_users" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _companyIdMeta = const VerificationMeta(
@@ -3365,9 +3361,7 @@ class $TemplateFieldsTable extends TemplateFields
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_required" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
@@ -6127,9 +6121,7 @@ class $ToolsTable extends Tools with TableInfo<$ToolsTable, Tool> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_available" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT TRUE',
     defaultValue: const Constant(true),
   );
   static const VerificationMeta _managedByMeta = const VerificationMeta(
@@ -6653,9 +6645,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_completed" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _isFlaggedMeta = const VerificationMeta(
@@ -6668,9 +6658,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_flagged" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _reasonForFlagMeta = const VerificationMeta(
@@ -7326,9 +7314,7 @@ class $ComplaintTable extends Complaint
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_resolved" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _reportedByUserMeta = const VerificationMeta(
@@ -8000,9 +7986,7 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_resolved" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _reportedByUserMeta = const VerificationMeta(
@@ -10172,9 +10156,7 @@ class $ChecklistItemsTable extends ChecklistItems
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("required" IN (0, 1))',
-    ),
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
     defaultValue: const Constant(false),
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
@@ -11087,10 +11069,9 @@ class $ChecklistRunItemsTable extends ChecklistRunItems
     aliasedName,
     false,
     type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("checked" IN (0, 1))',
-    ),
+    requiredDuringInsert: false,
+    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
+    defaultValue: const Constant(false),
   );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
@@ -11183,8 +11164,6 @@ class $ChecklistRunItemsTable extends ChecklistRunItems
         _checkedMeta,
         checked.isAcceptableOrUnknown(data['checked']!, _checkedMeta),
       );
-    } else if (isInserting) {
-      context.missing(_checkedMeta);
     }
     if (data.containsKey('notes')) {
       context.handle(
@@ -11441,14 +11420,13 @@ class ChecklistRunItemsCompanion extends UpdateCompanion<ChecklistRunItem> {
     this.id = const Value.absent(),
     required int runId,
     required int itemId,
-    required bool checked,
+    this.checked = const Value.absent(),
     this.notes = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
   }) : runId = Value(runId),
-       itemId = Value(itemId),
-       checked = Value(checked);
+       itemId = Value(itemId);
   static Insertable<ChecklistRunItem> custom({
     Expression<int>? id,
     Expression<int>? runId,
@@ -23844,7 +23822,7 @@ typedef $$ChecklistRunItemsTableCreateCompanionBuilder =
       Value<int> id,
       required int runId,
       required int itemId,
-      required bool checked,
+      Value<bool> checked,
       Value<String?> notes,
       Value<DateTime> updatedAt,
       Value<int> version,
@@ -24216,7 +24194,7 @@ class $$ChecklistRunItemsTableTableManager
                 Value<int> id = const Value.absent(),
                 required int runId,
                 required int itemId,
-                required bool checked,
+                Value<bool> checked = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
