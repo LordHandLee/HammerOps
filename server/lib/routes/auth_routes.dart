@@ -10,6 +10,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:http/http.dart' as http;
 
 import '../server_database.dart';
 
@@ -359,6 +360,39 @@ class AuthRoutes {
     final verifyBase = Platform.environment['VERIFY_BASE_URL'] ?? 'http://localhost:8080';
     final link = '$verifyBase/auth/verify?code=$code';
 
+    // Prefer Mailgun HTTP API if configured
+    final mgKey = Platform.environment['MAILGUN_API_KEY'];
+    final mgDomain = Platform.environment['MAILGUN_DOMAIN'];
+    final mgFrom =
+        Platform.environment['MAILGUN_FROM'] ?? Platform.environment['SMTP_FROM'] ?? 'no-reply@$mgDomain';
+    if (mgKey != null && mgDomain != null) {
+      final uri = Uri.https('api.mailgun.net', '/v3/$mgDomain/messages');
+      final auth = 'api:$mgKey';
+      try {
+        final resp = await http.post(
+          uri,
+          headers: {
+            'authorization': 'Basic ${base64Encode(utf8.encode(auth))}',
+          },
+          body: {
+            'from': mgFrom ?? 'no-reply@$mgDomain',
+            'to': email,
+            'subject': 'Verify your Hammer Ops email',
+            'text': 'Click to verify: $link',
+          },
+        );
+        if (resp.statusCode >= 200 && resp.statusCode < 300) {
+          stderr.writeln('Verification email sent via Mailgun to $email');
+          return;
+        } else {
+          stderr.writeln('Mailgun send failed (${resp.statusCode}): ${resp.body}');
+        }
+      } catch (e, st) {
+        stderr.writeln('Mailgun send error to $email: $e\n$st');
+      }
+    }
+
+    // Fallback to SMTP
     final host = Platform.environment['SMTP_HOST'];
     final port = int.tryParse(Platform.environment['SMTP_PORT'] ?? '587') ?? 587;
     final user = Platform.environment['SMTP_USER'];
