@@ -16,6 +16,7 @@ class EmailVerifications extends Table {
 }
 
 @DriftDatabase(
+  dialect: SqlDialect.postgres,
   tables: [
     Accounts,
     AccountSessions,
