@@ -62,8 +62,8 @@ class $AccountsTable extends Accounts with TableInfo<$AccountsTable, Account> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
@@ -2243,8 +2243,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _companyIdMeta = const VerificationMeta(
     'companyId',
@@ -3361,8 +3361,8 @@ class $TemplateFieldsTable extends TemplateFields
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
@@ -6121,8 +6121,8 @@ class $ToolsTable extends Tools with TableInfo<$ToolsTable, Tool> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT TRUE',
-    defaultValue: const Constant(true),
+    $customConstraints: 'NOT NULL DEFAULT TRUE',
+    defaultValue: const CustomExpression('TRUE'),
   );
   static const VerificationMeta _managedByMeta = const VerificationMeta(
     'managedBy',
@@ -6645,8 +6645,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _isFlaggedMeta = const VerificationMeta(
     'isFlagged',
@@ -6658,8 +6658,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _reasonForFlagMeta = const VerificationMeta(
     'reasonForFlag',
@@ -7314,8 +7314,8 @@ class $ComplaintTable extends Complaint
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _reportedByUserMeta = const VerificationMeta(
     'reportedByUser',
@@ -7986,8 +7986,8 @@ class $InjuryTable extends Injury with TableInfo<$InjuryTable, InjuryData> {
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _reportedByUserMeta = const VerificationMeta(
     'reportedByUser',
@@ -10156,8 +10156,8 @@ class $ChecklistItemsTable extends ChecklistItems
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -11070,8 +11070,8 @@ class $ChecklistRunItemsTable extends ChecklistRunItems
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    $customConstraints: 'BOOLEAN NOT NULL DEFAULT FALSE',
-    defaultValue: const Constant(false),
+    $customConstraints: 'NOT NULL DEFAULT FALSE',
+    defaultValue: const CustomExpression('FALSE'),
   );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
