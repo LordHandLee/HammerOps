@@ -367,7 +367,7 @@ class AuthRoutes {
         Platform.environment['MAILGUN_FROM'] ?? Platform.environment['SMTP_FROM'] ?? 'no-reply@$mgDomain';
     if (mgKey != null && mgDomain != null) {
       final uri = Uri.https('$mgDomain', '/emails');
-      final auth = 'api:$mgKey';
+      final auth = '$mgKey';
       try {
         final resp = await http.post(
           uri,
