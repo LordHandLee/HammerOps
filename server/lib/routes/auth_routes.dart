@@ -372,7 +372,8 @@ class AuthRoutes {
         final resp = await http.post(
           uri,
           headers: {
-            'Authorization': 'Bearer ${base64Encode(utf8.encode(auth))}',
+            // 'Authorization': 'Bearer ${base64Encode(utf8.encode(auth))}',
+            'Authorization': 'Bearer ${auth}',
           },
           body: {
             'from': mgFrom ?? 'no-reply@$mgDomain',
