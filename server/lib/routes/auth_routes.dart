@@ -358,7 +358,14 @@ class AuthRoutes {
         );
 
     final verifyBase = Platform.environment['VERIFY_BASE_URL'] ?? 'http://localhost:8080';
-    final link = '$verifyBase/auth/verify?code=$code';
+    // Build the link with proper URL encoding to avoid '+' being treated as space.
+    final verifyUri = Uri.parse(verifyBase).replace(
+      path: Uri.parse(verifyBase).path.endsWith('/')
+          ? '${Uri.parse(verifyBase).path}auth/verify'
+          : '${Uri.parse(verifyBase).path}/auth/verify',
+      queryParameters: {'code': code},
+    );
+    final link = verifyUri.toString();
 
     // Prefer Mailgun HTTP API if configured
     final mgKey = Platform.environment['MAILGUN_API_KEY']; //re_7nrJVnqf_NAwrizyDPa2USE1CnGWtYzn3 resend api
