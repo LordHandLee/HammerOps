@@ -1,0 +1,4 @@
+Visual heatmap of revenue in google maps
+Route optimization
+Automated invoicing
+Financial dashboards

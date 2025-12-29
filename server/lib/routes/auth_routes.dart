@@ -361,18 +361,18 @@ class AuthRoutes {
     final link = '$verifyBase/auth/verify?code=$code';
 
     // Prefer Mailgun HTTP API if configured
-    final mgKey = Platform.environment['MAILGUN_API_KEY'];
+    final mgKey = Platform.environment['MAILGUN_API_KEY']; //re_7nrJVnqf_NAwrizyDPa2USE1CnGWtYzn3 resend api
     final mgDomain = Platform.environment['MAILGUN_DOMAIN'];
     final mgFrom =
         Platform.environment['MAILGUN_FROM'] ?? Platform.environment['SMTP_FROM'] ?? 'no-reply@$mgDomain';
     if (mgKey != null && mgDomain != null) {
-      final uri = Uri.https('api.mailgun.net', '/v3/$mgDomain/messages');
+      final uri = Uri.https('$mgDomain');
       final auth = 'api:$mgKey';
       try {
         final resp = await http.post(
           uri,
           headers: {
-            'authorization': 'Basic ${base64Encode(utf8.encode(auth))}',
+            'Authorization': 'Bearer ${base64Encode(utf8.encode(auth))}',
           },
           body: {
             'from': mgFrom ?? 'no-reply@$mgDomain',
