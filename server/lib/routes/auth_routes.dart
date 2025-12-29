@@ -368,19 +368,38 @@ class AuthRoutes {
     if (mgKey != null && mgDomain != null) {
       final uri = Uri.https('$mgDomain', '/v3/mail/send');
       final auth = '$mgKey';
+      final payload = {
+        "personalizations": [
+          {
+            "to": [
+              {"email": email}
+            ]
+          }
+        ],
+        "from": {"email": mgFrom},
+        "subject": "Verify your Hammer Ops email",
+        "content": [
+          {
+            "type": "text/plain",
+            "value": "Click to verify: $link"
+          }
+        ]
+      };
       try {
         final resp = await http.post(
           uri,
           headers: {
             // 'Authorization': 'Bearer ${base64Encode(utf8.encode(auth))}',
             'Authorization': 'Bearer ${auth}',
+            'Content-Type: application/json',
           },
-          body: {
-            'from': mgFrom ?? 'no-reply@$mgDomain',
-            'to': email,
-            'subject': 'Verify your Hammer Ops email',
-            'text': 'Click to verify: $link',
-          },
+          body: jsonEncode(payload),
+          // {
+          //   'from': mgFrom ?? 'no-reply@$mgDomain',
+          //   'to': email,
+          //   'subject': 'Verify your Hammer Ops email',
+          //   'text': 'Click to verify: $link',
+          // },
         );
         if (resp.statusCode >= 200 && resp.statusCode < 300) {
           stderr.writeln('Verification email sent via Mailgun to $email');
