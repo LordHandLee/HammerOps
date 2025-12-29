@@ -369,22 +369,22 @@ class AuthRoutes {
       final uri = Uri.https('$mgDomain', '/v3/mail/send');
       final auth = '$mgKey';
       final payload = {
-        "personalizations": [
-          {
-            "to": [
-              {"email": email}
-            ]
-          }
-        ],
-        "from": {"email": mgFrom},
-        "subject": "Verify your Hammer Ops email",
-        "content": [
-          {
-            "type": "text/plain",
-            "value": "Click to verify: $link"
-          }
-        ]
-      };
+          "personalizations": [
+            {
+              "to": [
+                {"email": email}
+              ]
+            }
+          ],
+          "from": {"email": mgFrom},
+          "subject": "Verify your Hammer Ops email",
+          "content": [
+            {
+              "type": "text/plain",
+              "value": "Click to verify: $link"
+            }
+          ]
+        }
       try {
         final resp = await http.post(
           uri,
