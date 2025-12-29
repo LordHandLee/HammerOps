@@ -384,7 +384,7 @@ class AuthRoutes {
               "value": "Click to verify: $link"
             }
           ]
-        }
+        };
       try {
         final resp = await http.post(
           uri,
