@@ -38,15 +38,21 @@ class _ToolTrackerState extends State<ToolTracker> {
         backgroundColor: const Color.fromARGB(255, 195, 189, 170),
         title: const Text("Tool Tracker"),
       ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Create tool',
-        onPressed: () async {
-          await Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const ToolCreator()),
-          );
-          _refresh();
-        },
-        child: const Icon(Icons.add),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16, right: 8),
+          child: FloatingActionButton(
+            tooltip: 'Create tool',
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ToolCreator()),
+              );
+              _refresh();
+            },
+            child: const Icon(Icons.add),
+          ),
+        ),
       ),
       body: FutureBuilder<List<Tool>>(
         future: _toolsFuture,
@@ -64,6 +70,7 @@ class _ToolTrackerState extends State<ToolTracker> {
           return RefreshIndicator(
             onRefresh: _refresh,
             child: ListView.builder(
+              padding: const EdgeInsets.only(bottom: 80),
               itemCount: tools.length,
               itemBuilder: (context, index) {
                 final tool = tools[index];
