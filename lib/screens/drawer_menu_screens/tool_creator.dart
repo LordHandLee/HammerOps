@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hammer_ops/di/injector.dart';
+import 'package:hammer_ops/services/service.dart';
 
 class ToolCreator extends StatefulWidget {
   const ToolCreator({super.key});
@@ -8,33 +10,22 @@ class ToolCreator extends StatefulWidget {
 }
 
 class _JobCreatorState extends State<ToolCreator> {
-  final TextEditingController _jobTitleController = TextEditingController();
-  final TextEditingController _customerNameController = TextEditingController();
-
-  String? _selectedQuote;
-  String? _selectedUser;
-
-  // Mock data for dropdowns
-  final List<String> _quotes = ['Quote A', 'Quote B', 'Quote C'];
-  final List<String> _users = ['User 1', 'User 2', 'User 3'];
+  final AppService service = getIt<AppService>();
+  final TextEditingController _toolNameController = TextEditingController();
+  final TextEditingController _toolDescriptionController = TextEditingController();
 
   void _saveJob() {
-    final jobTitle = _jobTitleController.text.trim();
-    final customerName = _customerNameController.text.trim();
+    final name = _toolNameController.text.trim();
+    final desc = _toolDescriptionController.text.trim();
 
-    if (jobTitle.isEmpty || customerName.isEmpty || _selectedQuote == null || _selectedUser == null) {
+    if (name.isEmpty || desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
       );
       return;
     }
 
-    // TODO: Save the job to database or perform necessary logic
-    print('Saving job...');
-    print('Title: $jobTitle');
-    print('Customer: $customerName');
-    print('Quote: $_selectedQuote');
-    print('Assigned to: $_selectedUser');
+    service.tool.addTool(name, desc);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Job saved successfully')),
@@ -56,7 +47,7 @@ class _JobCreatorState extends State<ToolCreator> {
         child: ListView(
           children: [
             TextField(
-              controller: _jobTitleController,
+              controller: _toolNameController,
               decoration: const InputDecoration(
                 labelText: 'Tool Name',
                 border: OutlineInputBorder(),
@@ -64,7 +55,7 @@ class _JobCreatorState extends State<ToolCreator> {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: _customerNameController,
+              controller: _toolDescriptionController,
               decoration: const InputDecoration(
                 labelText: 'Tool Description',
                 border: OutlineInputBorder(),

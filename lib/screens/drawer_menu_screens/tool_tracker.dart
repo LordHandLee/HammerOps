@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:hammer_ops/database/database.dart';
+import 'package:hammer_ops/di/injector.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/tool_creator.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/tool.dart';
-class ToolTracker extends StatelessWidget {
+import 'package:hammer_ops/services/service.dart';
 
-  // const ToolTracker(Key? key) : super(key: key);
+class ToolTracker extends StatefulWidget {
   const ToolTracker({super.key});
+
+  @override
+  State<ToolTracker> createState() => _ToolTrackerState();
+}
+
+class _ToolTrackerState extends State<ToolTracker> {
+  final AppService service = getIt<AppService>();
+  late Future<List<Tool>> _toolsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  void _load() {
+    _toolsFuture = service.tool.getAllTools();
+  }
+
+  Future<void> _refresh() async {
+    setState(_load);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,56 +36,54 @@ class ToolTracker extends StatelessWidget {
       appBar: AppBar(
         leading: BackButton(onPressed: () => Navigator.pop(context)),
         backgroundColor: const Color.fromARGB(255, 195, 189, 170),
-        title: Text("Tool Tracker"),
+        title: const Text("Tool Tracker"),
       ),
-      body: Row(
-        children: [
-        Column(
-          children: [
-            ElevatedButton(
-              // opens tool creation screen. tool added to list upon creation
-              onPressed: () async {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ToolCreator(),
-                  ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Create tool',
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ToolCreator()),
+          );
+          _refresh();
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: FutureBuilder<List<Tool>>(
+        future: _toolsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          final tools = snapshot.data ?? [];
+          if (tools.isEmpty) {
+            return const Center(child: Text('No tools yet.'));
+          }
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.builder(
+              itemCount: tools.length,
+              itemBuilder: (context, index) {
+                final tool = tools[index];
+                return ListTile(
+                  leading: Icon(tool.isAvailable ? Icons.build : Icons.lock),
+                  title: Text(tool.name),
+                  subtitle: Text(tool.description ?? ''),
+                  trailing: Text(tool.isAvailable ? 'Available' : 'Checked out'),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => Tools(toolId: tool.id),
+                      ),
+                    );
+                  },
                 );
               },
-              child: const Text('CREATE TOOL'),),
-            const SizedBox(height: 16),
-            ElevatedButton(
-                // opens tool creation screen. tool added to list upon creation
-                onPressed: () async {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ToolCreator(),
-                    ),
-                  );
-                },
-                child: const Text('CHECKOUT TOOL'),),
-          ],
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          // need to get list of tools from database
-          // needs to be listview.builder
-          // when click on ListTile, navigate to corresponding tool page using tool id
-          child: ListView(
-            children: [
-              // tool widget
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('TOOL 1'),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => Tool(),
-                  ),
-                ), //onNavigate(const ToolTracker()),
-              ),
-            ],
-          ),
-        ),
-        ],
+            ),
+          );
+        },
       ),
     );
   }

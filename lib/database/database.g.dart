@@ -11934,6 +11934,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final CompanyDao companyDao = CompanyDao(this as AppDatabase);
   late final JobsDao jobsDao = JobsDao(this as AppDatabase);
   late final CustomersDao customersDao = CustomersDao(this as AppDatabase);
+  late final ToolsDao toolsDao = ToolsDao(this as AppDatabase);
   late final FleetEventDao fleetEventDao = FleetEventDao(this as AppDatabase);
   late final ChecklistDao checklistDao = ChecklistDao(this as AppDatabase);
   late final AccountDao accountDao = AccountDao(this as AppDatabase);
@@ -24436,6 +24437,12 @@ mixin _$CustomersDaoMixin on DatabaseAccessor<AppDatabase> {
   $CompanyTable get company => attachedDatabase.company;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
+}
+mixin _$ToolsDaoMixin on DatabaseAccessor<AppDatabase> {
+  $AccountsTable get accounts => attachedDatabase.accounts;
+  $CompanyTable get company => attachedDatabase.company;
+  $UsersTable get users => attachedDatabase.users;
+  $ToolsTable get tools => attachedDatabase.tools;
 }
 mixin _$FleetEventDaoMixin on DatabaseAccessor<AppDatabase> {
   $FleetEventsTable get fleetEvents => attachedDatabase.fleetEvents;

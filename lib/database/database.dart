@@ -25,6 +25,7 @@ part 'database.g.dart';
     CompanyDao,
     JobsDao,
     CustomersDao,
+    ToolsDao,
     FleetEventDao,
     ChecklistDao,
     AccountDao,

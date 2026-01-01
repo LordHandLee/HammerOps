@@ -252,6 +252,35 @@ class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixi
   }
 }
 
+@DriftAccessor(tables: [Tools])
+class ToolsDao extends DatabaseAccessor<AppDatabase> with _$ToolsDaoMixin {
+  ToolsDao(super.db);
+
+  Future<int> insertTool(ToolsCompanion tool) => into(tools).insert(tool);
+
+  Future<List<Tool>> getAllTools() => select(tools).get();
+
+  Future<Tool?> getToolById(int id) =>
+      (select(tools)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<bool> updateTool(
+      {required int id,
+      String? name,
+      String? description,
+      bool? isAvailable,
+      int? managedBy}) {
+    return (update(tools)..where((t) => t.id.equals(id))).write(
+      ToolsCompanion(
+        name: name != null ? Value(name) : const Value.absent(),
+        description: description != null ? Value(description) : const Value.absent(),
+        isAvailable: isAvailable != null ? Value(isAvailable) : const Value.absent(),
+        managedBy: managedBy != null ? Value(managedBy) : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+}
+
 // @DriftAccessor(tables: [Tools])
 // class ToolsDao extends DatabaseAccessor<AppDatabase> with _$ToolsDaoMixin {
 //   ToolsDao(super.db);
@@ -531,6 +560,7 @@ class AppDao {
   final FleetEventDao fleetevent;
   final ComplaintDao complaint;
   final CustomersDao customer;
+  final ToolsDao tools;
   final TasksDao task;
   final InjuryDao injury;
   final ChecklistDao checklist;
@@ -548,6 +578,7 @@ class AppDao {
         fleetevent = FleetEventDao(db),
         complaint = ComplaintDao(db),
         customer = CustomersDao(db),
+        tools = ToolsDao(db),
         task = TasksDao(db),
         injury = InjuryDao(db),
         checklist = ChecklistDao(db),

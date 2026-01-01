@@ -248,6 +248,37 @@ class TaskRepository {
 
 }
 
+class ToolRepository {
+  final ToolsDao toolsDao;
+
+  ToolRepository(this.toolsDao);
+
+  Future<int> addTool(String name, String description, int managedBy) {
+    final tool = ToolsCompanion.insert(
+      name: name,
+      description: Value(description),
+      managedBy: managedBy,
+    );
+    return toolsDao.insertTool(tool);
+  }
+
+  Future<List<Tool>> getAllTools() => toolsDao.getAllTools();
+
+  Future<Tool?> getToolById(int id) => toolsDao.getToolById(id);
+
+  Future<bool> updateAvailability({
+    required int id,
+    required bool isAvailable,
+    required int managedBy,
+  }) {
+    return toolsDao.updateTool(
+      id: id,
+      isAvailable: isAvailable,
+      managedBy: managedBy,
+    );
+  }
+}
+
 class ComplaintRepository {
   final ComplaintDao complaintDao;
 
@@ -416,6 +447,7 @@ class AppRepository {
   final FleetEventRepository fleet;
   final ComplaintRepository complaint;
   final CustomerRepository customer;
+  final ToolRepository tool;
   final TaskRepository task;
   final InjuryRepository injury;
   final ChecklistRepository checklist;
@@ -431,6 +463,7 @@ class AppRepository {
         fleet = FleetEventRepository(dao.fleetevent),
         complaint = ComplaintRepository(dao.complaint),
         customer = CustomerRepository(dao.customer),
+        tool = ToolRepository(dao.tools),
         task = TaskRepository(dao.task),
         injury = InjuryRepository(dao.injury),
         checklist = ChecklistRepository(dao.checklist),

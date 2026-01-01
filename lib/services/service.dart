@@ -570,6 +570,45 @@ class TaskService {
 
 }
 
+class ToolService {
+  final ToolRepository toolRepository;
+  final UserService userService;
+
+  ToolService(this.toolRepository, this.userService);
+
+  int _currentUserOrFallback() {
+    try {
+      return userService.getCurrentUser();
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  Future<int> addTool(String name, String description) {
+    return toolRepository.addTool(name, description, _currentUserOrFallback());
+  }
+
+  Future<List<Tool>> getAllTools() => toolRepository.getAllTools();
+
+  Future<Tool?> getToolById(int id) => toolRepository.getToolById(id);
+
+  Future<bool> checkoutTool(int id) {
+    return toolRepository.updateAvailability(
+      id: id,
+      isAvailable: false,
+      managedBy: _currentUserOrFallback(),
+    );
+  }
+
+  Future<bool> returnTool(int id) {
+    return toolRepository.updateAvailability(
+      id: id,
+      isAvailable: true,
+      managedBy: _currentUserOrFallback(),
+    );
+  }
+}
+
 class ComplaintService {
   final ComplaintRepository complaintRepository;
 
@@ -763,6 +802,7 @@ class AppService {
   final FleetEventService fleet;
   final ComplaintService complaint;
   final CustomerService customer;
+  late final ToolService tool;
   final TaskService task;
   final InjuryService injury;
   final ChecklistService checklist;
@@ -795,5 +835,7 @@ class AppService {
           db,
           repo.localChanges,
           SyncService(ApiClient(), TokenStorage()),
-        );
+        ) {
+    tool = ToolService(repo.tool, user);
+  }
 }
