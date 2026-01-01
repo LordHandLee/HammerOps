@@ -592,7 +592,7 @@ class ToolService {
 
   Future<Tool?> getToolById(int id) => toolRepository.getToolById(id);
 
-  Future<bool> checkoutTool(int id) {
+  Future<int> checkoutTool(int id) {
     return toolRepository.updateAvailability(
       id: id,
       isAvailable: false,
@@ -600,7 +600,7 @@ class ToolService {
     );
   }
 
-  Future<bool> returnTool(int id) {
+  Future<int> returnTool(int id) {
     return toolRepository.updateAvailability(
       id: id,
       isAvailable: true,

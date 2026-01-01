@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hammer_ops/database/database.dart';
 import 'package:hammer_ops/di/injector.dart';
 import 'package:hammer_ops/services/QR_generator.dart';
-import 'package:hammer_ops/services/QR_scanner.dart';
+import 'package:hammer_ops/services/qr_scanner.dart';
 import 'package:hammer_ops/services/service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';

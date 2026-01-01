@@ -266,7 +266,7 @@ class ToolRepository {
 
   Future<Tool?> getToolById(int id) => toolsDao.getToolById(id);
 
-  Future<bool> updateAvailability({
+  Future<int> updateAvailability({
     required int id,
     required bool isAvailable,
     required int managedBy,

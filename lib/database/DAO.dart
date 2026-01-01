@@ -263,7 +263,7 @@ class ToolsDao extends DatabaseAccessor<AppDatabase> with _$ToolsDaoMixin {
   Future<Tool?> getToolById(int id) =>
       (select(tools)..where((t) => t.id.equals(id))).getSingleOrNull();
 
-  Future<bool> updateTool(
+  Future<int> updateTool(
       {required int id,
       String? name,
       String? description,
