@@ -5574,6 +5574,18 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _jobIdMeta = const VerificationMeta('jobId');
+  @override
+  late final GeneratedColumn<int> jobId = GeneratedColumn<int>(
+    'job_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES jobs (id) ON DELETE CASCADE',
+    ),
+  );
   static const VerificationMeta _isCompletedMeta = const VerificationMeta(
     'isCompleted',
   );
@@ -5670,6 +5682,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     title,
     description,
     dueDate,
+    jobId,
     isCompleted,
     isFlagged,
     reasonForFlag,
@@ -5715,6 +5728,14 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         _dueDateMeta,
         dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
       );
+    }
+    if (data.containsKey('job_id')) {
+      context.handle(
+        _jobIdMeta,
+        jobId.isAcceptableOrUnknown(data['job_id']!, _jobIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jobIdMeta);
     }
     if (data.containsKey('is_completed')) {
       context.handle(
@@ -5791,6 +5812,10 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}due_date'],
       ),
+      jobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}job_id'],
+      )!,
       isCompleted: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_completed'],
@@ -5833,6 +5858,7 @@ class Task extends DataClass implements Insertable<Task> {
   final String title;
   final String? description;
   final DateTime? dueDate;
+  final int jobId;
   final bool isCompleted;
   final bool isFlagged;
   final String? reasonForFlag;
@@ -5845,6 +5871,7 @@ class Task extends DataClass implements Insertable<Task> {
     required this.title,
     this.description,
     this.dueDate,
+    required this.jobId,
     required this.isCompleted,
     required this.isFlagged,
     this.reasonForFlag,
@@ -5864,6 +5891,7 @@ class Task extends DataClass implements Insertable<Task> {
     if (!nullToAbsent || dueDate != null) {
       map['due_date'] = Variable<DateTime>(dueDate);
     }
+    map['job_id'] = Variable<int>(jobId);
     map['is_completed'] = Variable<bool>(isCompleted);
     map['is_flagged'] = Variable<bool>(isFlagged);
     if (!nullToAbsent || reasonForFlag != null) {
@@ -5888,6 +5916,7 @@ class Task extends DataClass implements Insertable<Task> {
       dueDate: dueDate == null && nullToAbsent
           ? const Value.absent()
           : Value(dueDate),
+      jobId: Value(jobId),
       isCompleted: Value(isCompleted),
       isFlagged: Value(isFlagged),
       reasonForFlag: reasonForFlag == null && nullToAbsent
@@ -5912,6 +5941,7 @@ class Task extends DataClass implements Insertable<Task> {
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String?>(json['description']),
       dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
+      jobId: serializer.fromJson<int>(json['jobId']),
       isCompleted: serializer.fromJson<bool>(json['isCompleted']),
       isFlagged: serializer.fromJson<bool>(json['isFlagged']),
       reasonForFlag: serializer.fromJson<String?>(json['reasonForFlag']),
@@ -5929,6 +5959,7 @@ class Task extends DataClass implements Insertable<Task> {
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String?>(description),
       'dueDate': serializer.toJson<DateTime?>(dueDate),
+      'jobId': serializer.toJson<int>(jobId),
       'isCompleted': serializer.toJson<bool>(isCompleted),
       'isFlagged': serializer.toJson<bool>(isFlagged),
       'reasonForFlag': serializer.toJson<String?>(reasonForFlag),
@@ -5944,6 +5975,7 @@ class Task extends DataClass implements Insertable<Task> {
     String? title,
     Value<String?> description = const Value.absent(),
     Value<DateTime?> dueDate = const Value.absent(),
+    int? jobId,
     bool? isCompleted,
     bool? isFlagged,
     Value<String?> reasonForFlag = const Value.absent(),
@@ -5956,6 +5988,7 @@ class Task extends DataClass implements Insertable<Task> {
     title: title ?? this.title,
     description: description.present ? description.value : this.description,
     dueDate: dueDate.present ? dueDate.value : this.dueDate,
+    jobId: jobId ?? this.jobId,
     isCompleted: isCompleted ?? this.isCompleted,
     isFlagged: isFlagged ?? this.isFlagged,
     reasonForFlag: reasonForFlag.present
@@ -5974,6 +6007,7 @@ class Task extends DataClass implements Insertable<Task> {
           ? data.description.value
           : this.description,
       dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      jobId: data.jobId.present ? data.jobId.value : this.jobId,
       isCompleted: data.isCompleted.present
           ? data.isCompleted.value
           : this.isCompleted,
@@ -5997,6 +6031,7 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('dueDate: $dueDate, ')
+          ..write('jobId: $jobId, ')
           ..write('isCompleted: $isCompleted, ')
           ..write('isFlagged: $isFlagged, ')
           ..write('reasonForFlag: $reasonForFlag, ')
@@ -6014,6 +6049,7 @@ class Task extends DataClass implements Insertable<Task> {
     title,
     description,
     dueDate,
+    jobId,
     isCompleted,
     isFlagged,
     reasonForFlag,
@@ -6030,6 +6066,7 @@ class Task extends DataClass implements Insertable<Task> {
           other.title == this.title &&
           other.description == this.description &&
           other.dueDate == this.dueDate &&
+          other.jobId == this.jobId &&
           other.isCompleted == this.isCompleted &&
           other.isFlagged == this.isFlagged &&
           other.reasonForFlag == this.reasonForFlag &&
@@ -6044,6 +6081,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String> title;
   final Value<String?> description;
   final Value<DateTime?> dueDate;
+  final Value<int> jobId;
   final Value<bool> isCompleted;
   final Value<bool> isFlagged;
   final Value<String?> reasonForFlag;
@@ -6056,6 +6094,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.dueDate = const Value.absent(),
+    this.jobId = const Value.absent(),
     this.isCompleted = const Value.absent(),
     this.isFlagged = const Value.absent(),
     this.reasonForFlag = const Value.absent(),
@@ -6069,6 +6108,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     required String title,
     this.description = const Value.absent(),
     this.dueDate = const Value.absent(),
+    required int jobId,
     this.isCompleted = const Value.absent(),
     this.isFlagged = const Value.absent(),
     this.reasonForFlag = const Value.absent(),
@@ -6077,12 +6117,14 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
   }) : title = Value(title),
+       jobId = Value(jobId),
        assignedTo = Value(assignedTo);
   static Insertable<Task> custom({
     Expression<int>? id,
     Expression<String>? title,
     Expression<String>? description,
     Expression<DateTime>? dueDate,
+    Expression<int>? jobId,
     Expression<bool>? isCompleted,
     Expression<bool>? isFlagged,
     Expression<String>? reasonForFlag,
@@ -6096,6 +6138,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       if (title != null) 'title': title,
       if (description != null) 'description': description,
       if (dueDate != null) 'due_date': dueDate,
+      if (jobId != null) 'job_id': jobId,
       if (isCompleted != null) 'is_completed': isCompleted,
       if (isFlagged != null) 'is_flagged': isFlagged,
       if (reasonForFlag != null) 'reason_for_flag': reasonForFlag,
@@ -6111,6 +6154,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<String>? title,
     Value<String?>? description,
     Value<DateTime?>? dueDate,
+    Value<int>? jobId,
     Value<bool>? isCompleted,
     Value<bool>? isFlagged,
     Value<String?>? reasonForFlag,
@@ -6124,6 +6168,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       title: title ?? this.title,
       description: description ?? this.description,
       dueDate: dueDate ?? this.dueDate,
+      jobId: jobId ?? this.jobId,
       isCompleted: isCompleted ?? this.isCompleted,
       isFlagged: isFlagged ?? this.isFlagged,
       reasonForFlag: reasonForFlag ?? this.reasonForFlag,
@@ -6148,6 +6193,9 @@ class TasksCompanion extends UpdateCompanion<Task> {
     }
     if (dueDate.present) {
       map['due_date'] = Variable<DateTime>(dueDate.value);
+    }
+    if (jobId.present) {
+      map['job_id'] = Variable<int>(jobId.value);
     }
     if (isCompleted.present) {
       map['is_completed'] = Variable<bool>(isCompleted.value);
@@ -6180,6 +6228,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('dueDate: $dueDate, ')
+          ..write('jobId: $jobId, ')
           ..write('isCompleted: $isCompleted, ')
           ..write('isFlagged: $isFlagged, ')
           ..write('reasonForFlag: $reasonForFlag, ')
@@ -12077,6 +12126,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
+        'jobs',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('tasks', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
         'users',
         limitUpdateKind: UpdateKind.delete,
       ),
@@ -17868,6 +17924,25 @@ final class $$JobsTableReferences
     );
   }
 
+  static MultiTypedResultKey<$TasksTable, List<Task>> _tasksRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.tasks,
+    aliasName: $_aliasNameGenerator(db.jobs.id, db.tasks.jobId),
+  );
+
+  $$TasksTableProcessedTableManager get tasksRefs {
+    final manager = $$TasksTableTableManager(
+      $_db,
+      $_db.tasks,
+    ).filter((f) => f.jobId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_tasksRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$DocumentTable, List<DocumentData>>
   _documentRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.document,
@@ -18002,6 +18077,31 @@ class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
           ),
     );
     return composer;
+  }
+
+  Expression<bool> tasksRefs(
+    Expression<bool> Function($$TasksTableFilterComposer f) f,
+  ) {
+    final $$TasksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.jobId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TasksTableFilterComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 
   Expression<bool> documentRefs(
@@ -18250,6 +18350,31 @@ class $$JobsTableAnnotationComposer
     return composer;
   }
 
+  Expression<T> tasksRefs<T extends Object>(
+    Expression<T> Function($$TasksTableAnnotationComposer a) f,
+  ) {
+    final $$TasksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.jobId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TasksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> documentRefs<T extends Object>(
     Expression<T> Function($$DocumentTableAnnotationComposer a) f,
   ) {
@@ -18293,6 +18418,7 @@ class $$JobsTableTableManager
             bool quoteId,
             bool assignedTo,
             bool customer,
+            bool tasksRefs,
             bool documentRefs,
           })
         > {
@@ -18370,11 +18496,15 @@ class $$JobsTableTableManager
                 quoteId = false,
                 assignedTo = false,
                 customer = false,
+                tasksRefs = false,
                 documentRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [if (documentRefs) db.document],
+                  explicitlyWatchedTables: [
+                    if (tasksRefs) db.tasks,
+                    if (documentRefs) db.document,
+                  ],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -18435,6 +18565,19 @@ class $$JobsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (tasksRefs)
+                        await $_getPrefetchedData<Job, $JobsTable, Task>(
+                          currentTable: table,
+                          referencedTable: $$JobsTableReferences
+                              ._tasksRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$JobsTableReferences(db, table, p0).tasksRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.jobId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (documentRefs)
                         await $_getPrefetchedData<
                           Job,
@@ -18476,6 +18619,7 @@ typedef $$JobsTableProcessedTableManager =
         bool quoteId,
         bool assignedTo,
         bool customer,
+        bool tasksRefs,
         bool documentRefs,
       })
     >;
@@ -18855,6 +18999,7 @@ typedef $$TasksTableCreateCompanionBuilder =
       required String title,
       Value<String?> description,
       Value<DateTime?> dueDate,
+      required int jobId,
       Value<bool> isCompleted,
       Value<bool> isFlagged,
       Value<String?> reasonForFlag,
@@ -18869,6 +19014,7 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String?> description,
       Value<DateTime?> dueDate,
+      Value<int> jobId,
       Value<bool> isCompleted,
       Value<bool> isFlagged,
       Value<String?> reasonForFlag,
@@ -18881,6 +19027,23 @@ typedef $$TasksTableUpdateCompanionBuilder =
 final class $$TasksTableReferences
     extends BaseReferences<_$AppDatabase, $TasksTable, Task> {
   $$TasksTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $JobsTable _jobIdTable(_$AppDatabase db) =>
+      db.jobs.createAlias($_aliasNameGenerator(db.tasks.jobId, db.jobs.id));
+
+  $$JobsTableProcessedTableManager get jobId {
+    final $_column = $_itemColumn<int>('job_id')!;
+
+    final manager = $$JobsTableTableManager(
+      $_db,
+      $_db.jobs,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_jobIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static $UsersTable _assignedToTable(_$AppDatabase db) => db.users.createAlias(
     $_aliasNameGenerator(db.tasks.assignedTo, db.users.id),
@@ -18958,6 +19121,29 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
     column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$JobsTableFilterComposer get jobId {
+    final $$JobsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jobId,
+      referencedTable: $db.jobs,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$JobsTableFilterComposer(
+            $db: $db,
+            $table: $db.jobs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   $$UsersTableFilterComposer get assignedTo {
     final $$UsersTableFilterComposer composer = $composerBuilder(
@@ -19042,6 +19228,29 @@ class $$TasksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  $$JobsTableOrderingComposer get jobId {
+    final $$JobsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jobId,
+      referencedTable: $db.jobs,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$JobsTableOrderingComposer(
+            $db: $db,
+            $table: $db.jobs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$UsersTableOrderingComposer get assignedTo {
     final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -19111,6 +19320,29 @@ class $$TasksTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
+  $$JobsTableAnnotationComposer get jobId {
+    final $$JobsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jobId,
+      referencedTable: $db.jobs,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$JobsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.jobs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$UsersTableAnnotationComposer get assignedTo {
     final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -19148,7 +19380,7 @@ class $$TasksTableTableManager
           $$TasksTableUpdateCompanionBuilder,
           (Task, $$TasksTableReferences),
           Task,
-          PrefetchHooks Function({bool assignedTo})
+          PrefetchHooks Function({bool jobId, bool assignedTo})
         > {
   $$TasksTableTableManager(_$AppDatabase db, $TasksTable table)
     : super(
@@ -19167,6 +19399,7 @@ class $$TasksTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime?> dueDate = const Value.absent(),
+                Value<int> jobId = const Value.absent(),
                 Value<bool> isCompleted = const Value.absent(),
                 Value<bool> isFlagged = const Value.absent(),
                 Value<String?> reasonForFlag = const Value.absent(),
@@ -19179,6 +19412,7 @@ class $$TasksTableTableManager
                 title: title,
                 description: description,
                 dueDate: dueDate,
+                jobId: jobId,
                 isCompleted: isCompleted,
                 isFlagged: isFlagged,
                 reasonForFlag: reasonForFlag,
@@ -19193,6 +19427,7 @@ class $$TasksTableTableManager
                 required String title,
                 Value<String?> description = const Value.absent(),
                 Value<DateTime?> dueDate = const Value.absent(),
+                required int jobId,
                 Value<bool> isCompleted = const Value.absent(),
                 Value<bool> isFlagged = const Value.absent(),
                 Value<String?> reasonForFlag = const Value.absent(),
@@ -19205,6 +19440,7 @@ class $$TasksTableTableManager
                 title: title,
                 description: description,
                 dueDate: dueDate,
+                jobId: jobId,
                 isCompleted: isCompleted,
                 isFlagged: isFlagged,
                 reasonForFlag: reasonForFlag,
@@ -19219,7 +19455,7 @@ class $$TasksTableTableManager
                     (e.readTable(table), $$TasksTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({assignedTo = false}) {
+          prefetchHooksCallback: ({jobId = false, assignedTo = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -19239,6 +19475,19 @@ class $$TasksTableTableManager
                       dynamic
                     >
                   >(state) {
+                    if (jobId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.jobId,
+                                referencedTable: $$TasksTableReferences
+                                    ._jobIdTable(db),
+                                referencedColumn: $$TasksTableReferences
+                                    ._jobIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
                     if (assignedTo) {
                       state =
                           state.withJoin(
@@ -19276,7 +19525,7 @@ typedef $$TasksTableProcessedTableManager =
       $$TasksTableUpdateCompanionBuilder,
       (Task, $$TasksTableReferences),
       Task,
-      PrefetchHooks Function({bool assignedTo})
+      PrefetchHooks Function({bool jobId, bool assignedTo})
     >;
 typedef $$ComplaintTableCreateCompanionBuilder =
     ComplaintCompanion Function({
@@ -24474,6 +24723,10 @@ mixin _$TasksDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
   $UsersTable get users => attachedDatabase.users;
+  $TemplatesTable get templates => attachedDatabase.templates;
+  $JobQuotesTable get jobQuotes => attachedDatabase.jobQuotes;
+  $CustomersTable get customers => attachedDatabase.customers;
+  $JobsTable get jobs => attachedDatabase.jobs;
   $TasksTable get tasks => attachedDatabase.tasks;
 }
 mixin _$ComplaintDaoMixin on DatabaseAccessor<AppDatabase> {

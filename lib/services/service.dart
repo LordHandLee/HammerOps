@@ -545,14 +545,20 @@ class TaskService {
 
   TaskService(this.taskRepository);
 
-  Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
-    // final task = TasksCompanion.insert(
-    //   title: title,
-    //   description: Value(description),
-    //   dueDate: Value(dueDate),
-    //   assignedTo: assignedTo,
-    // );
-    return taskRepository.addTask(title, description, dueDate, assignedTo);
+  Future<int> addTask({
+    required String title,
+    required int jobId,
+    required int assignedTo,
+    String description = '',
+    DateTime? dueDate,
+  }) {
+    return taskRepository.addTask(
+      title: title,
+      jobId: jobId,
+      assignedTo: assignedTo,
+      description: description,
+      dueDate: dueDate,
+    );
   }
 
   Future<List<Task>> getAllTasks() {
@@ -568,6 +574,28 @@ class TaskService {
 
   Stream<List<Task>> watchAllTasks() => taskRepository.watchAllTasks();
 
+  Future<int> updateTask({
+    required int id,
+    String? title,
+    String? description,
+    DateTime? dueDate,
+    bool? isCompleted,
+    int? assignedTo,
+  }) =>
+      taskRepository.updateTask(
+        id: id,
+        title: title,
+        description: description,
+        dueDate: dueDate,
+        isCompleted: isCompleted,
+        assignedTo: assignedTo,
+      );
+
+  Future<int> deleteTask(int id) => taskRepository.deleteTask(id);
+
+  Future<List<Task>> getTasksForJob(int jobId) => taskRepository.getTasksForJob(jobId);
+
+  Stream<List<Task>> watchTasksForJob(int jobId) => taskRepository.watchTasksForJob(jobId);
 }
 
 class ToolService {

@@ -5,6 +5,7 @@ import 'package:hammer_ops/screens/drawer_menu_screens/job_manager.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/maintain_fleet.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/task_shield.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/flag_task.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/task_manager.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/injury_log.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/custom_checklist.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/admin_checklist.dart';
@@ -217,6 +218,11 @@ class _DrawerMenu extends StatelessWidget {
           leading: const Icon(Icons.settings),
           title: const Text('FLAG TASK'),
           onTap: () => onNavigate(FlagTaskScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.list_alt),
+          title: const Text('TASK MANAGER'),
+          onTap: () => onNavigate(const TaskManagerScreen()),
         ),
         ListTile(
           leading: const Icon(Icons.people),

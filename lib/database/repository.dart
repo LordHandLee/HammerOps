@@ -228,11 +228,18 @@ class TaskRepository {
 
   TaskRepository(this.tasksDao);
 
-  Future<int> addTask(String title, String description, DateTime? dueDate, int assignedTo) {
+  Future<int> addTask({
+    required String title,
+    required int jobId,
+    required int assignedTo,
+    String description = '',
+    DateTime? dueDate,
+  }) {
     final task = TasksCompanion.insert(
       title: title,
       description: Value(description),
       dueDate: Value(dueDate),
+      jobId: jobId,
       assignedTo: assignedTo,
     );
     return tasksDao.insertTask(task);
@@ -245,6 +252,29 @@ class TaskRepository {
   Future<List<Task>> getFlaggedTasks() => tasksDao.getFlaggedTasks();
 
   Stream<List<Task>> watchAllTasks() => tasksDao.watchAllTasks();
+
+  Future<int> updateTask({
+    required int id,
+    String? title,
+    String? description,
+    DateTime? dueDate,
+    bool? isCompleted,
+    int? assignedTo,
+  }) =>
+      tasksDao.updateTask(
+        id: id,
+        title: title,
+        description: description,
+        dueDate: dueDate,
+        isCompleted: isCompleted,
+        assignedTo: assignedTo,
+      );
+
+  Future<int> deleteTask(int id) => tasksDao.deleteTask(id);
+
+  Future<List<Task>> getTasksForJob(int jobId) => tasksDao.getTasksForJob(jobId);
+
+  Stream<List<Task>> watchTasksForJob(int jobId) => tasksDao.watchTasksForJob(jobId);
 
 }
 

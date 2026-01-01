@@ -326,11 +326,42 @@ class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
   }
 
   Stream<List<Task>> watchAllTasks() {
-  return (select(tasks)
-        ..orderBy([(t) => OrderingTerm.asc(t.dueDate)]))
-      .watch();
-}
+    return (select(tasks)
+          ..orderBy([(t) => OrderingTerm.asc(t.dueDate)]))
+        .watch();
+  }
 
+  Future<int> updateTask({
+    required int id,
+    String? title,
+    String? description,
+    DateTime? dueDate,
+    bool? isCompleted,
+    int? assignedTo,
+  }) {
+    return (update(tasks)..where((t) => t.id.equals(id))).write(
+      TasksCompanion(
+        title: title != null ? Value(title) : const Value.absent(),
+        description: description != null ? Value(description) : const Value.absent(),
+        dueDate: dueDate != null ? Value(dueDate) : const Value.absent(),
+        isCompleted: isCompleted != null ? Value(isCompleted) : const Value.absent(),
+        assignedTo: assignedTo != null ? Value(assignedTo) : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<int> deleteTask(int id) {
+    return (delete(tasks)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<List<Task>> getTasksForJob(int jobId) {
+    return (select(tasks)..where((t) => t.jobId.equals(jobId))).get();
+  }
+
+  Stream<List<Task>> watchTasksForJob(int jobId) {
+    return (select(tasks)..where((t) => t.jobId.equals(jobId))).watch();
+  }
 }
 
 @DriftAccessor(tables: [Complaint])

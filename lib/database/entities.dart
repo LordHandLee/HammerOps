@@ -210,6 +210,7 @@ class Tasks extends Table {
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get description => text().nullable()();
   DateTimeColumn get dueDate => dateTime().nullable()();
+  IntColumn get jobId => integer().references(Jobs, #id, onDelete: KeyAction.cascade)();
   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
 
   // Is flagged for review or important
