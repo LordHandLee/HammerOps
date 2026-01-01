@@ -188,6 +188,22 @@ class CustomerRepository {
   }
 
   Future<List<Customer>> getAllCustomers() => customerDao.getAllCustomers();
+
+  Future<int> updateCustomer({
+    required int id,
+    required String name,
+    required String contactInfo,
+    String? address,
+  }) {
+    return customerDao.updateCustomer(
+      id: id,
+      name: name,
+      contactInfo: contactInfo,
+      address: address,
+    );
+  }
+
+  Future<int> deleteCustomer(int id) => customerDao.deleteCustomer(id);
 }
 
 // class ToolRepository {

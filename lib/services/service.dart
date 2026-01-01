@@ -506,6 +506,24 @@ class CustomerService {
   Future<List<Customer>> getAllCustomers() {
     return customerRepository.getAllCustomers();
   }
+
+  Future<int> updateCustomer({
+    required int id,
+    required String name,
+    required String contactInfo,
+    String? address,
+  }) {
+    return customerRepository.updateCustomer(
+      id: id,
+      name: name,
+      contactInfo: contactInfo,
+      address: address,
+    );
+  }
+
+  Future<int> deleteCustomer(int id) {
+    return customerRepository.deleteCustomer(id);
+  }
 }
 
 // class ToolService {

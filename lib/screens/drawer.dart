@@ -8,6 +8,7 @@ import 'package:hammer_ops/screens/drawer_menu_screens/flag_task.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/injury_log.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/custom_checklist.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/admin_checklist.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/customer_manager.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
@@ -216,6 +217,11 @@ class _DrawerMenu extends StatelessWidget {
           leading: const Icon(Icons.settings),
           title: const Text('FLAG TASK'),
           onTap: () => onNavigate(FlagTaskScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.people),
+          title: const Text('CUSTOMER MANAGER'),
+          onTap: () => onNavigate(const CustomerManagerScreen()),
         ),
         ListTile(
           leading: const Icon(Icons.settings),

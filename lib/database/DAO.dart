@@ -230,6 +230,26 @@ class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixi
   Future<int> insertCustomer(CustomersCompanion customer) => into(customers).insert(customer);
 
   Future<List<Customer>> getAllCustomers() => select(customers).get();
+
+  Future<int> updateCustomer({
+    required int id,
+    required String name,
+    required String contactInfo,
+    String? address,
+  }) {
+    return (update(customers)..where((c) => c.id.equals(id))).write(
+      CustomersCompanion(
+        name: Value(name),
+        contactInfo: Value(contactInfo),
+        address: Value(address),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<int> deleteCustomer(int id) {
+    return (delete(customers)..where((c) => c.id.equals(id))).go();
+  }
 }
 
 // @DriftAccessor(tables: [Tools])
