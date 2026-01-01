@@ -146,6 +146,7 @@ class _CustomerManagerScreenState extends State<CustomerManagerScreen> {
         title: const Text('Customer Manager'),
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Add customer',
         onPressed: () => _showCustomerDialog(),
         child: const Icon(Icons.add),
       ),
@@ -160,7 +161,20 @@ class _CustomerManagerScreenState extends State<CustomerManagerScreen> {
           }
           final customers = snapshot.data ?? [];
           if (customers.isEmpty) {
-            return const Center(child: Text('No customers yet.'));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('No customers yet.'),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add customer'),
+                    onPressed: () => _showCustomerDialog(),
+                  ),
+                ],
+              ),
+            );
           }
           return RefreshIndicator(
             onRefresh: _refresh,
@@ -168,28 +182,39 @@ class _CustomerManagerScreenState extends State<CustomerManagerScreen> {
               itemCount: customers.length,
               itemBuilder: (context, index) {
                 final c = customers[index];
-                return ListTile(
-                  leading: const Icon(Icons.person),
-                  title: Text(c.name),
-                  subtitle: Text(c.contactInfo),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () => _showCustomerDialog(existing: c),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _confirmDelete(c),
-                      ),
-                    ],
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Text(c.name),
+                    subtitle: Text(c.contactInfo),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _showCustomerDialog(existing: c),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _confirmDelete(c),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
           );
         },
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12),
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.add),
+          label: const Text('Add customer'),
+          onPressed: () => _showCustomerDialog(),
+        ),
       ),
     );
   }
