@@ -221,7 +221,7 @@ class _DrawerMenu extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.people),
           title: const Text('CUSTOMER MANAGER'),
-          onTap: () => onNavigate(const CustomerManagerScreen()),
+          onTap: () => onNavigate(CustomerManagerScreen()),
         ),
         ListTile(
           leading: const Icon(Icons.settings),
