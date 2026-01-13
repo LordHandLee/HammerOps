@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Hammer Ops uses your calendar to add and update fleet maintenance events.</string>
 </dict>
 </plist>

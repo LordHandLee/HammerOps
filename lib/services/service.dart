@@ -5,8 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:hammer_ops/database/repository.dart';
 import 'package:hammer_ops/database/database.dart';
 import 'package:drift/drift.dart';
-import 'package:device_calendar/device_calendar.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:hammer_ops/services/calendar_sync.dart';
 import 'package:hammer_ops/services/api_client.dart';
 import 'package:hammer_ops/services/auth_api.dart';
 import 'package:hammer_ops/services/token_storage.dart';
@@ -692,9 +691,10 @@ class InjuryService {
 
 class FleetEventService {
   final FleetEventRepository repository;
-  final _calendarPlugin = DeviceCalendarPlugin();
+  final CalendarSync calendarSync;
 
-  FleetEventService(this.repository);
+  FleetEventService(this.repository, {CalendarSync? calendarSync})
+      : calendarSync = calendarSync ?? CalendarSync();
 
   // Get future events (from DB)
   Future<List<FleetEvent>> getFutureEvents() {
@@ -716,10 +716,22 @@ class FleetEventService {
       notes: Value(notes),
     );
 
-    await repository.addEvent(event);
+    final id = await repository.addEvent(event);
 
     if (addToCalendar) {
-      await _addToDeviceCalendar(event);
+      try {
+        final extId = await calendarSync.upsertEvent(
+          title: '$vehicleName - $eventType',
+          start: date,
+          end: date.add(const Duration(hours: 1)),
+          notes: notes,
+        );
+        if (extId != null) {
+          await repository.updateCalendarId(id, extId);
+        }
+      } catch (_) {
+        // ignore calendar failures
+      }
     }
   }
 
@@ -736,48 +748,29 @@ class FleetEventService {
     await repository.updateEvent(updated);
 
     if (updateCalendar) {
-      await _addToDeviceCalendar(updated);
+      try {
+        final extId = await calendarSync.upsertEvent(
+          title: '${event.vehicleName} - ${event.eventType}',
+          start: event.date,
+          end: event.date.add(const Duration(hours: 1)),
+          notes: event.notes,
+          externalId: event.calendarEventId,
+        );
+        if (extId != null && extId != event.calendarEventId) {
+          await repository.updateCalendarId(event.id, extId);
+        }
+      } catch (_) {}
     }
   }
 
   // Delete event
   Future<void> deleteEvent(FleetEvent event, {bool removeFromCalendar = true}) async {
     await repository.deleteEvent(event.id);
-    if (removeFromCalendar) {
-      await _removeFromDeviceCalendar(event);
+    if (removeFromCalendar && event.calendarEventId != null) {
+      try {
+        await calendarSync.deleteEvent(event.calendarEventId!);
+      } catch (_) {}
     }
-  }
-
-  // --- Calendar integration ---
-
-  Future<void> _addToDeviceCalendar(FleetEventsCompanion event) async {
-    final permissions = await _calendarPlugin.hasPermissions();
-    if (!permissions.isSuccess || !permissions.data!) {
-      await _calendarPlugin.requestPermissions();
-    }
-
-    final calendars = await _calendarPlugin.retrieveCalendars();
-    if (!calendars.isSuccess || calendars.data!.isEmpty) return;
-
-    final calendar = calendars.data!.first;
-
-      // Convert to TZDateTime
-    final start = tz.TZDateTime.from(event.date.value, tz.local);
-    final end = start.add(const Duration(hours: 1));
-
-    final calEvent = Event(
-      calendar.id,
-      title: '${event.vehicleName.value} - ${event.eventType.value}',
-      start: start,
-      end: end,
-      description: event.notes.value,
-    );
-
-    await _calendarPlugin.createOrUpdateEvent(calEvent);
-  }
-
-  Future<void> _removeFromDeviceCalendar(FleetEvent event) async {
-    // Optional: store event.calendarEventId in DB if you want to remove it later
   }
 }
 

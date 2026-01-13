@@ -408,7 +408,7 @@ class FleetEventDao extends DatabaseAccessor<AppDatabase> with _$FleetEventDaoMi
         .get();
   }
 
-  Future<void> insertEvent(FleetEventsCompanion event) =>
+  Future<int> insertEvent(FleetEventsCompanion event) =>
       into(fleetEvents).insert(event);
 
   Future<void> updateEvent(FleetEventsCompanion event) =>

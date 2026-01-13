@@ -371,9 +371,18 @@ class FleetEventRepository {
   FleetEventRepository(this.fleetDao);
 
   Future<List<FleetEvent>> getFutureEvents() => fleetDao.getFutureEvents();
-  Future<void> addEvent(FleetEventsCompanion event) => fleetDao.insertEvent(event);
+  Future<int> addEvent(FleetEventsCompanion event) => fleetDao.insertEvent(event);
   Future<void> updateEvent(FleetEventsCompanion event) => fleetDao.updateEvent(event);
   Future<void> deleteEvent(int id) => fleetDao.deleteEvent(id);
+
+  Future<void> updateCalendarId(int id, String? calendarId) {
+    return (fleetDao.update(fleetDao.fleetEvents)..where((t) => t.id.equals(id))).write(
+      FleetEventsCompanion(
+        calendarEventId: Value(calendarId),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
 }
 
 class ChecklistRepository {

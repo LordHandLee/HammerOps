@@ -8264,6 +8264,17 @@ class $FleetEventsTable extends FleetEvents
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _calendarEventIdMeta = const VerificationMeta(
+    'calendarEventId',
+  );
+  @override
+  late final GeneratedColumn<String> calendarEventId = GeneratedColumn<String>(
+    'calendar_event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -8306,6 +8317,7 @@ class $FleetEventsTable extends FleetEvents
     eventType,
     date,
     notes,
+    calendarEventId,
     updatedAt,
     version,
     deletedAt,
@@ -8358,6 +8370,15 @@ class $FleetEventsTable extends FleetEvents
         notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
       );
     }
+    if (data.containsKey('calendar_event_id')) {
+      context.handle(
+        _calendarEventIdMeta,
+        calendarEventId.isAcceptableOrUnknown(
+          data['calendar_event_id']!,
+          _calendarEventIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -8405,6 +8426,10 @@ class $FleetEventsTable extends FleetEvents
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
       ),
+      calendarEventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calendar_event_id'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -8432,6 +8457,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
   final String eventType;
   final DateTime date;
   final String? notes;
+  final String? calendarEventId;
   final DateTime updatedAt;
   final int version;
   final DateTime? deletedAt;
@@ -8441,6 +8467,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
     required this.eventType,
     required this.date,
     this.notes,
+    this.calendarEventId,
     required this.updatedAt,
     required this.version,
     this.deletedAt,
@@ -8454,6 +8481,9 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
     map['date'] = Variable<DateTime>(date);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || calendarEventId != null) {
+      map['calendar_event_id'] = Variable<String>(calendarEventId);
     }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['version'] = Variable<int>(version);
@@ -8472,6 +8502,9 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
+      calendarEventId: calendarEventId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(calendarEventId),
       updatedAt: Value(updatedAt),
       version: Value(version),
       deletedAt: deletedAt == null && nullToAbsent
@@ -8491,6 +8524,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
       eventType: serializer.fromJson<String>(json['eventType']),
       date: serializer.fromJson<DateTime>(json['date']),
       notes: serializer.fromJson<String?>(json['notes']),
+      calendarEventId: serializer.fromJson<String?>(json['calendarEventId']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       version: serializer.fromJson<int>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -8505,6 +8539,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
       'eventType': serializer.toJson<String>(eventType),
       'date': serializer.toJson<DateTime>(date),
       'notes': serializer.toJson<String?>(notes),
+      'calendarEventId': serializer.toJson<String?>(calendarEventId),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'version': serializer.toJson<int>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -8517,6 +8552,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
     String? eventType,
     DateTime? date,
     Value<String?> notes = const Value.absent(),
+    Value<String?> calendarEventId = const Value.absent(),
     DateTime? updatedAt,
     int? version,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -8526,6 +8562,9 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
     eventType: eventType ?? this.eventType,
     date: date ?? this.date,
     notes: notes.present ? notes.value : this.notes,
+    calendarEventId: calendarEventId.present
+        ? calendarEventId.value
+        : this.calendarEventId,
     updatedAt: updatedAt ?? this.updatedAt,
     version: version ?? this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -8539,6 +8578,9 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
       eventType: data.eventType.present ? data.eventType.value : this.eventType,
       date: data.date.present ? data.date.value : this.date,
       notes: data.notes.present ? data.notes.value : this.notes,
+      calendarEventId: data.calendarEventId.present
+          ? data.calendarEventId.value
+          : this.calendarEventId,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       version: data.version.present ? data.version.value : this.version,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -8553,6 +8595,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
           ..write('eventType: $eventType, ')
           ..write('date: $date, ')
           ..write('notes: $notes, ')
+          ..write('calendarEventId: $calendarEventId, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
           ..write('deletedAt: $deletedAt')
@@ -8567,6 +8610,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
     eventType,
     date,
     notes,
+    calendarEventId,
     updatedAt,
     version,
     deletedAt,
@@ -8580,6 +8624,7 @@ class FleetEvent extends DataClass implements Insertable<FleetEvent> {
           other.eventType == this.eventType &&
           other.date == this.date &&
           other.notes == this.notes &&
+          other.calendarEventId == this.calendarEventId &&
           other.updatedAt == this.updatedAt &&
           other.version == this.version &&
           other.deletedAt == this.deletedAt);
@@ -8591,6 +8636,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
   final Value<String> eventType;
   final Value<DateTime> date;
   final Value<String?> notes;
+  final Value<String?> calendarEventId;
   final Value<DateTime> updatedAt;
   final Value<int> version;
   final Value<DateTime?> deletedAt;
@@ -8600,6 +8646,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
     this.eventType = const Value.absent(),
     this.date = const Value.absent(),
     this.notes = const Value.absent(),
+    this.calendarEventId = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -8610,6 +8657,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
     required String eventType,
     required DateTime date,
     this.notes = const Value.absent(),
+    this.calendarEventId = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -8622,6 +8670,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
     Expression<String>? eventType,
     Expression<DateTime>? date,
     Expression<String>? notes,
+    Expression<String>? calendarEventId,
     Expression<DateTime>? updatedAt,
     Expression<int>? version,
     Expression<DateTime>? deletedAt,
@@ -8632,6 +8681,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
       if (eventType != null) 'event_type': eventType,
       if (date != null) 'date': date,
       if (notes != null) 'notes': notes,
+      if (calendarEventId != null) 'calendar_event_id': calendarEventId,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (version != null) 'version': version,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -8644,6 +8694,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
     Value<String>? eventType,
     Value<DateTime>? date,
     Value<String?>? notes,
+    Value<String?>? calendarEventId,
     Value<DateTime>? updatedAt,
     Value<int>? version,
     Value<DateTime?>? deletedAt,
@@ -8654,6 +8705,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
       eventType: eventType ?? this.eventType,
       date: date ?? this.date,
       notes: notes ?? this.notes,
+      calendarEventId: calendarEventId ?? this.calendarEventId,
       updatedAt: updatedAt ?? this.updatedAt,
       version: version ?? this.version,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -8678,6 +8730,9 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
+    if (calendarEventId.present) {
+      map['calendar_event_id'] = Variable<String>(calendarEventId.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -8698,6 +8753,7 @@ class FleetEventsCompanion extends UpdateCompanion<FleetEvent> {
           ..write('eventType: $eventType, ')
           ..write('date: $date, ')
           ..write('notes: $notes, ')
+          ..write('calendarEventId: $calendarEventId, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
           ..write('deletedAt: $deletedAt')
@@ -21356,6 +21412,7 @@ typedef $$FleetEventsTableCreateCompanionBuilder =
       required String eventType,
       required DateTime date,
       Value<String?> notes,
+      Value<String?> calendarEventId,
       Value<DateTime> updatedAt,
       Value<int> version,
       Value<DateTime?> deletedAt,
@@ -21367,6 +21424,7 @@ typedef $$FleetEventsTableUpdateCompanionBuilder =
       Value<String> eventType,
       Value<DateTime> date,
       Value<String?> notes,
+      Value<String?> calendarEventId,
       Value<DateTime> updatedAt,
       Value<int> version,
       Value<DateTime?> deletedAt,
@@ -21403,6 +21461,11 @@ class $$FleetEventsTableFilterComposer
 
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calendarEventId => $composableBuilder(
+    column: $table.calendarEventId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21456,6 +21519,11 @@ class $$FleetEventsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get calendarEventId => $composableBuilder(
+    column: $table.calendarEventId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -21497,6 +21565,11 @@ class $$FleetEventsTableAnnotationComposer
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get calendarEventId => $composableBuilder(
+    column: $table.calendarEventId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -21544,6 +21617,7 @@ class $$FleetEventsTableTableManager
                 Value<String> eventType = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
+                Value<String?> calendarEventId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -21553,6 +21627,7 @@ class $$FleetEventsTableTableManager
                 eventType: eventType,
                 date: date,
                 notes: notes,
+                calendarEventId: calendarEventId,
                 updatedAt: updatedAt,
                 version: version,
                 deletedAt: deletedAt,
@@ -21564,6 +21639,7 @@ class $$FleetEventsTableTableManager
                 required String eventType,
                 required DateTime date,
                 Value<String?> notes = const Value.absent(),
+                Value<String?> calendarEventId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -21573,6 +21649,7 @@ class $$FleetEventsTableTableManager
                 eventType: eventType,
                 date: date,
                 notes: notes,
+                calendarEventId: calendarEventId,
                 updatedAt: updatedAt,
                 version: version,
                 deletedAt: deletedAt,

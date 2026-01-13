@@ -310,6 +310,7 @@ class FleetEvents extends Table {
   TextColumn get eventType => text()(); // maintenance, repair, inspection
   DateTimeColumn get date => dateTime()();
   TextColumn get notes => text().nullable()();
+  TextColumn get calendarEventId => text().nullable()();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   IntColumn get version => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();
