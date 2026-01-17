@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:hammer_ops/screens/subscreens/briefcase_screen.dart';
+import 'package:hammer_ops/screens/subscreens/task_list_screen.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -20,11 +20,8 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
+
 class _DashboardPageState extends State<DashboardPage> {
-  final GlobalKey _topBarKey = GlobalKey();
-  final GlobalKey _bottomBarKey = GlobalKey();
-
-
 @override
   Widget build(BuildContext context) {
     // compute available height between AppBar and BottomNavigationBar (account for system padding)
@@ -75,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 textColor: Colors.white,
                 container_color: Color.fromARGB(255, 28, 46, 60),
                 expanded_color: Color.fromARGB(255, 28, 46, 60),
-                subscreen: BriefcaseScreen(),
+                subscreen: const TaskListScreen(),
               ),
               SnugTile(
                 title: "SUPPLY DECK", 
@@ -220,4 +217,3 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
     );
   }
 }
-
