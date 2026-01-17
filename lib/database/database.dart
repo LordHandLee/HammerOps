@@ -17,7 +17,7 @@ part 'database.g.dart';
 // ------------------
 @DriftDatabase(
   tables: [Users, Templates, TemplateFields, JobQuotes, QuoteFieldValues, Jobs, Customers, Company, Tools, Tasks, Complaint,
-  Injury, Document, FleetEvents, ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems, Accounts, AccountSessions, CompanyMembers, LocalChanges], 
+  Injury, Documents, FleetEvents, ChecklistTemplates, ChecklistItems, ChecklistRuns, ChecklistRunItems, Accounts, AccountSessions, CompanyMembers, LocalChanges], 
   daos: [
     UserDao,
     TemplatesDao,
@@ -25,6 +25,7 @@ part 'database.g.dart';
     CompanyDao,
     JobsDao,
     CustomersDao,
+    DocumentDao,
     ToolsDao,
     FleetEventDao,
     ChecklistDao,

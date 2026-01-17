@@ -385,6 +385,34 @@ class FleetEventRepository {
   }
 }
 
+class DocumentRepository {
+  final DocumentDao dao;
+
+  DocumentRepository(this.dao);
+
+  Future<int> addDocument({
+    required String title,
+    required String filePath,
+    required int uploadedBy,
+    int? jobId,
+    int? customerId,
+  }) {
+    final companion = DocumentsCompanion.insert(
+      title: title,
+      filePath: filePath,
+      uploadedBy: uploadedBy,
+      customerId: Value(customerId),
+      jobId: Value(jobId),
+    );
+    return dao.insertDocument(companion);
+  }
+
+  Future<List<Document>> getAllDocuments() => dao.getAllDocuments();
+  Future<List<Document>> getDocumentsByJob(int jobId) => dao.getDocumentsByJob(jobId);
+  Future<List<Document>> getDocumentsWithoutJob() => dao.getDocumentsWithoutJob();
+  Future<int> deleteDocument(int id) => dao.deleteDocument(id);
+}
+
 class ChecklistRepository {
   final ChecklistDao dao;
 
@@ -491,6 +519,7 @@ class AppRepository {
   final InjuryRepository injury;
   final ChecklistRepository checklist;
   final JobRepository jobs;
+  final DocumentRepository document;
   final AccountRepository account;
   final LocalChangeDao localChanges;
 
@@ -507,6 +536,7 @@ class AppRepository {
         injury = InjuryRepository(dao.injury),
         checklist = ChecklistRepository(dao.checklist),
         jobs = JobRepository(dao.jobs),
+        document = DocumentRepository(dao.document),
         account = AccountRepository(dao.account, dao.accountSession, dao.companyMember),
         localChanges = dao.localChanges;
 }

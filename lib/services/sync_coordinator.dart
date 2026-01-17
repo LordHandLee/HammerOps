@@ -50,8 +50,8 @@ class SyncCoordinator {
           grouped[table]!['rows'].add(decoded as Map<String, dynamic>);
         }
       }
-      final pushRes = await syncService.push(grouped.values.toList());
-      // Optional: inspect pushRes['conflicts']
+      await syncService.push(grouped.values.toList());
+      // Optional: inspect push response for conflicts
       await localChanges.clear();
     }
 
@@ -109,8 +109,8 @@ class SyncCoordinator {
         return db.complaint;
       case 'injury':
         return db.injury;
-      case 'document':
-        return db.document;
+      case 'documents':
+        return db.documents;
       case 'fleet_events':
         return db.fleetEvents;
       case 'checklist_templates':

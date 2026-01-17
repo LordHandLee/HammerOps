@@ -7597,12 +7597,12 @@ class InjuryCompanion extends UpdateCompanion<InjuryData> {
   }
 }
 
-class $DocumentTable extends Document
-    with TableInfo<$DocumentTable, DocumentData> {
+class $DocumentsTable extends Documents
+    with TableInfo<$DocumentsTable, Document> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $DocumentTable(this.attachedDatabase, [this._alias]);
+  $DocumentsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -7673,9 +7673,9 @@ class $DocumentTable extends Document
   late final GeneratedColumn<int> customerId = GeneratedColumn<int>(
     'customer_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES customers (id) ON DELETE CASCADE',
     ),
@@ -7685,9 +7685,9 @@ class $DocumentTable extends Document
   late final GeneratedColumn<int> jobId = GeneratedColumn<int>(
     'job_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES jobs (id) ON DELETE CASCADE',
     ),
@@ -7744,10 +7744,10 @@ class $DocumentTable extends Document
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'document';
+  static const String $name = 'documents';
   @override
   VerificationContext validateIntegrity(
-    Insertable<DocumentData> instance, {
+    Insertable<Document> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -7790,16 +7790,12 @@ class $DocumentTable extends Document
         _customerIdMeta,
         customerId.isAcceptableOrUnknown(data['customer_id']!, _customerIdMeta),
       );
-    } else if (isInserting) {
-      context.missing(_customerIdMeta);
     }
     if (data.containsKey('job_id')) {
       context.handle(
         _jobIdMeta,
         jobId.isAcceptableOrUnknown(data['job_id']!, _jobIdMeta),
       );
-    } else if (isInserting) {
-      context.missing(_jobIdMeta);
     }
     if (data.containsKey('updated_at')) {
       context.handle(
@@ -7825,9 +7821,9 @@ class $DocumentTable extends Document
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  DocumentData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Document map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DocumentData(
+    return Document(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -7851,11 +7847,11 @@ class $DocumentTable extends Document
       customerId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}customer_id'],
-      )!,
+      ),
       jobId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}job_id'],
-      )!,
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -7872,30 +7868,30 @@ class $DocumentTable extends Document
   }
 
   @override
-  $DocumentTable createAlias(String alias) {
-    return $DocumentTable(attachedDatabase, alias);
+  $DocumentsTable createAlias(String alias) {
+    return $DocumentsTable(attachedDatabase, alias);
   }
 }
 
-class DocumentData extends DataClass implements Insertable<DocumentData> {
+class Document extends DataClass implements Insertable<Document> {
   final int id;
   final String title;
   final String filePath;
   final DateTime uploadedAt;
   final int uploadedBy;
-  final int customerId;
-  final int jobId;
+  final int? customerId;
+  final int? jobId;
   final DateTime updatedAt;
   final int version;
   final DateTime? deletedAt;
-  const DocumentData({
+  const Document({
     required this.id,
     required this.title,
     required this.filePath,
     required this.uploadedAt,
     required this.uploadedBy,
-    required this.customerId,
-    required this.jobId,
+    this.customerId,
+    this.jobId,
     required this.updatedAt,
     required this.version,
     this.deletedAt,
@@ -7908,8 +7904,12 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
     map['file_path'] = Variable<String>(filePath);
     map['uploaded_at'] = Variable<DateTime>(uploadedAt);
     map['uploaded_by'] = Variable<int>(uploadedBy);
-    map['customer_id'] = Variable<int>(customerId);
-    map['job_id'] = Variable<int>(jobId);
+    if (!nullToAbsent || customerId != null) {
+      map['customer_id'] = Variable<int>(customerId);
+    }
+    if (!nullToAbsent || jobId != null) {
+      map['job_id'] = Variable<int>(jobId);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['version'] = Variable<int>(version);
     if (!nullToAbsent || deletedAt != null) {
@@ -7918,15 +7918,19 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
     return map;
   }
 
-  DocumentCompanion toCompanion(bool nullToAbsent) {
-    return DocumentCompanion(
+  DocumentsCompanion toCompanion(bool nullToAbsent) {
+    return DocumentsCompanion(
       id: Value(id),
       title: Value(title),
       filePath: Value(filePath),
       uploadedAt: Value(uploadedAt),
       uploadedBy: Value(uploadedBy),
-      customerId: Value(customerId),
-      jobId: Value(jobId),
+      customerId: customerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customerId),
+      jobId: jobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobId),
       updatedAt: Value(updatedAt),
       version: Value(version),
       deletedAt: deletedAt == null && nullToAbsent
@@ -7935,19 +7939,19 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
     );
   }
 
-  factory DocumentData.fromJson(
+  factory Document.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DocumentData(
+    return Document(
       id: serializer.fromJson<int>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       filePath: serializer.fromJson<String>(json['filePath']),
       uploadedAt: serializer.fromJson<DateTime>(json['uploadedAt']),
       uploadedBy: serializer.fromJson<int>(json['uploadedBy']),
-      customerId: serializer.fromJson<int>(json['customerId']),
-      jobId: serializer.fromJson<int>(json['jobId']),
+      customerId: serializer.fromJson<int?>(json['customerId']),
+      jobId: serializer.fromJson<int?>(json['jobId']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       version: serializer.fromJson<int>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -7962,39 +7966,39 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
       'filePath': serializer.toJson<String>(filePath),
       'uploadedAt': serializer.toJson<DateTime>(uploadedAt),
       'uploadedBy': serializer.toJson<int>(uploadedBy),
-      'customerId': serializer.toJson<int>(customerId),
-      'jobId': serializer.toJson<int>(jobId),
+      'customerId': serializer.toJson<int?>(customerId),
+      'jobId': serializer.toJson<int?>(jobId),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'version': serializer.toJson<int>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
-  DocumentData copyWith({
+  Document copyWith({
     int? id,
     String? title,
     String? filePath,
     DateTime? uploadedAt,
     int? uploadedBy,
-    int? customerId,
-    int? jobId,
+    Value<int?> customerId = const Value.absent(),
+    Value<int?> jobId = const Value.absent(),
     DateTime? updatedAt,
     int? version,
     Value<DateTime?> deletedAt = const Value.absent(),
-  }) => DocumentData(
+  }) => Document(
     id: id ?? this.id,
     title: title ?? this.title,
     filePath: filePath ?? this.filePath,
     uploadedAt: uploadedAt ?? this.uploadedAt,
     uploadedBy: uploadedBy ?? this.uploadedBy,
-    customerId: customerId ?? this.customerId,
-    jobId: jobId ?? this.jobId,
+    customerId: customerId.present ? customerId.value : this.customerId,
+    jobId: jobId.present ? jobId.value : this.jobId,
     updatedAt: updatedAt ?? this.updatedAt,
     version: version ?? this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
-  DocumentData copyWithCompanion(DocumentCompanion data) {
-    return DocumentData(
+  Document copyWithCompanion(DocumentsCompanion data) {
+    return Document(
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
@@ -8016,7 +8020,7 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
 
   @override
   String toString() {
-    return (StringBuffer('DocumentData(')
+    return (StringBuffer('Document(')
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('filePath: $filePath, ')
@@ -8047,7 +8051,7 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is DocumentData &&
+      (other is Document &&
           other.id == this.id &&
           other.title == this.title &&
           other.filePath == this.filePath &&
@@ -8060,18 +8064,18 @@ class DocumentData extends DataClass implements Insertable<DocumentData> {
           other.deletedAt == this.deletedAt);
 }
 
-class DocumentCompanion extends UpdateCompanion<DocumentData> {
+class DocumentsCompanion extends UpdateCompanion<Document> {
   final Value<int> id;
   final Value<String> title;
   final Value<String> filePath;
   final Value<DateTime> uploadedAt;
   final Value<int> uploadedBy;
-  final Value<int> customerId;
-  final Value<int> jobId;
+  final Value<int?> customerId;
+  final Value<int?> jobId;
   final Value<DateTime> updatedAt;
   final Value<int> version;
   final Value<DateTime?> deletedAt;
-  const DocumentCompanion({
+  const DocumentsCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.filePath = const Value.absent(),
@@ -8083,23 +8087,21 @@ class DocumentCompanion extends UpdateCompanion<DocumentData> {
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
   });
-  DocumentCompanion.insert({
+  DocumentsCompanion.insert({
     this.id = const Value.absent(),
     required String title,
     required String filePath,
     this.uploadedAt = const Value.absent(),
     required int uploadedBy,
-    required int customerId,
-    required int jobId,
+    this.customerId = const Value.absent(),
+    this.jobId = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
   }) : title = Value(title),
        filePath = Value(filePath),
-       uploadedBy = Value(uploadedBy),
-       customerId = Value(customerId),
-       jobId = Value(jobId);
-  static Insertable<DocumentData> custom({
+       uploadedBy = Value(uploadedBy);
+  static Insertable<Document> custom({
     Expression<int>? id,
     Expression<String>? title,
     Expression<String>? filePath,
@@ -8125,19 +8127,19 @@ class DocumentCompanion extends UpdateCompanion<DocumentData> {
     });
   }
 
-  DocumentCompanion copyWith({
+  DocumentsCompanion copyWith({
     Value<int>? id,
     Value<String>? title,
     Value<String>? filePath,
     Value<DateTime>? uploadedAt,
     Value<int>? uploadedBy,
-    Value<int>? customerId,
-    Value<int>? jobId,
+    Value<int?>? customerId,
+    Value<int?>? jobId,
     Value<DateTime>? updatedAt,
     Value<int>? version,
     Value<DateTime?>? deletedAt,
   }) {
-    return DocumentCompanion(
+    return DocumentsCompanion(
       id: id ?? this.id,
       title: title ?? this.title,
       filePath: filePath ?? this.filePath,
@@ -8189,7 +8191,7 @@ class DocumentCompanion extends UpdateCompanion<DocumentData> {
 
   @override
   String toString() {
-    return (StringBuffer('DocumentCompanion(')
+    return (StringBuffer('DocumentsCompanion(')
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('filePath: $filePath, ')
@@ -12020,7 +12022,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TasksTable tasks = $TasksTable(this);
   late final $ComplaintTable complaint = $ComplaintTable(this);
   late final $InjuryTable injury = $InjuryTable(this);
-  late final $DocumentTable document = $DocumentTable(this);
+  late final $DocumentsTable documents = $DocumentsTable(this);
   late final $FleetEventsTable fleetEvents = $FleetEventsTable(this);
   late final $ChecklistTemplatesTable checklistTemplates =
       $ChecklistTemplatesTable(this);
@@ -12039,6 +12041,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final CompanyDao companyDao = CompanyDao(this as AppDatabase);
   late final JobsDao jobsDao = JobsDao(this as AppDatabase);
   late final CustomersDao customersDao = CustomersDao(this as AppDatabase);
+  late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final ToolsDao toolsDao = ToolsDao(this as AppDatabase);
   late final FleetEventDao fleetEventDao = FleetEventDao(this as AppDatabase);
   late final ChecklistDao checklistDao = ChecklistDao(this as AppDatabase);
@@ -12070,7 +12073,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     tasks,
     complaint,
     injury,
-    document,
+    documents,
     fleetEvents,
     checklistTemplates,
     checklistItems,
@@ -12241,21 +12244,21 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         'users',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('document', kind: UpdateKind.delete)],
+      result: [TableUpdate('documents', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'customers',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('document', kind: UpdateKind.delete)],
+      result: [TableUpdate('documents', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'jobs',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('document', kind: UpdateKind.delete)],
+      result: [TableUpdate('documents', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -13677,19 +13680,19 @@ final class $$UsersTableReferences
     );
   }
 
-  static MultiTypedResultKey<$DocumentTable, List<DocumentData>>
-  _documentRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.document,
-    aliasName: $_aliasNameGenerator(db.users.id, db.document.uploadedBy),
+  static MultiTypedResultKey<$DocumentsTable, List<Document>>
+  _documentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.documents,
+    aliasName: $_aliasNameGenerator(db.users.id, db.documents.uploadedBy),
   );
 
-  $$DocumentTableProcessedTableManager get documentRefs {
-    final manager = $$DocumentTableTableManager(
+  $$DocumentsTableProcessedTableManager get documentsRefs {
+    final manager = $$DocumentsTableTableManager(
       $_db,
-      $_db.document,
+      $_db.documents,
     ).filter((f) => f.uploadedBy.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_documentRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_documentsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -14050,22 +14053,22 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
     return f(composer);
   }
 
-  Expression<bool> documentRefs(
-    Expression<bool> Function($$DocumentTableFilterComposer f) f,
+  Expression<bool> documentsRefs(
+    Expression<bool> Function($$DocumentsTableFilterComposer f) f,
   ) {
-    final $$DocumentTableFilterComposer composer = $composerBuilder(
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.document,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.uploadedBy,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentTableFilterComposer(
+          }) => $$DocumentsTableFilterComposer(
             $db: $db,
-            $table: $db.document,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -14521,22 +14524,22 @@ class $$UsersTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> documentRefs<T extends Object>(
-    Expression<T> Function($$DocumentTableAnnotationComposer a) f,
+  Expression<T> documentsRefs<T extends Object>(
+    Expression<T> Function($$DocumentsTableAnnotationComposer a) f,
   ) {
-    final $$DocumentTableAnnotationComposer composer = $composerBuilder(
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.document,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.uploadedBy,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentTableAnnotationComposer(
+          }) => $$DocumentsTableAnnotationComposer(
             $db: $db,
-            $table: $db.document,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -14573,7 +14576,7 @@ class $$UsersTableTableManager
             bool complaintRefs,
             bool userInjuries,
             bool injuryRefs,
-            bool documentRefs,
+            bool documentsRefs,
           })
         > {
   $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
@@ -14663,7 +14666,7 @@ class $$UsersTableTableManager
                 complaintRefs = false,
                 userInjuries = false,
                 injuryRefs = false,
-                documentRefs = false,
+                documentsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -14678,7 +14681,7 @@ class $$UsersTableTableManager
                     if (complaintRefs) db.complaint,
                     if (userInjuries) db.injury,
                     if (injuryRefs) db.injury,
-                    if (documentRefs) db.document,
+                    if (documentsRefs) db.documents,
                   ],
                   addJoins:
                       <
@@ -14897,21 +14900,17 @@ class $$UsersTableTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (documentRefs)
-                        await $_getPrefetchedData<
-                          User,
-                          $UsersTable,
-                          DocumentData
-                        >(
+                      if (documentsRefs)
+                        await $_getPrefetchedData<User, $UsersTable, Document>(
                           currentTable: table,
                           referencedTable: $$UsersTableReferences
-                              ._documentRefsTable(db),
+                              ._documentsRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).documentRefs,
+                              ).documentsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.uploadedBy == item.id,
@@ -14951,7 +14950,7 @@ typedef $$UsersTableProcessedTableManager =
         bool complaintRefs,
         bool userInjuries,
         bool injuryRefs,
-        bool documentRefs,
+        bool documentsRefs,
       })
     >;
 typedef $$TemplatesTableCreateCompanionBuilder =
@@ -17242,19 +17241,19 @@ final class $$CustomersTableReferences
     );
   }
 
-  static MultiTypedResultKey<$DocumentTable, List<DocumentData>>
-  _documentRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.document,
-    aliasName: $_aliasNameGenerator(db.customers.id, db.document.customerId),
+  static MultiTypedResultKey<$DocumentsTable, List<Document>>
+  _documentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.documents,
+    aliasName: $_aliasNameGenerator(db.customers.id, db.documents.customerId),
   );
 
-  $$DocumentTableProcessedTableManager get documentRefs {
-    final manager = $$DocumentTableTableManager(
+  $$DocumentsTableProcessedTableManager get documentsRefs {
+    final manager = $$DocumentsTableTableManager(
       $_db,
-      $_db.document,
+      $_db.documents,
     ).filter((f) => f.customerId.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_documentRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_documentsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -17403,22 +17402,22 @@ class $$CustomersTableFilterComposer
     return f(composer);
   }
 
-  Expression<bool> documentRefs(
-    Expression<bool> Function($$DocumentTableFilterComposer f) f,
+  Expression<bool> documentsRefs(
+    Expression<bool> Function($$DocumentsTableFilterComposer f) f,
   ) {
-    final $$DocumentTableFilterComposer composer = $composerBuilder(
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.document,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.customerId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentTableFilterComposer(
+          }) => $$DocumentsTableFilterComposer(
             $db: $db,
-            $table: $db.document,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -17627,22 +17626,22 @@ class $$CustomersTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> documentRefs<T extends Object>(
-    Expression<T> Function($$DocumentTableAnnotationComposer a) f,
+  Expression<T> documentsRefs<T extends Object>(
+    Expression<T> Function($$DocumentsTableAnnotationComposer a) f,
   ) {
-    final $$DocumentTableAnnotationComposer composer = $composerBuilder(
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.document,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.customerId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentTableAnnotationComposer(
+          }) => $$DocumentsTableAnnotationComposer(
             $db: $db,
-            $table: $db.document,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -17671,7 +17670,7 @@ class $$CustomersTableTableManager
             bool jobsRefs,
             bool complaintRefs,
             bool injuryRefs,
-            bool documentRefs,
+            bool documentsRefs,
           })
         > {
   $$CustomersTableTableManager(_$AppDatabase db, $CustomersTable table)
@@ -17739,7 +17738,7 @@ class $$CustomersTableTableManager
                 jobsRefs = false,
                 complaintRefs = false,
                 injuryRefs = false,
-                documentRefs = false,
+                documentsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -17747,7 +17746,7 @@ class $$CustomersTableTableManager
                     if (jobsRefs) db.jobs,
                     if (complaintRefs) db.complaint,
                     if (injuryRefs) db.injury,
-                    if (documentRefs) db.document,
+                    if (documentsRefs) db.documents,
                   ],
                   addJoins:
                       <
@@ -17846,21 +17845,21 @@ class $$CustomersTableTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (documentRefs)
+                      if (documentsRefs)
                         await $_getPrefetchedData<
                           Customer,
                           $CustomersTable,
-                          DocumentData
+                          Document
                         >(
                           currentTable: table,
                           referencedTable: $$CustomersTableReferences
-                              ._documentRefsTable(db),
+                              ._documentsRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $$CustomersTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).documentRefs,
+                              ).documentsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.customerId == item.id,
@@ -17892,7 +17891,7 @@ typedef $$CustomersTableProcessedTableManager =
         bool jobsRefs,
         bool complaintRefs,
         bool injuryRefs,
-        bool documentRefs,
+        bool documentsRefs,
       })
     >;
 typedef $$JobsTableCreateCompanionBuilder =
@@ -17999,19 +17998,19 @@ final class $$JobsTableReferences
     );
   }
 
-  static MultiTypedResultKey<$DocumentTable, List<DocumentData>>
-  _documentRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.document,
-    aliasName: $_aliasNameGenerator(db.jobs.id, db.document.jobId),
+  static MultiTypedResultKey<$DocumentsTable, List<Document>>
+  _documentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.documents,
+    aliasName: $_aliasNameGenerator(db.jobs.id, db.documents.jobId),
   );
 
-  $$DocumentTableProcessedTableManager get documentRefs {
-    final manager = $$DocumentTableTableManager(
+  $$DocumentsTableProcessedTableManager get documentsRefs {
+    final manager = $$DocumentsTableTableManager(
       $_db,
-      $_db.document,
+      $_db.documents,
     ).filter((f) => f.jobId.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_documentRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_documentsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -18160,22 +18159,22 @@ class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
     return f(composer);
   }
 
-  Expression<bool> documentRefs(
-    Expression<bool> Function($$DocumentTableFilterComposer f) f,
+  Expression<bool> documentsRefs(
+    Expression<bool> Function($$DocumentsTableFilterComposer f) f,
   ) {
-    final $$DocumentTableFilterComposer composer = $composerBuilder(
+    final $$DocumentsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.document,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.jobId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentTableFilterComposer(
+          }) => $$DocumentsTableFilterComposer(
             $db: $db,
-            $table: $db.document,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -18431,22 +18430,22 @@ class $$JobsTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> documentRefs<T extends Object>(
-    Expression<T> Function($$DocumentTableAnnotationComposer a) f,
+  Expression<T> documentsRefs<T extends Object>(
+    Expression<T> Function($$DocumentsTableAnnotationComposer a) f,
   ) {
-    final $$DocumentTableAnnotationComposer composer = $composerBuilder(
+    final $$DocumentsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.document,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.jobId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$DocumentTableAnnotationComposer(
+          }) => $$DocumentsTableAnnotationComposer(
             $db: $db,
-            $table: $db.document,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -18475,7 +18474,7 @@ class $$JobsTableTableManager
             bool assignedTo,
             bool customer,
             bool tasksRefs,
-            bool documentRefs,
+            bool documentsRefs,
           })
         > {
   $$JobsTableTableManager(_$AppDatabase db, $JobsTable table)
@@ -18553,13 +18552,13 @@ class $$JobsTableTableManager
                 assignedTo = false,
                 customer = false,
                 tasksRefs = false,
-                documentRefs = false,
+                documentsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (tasksRefs) db.tasks,
-                    if (documentRefs) db.document,
+                    if (documentsRefs) db.documents,
                   ],
                   addJoins:
                       <
@@ -18634,17 +18633,16 @@ class $$JobsTableTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (documentRefs)
-                        await $_getPrefetchedData<
-                          Job,
-                          $JobsTable,
-                          DocumentData
-                        >(
+                      if (documentsRefs)
+                        await $_getPrefetchedData<Job, $JobsTable, Document>(
                           currentTable: table,
                           referencedTable: $$JobsTableReferences
-                              ._documentRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$JobsTableReferences(db, table, p0).documentRefs,
+                              ._documentsRefsTable(db),
+                          managerFromTypedResult: (p0) => $$JobsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).documentsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.jobId == item.id,
@@ -18676,7 +18674,7 @@ typedef $$JobsTableProcessedTableManager =
         bool assignedTo,
         bool customer,
         bool tasksRefs,
-        bool documentRefs,
+        bool documentsRefs,
       })
     >;
 typedef $$ToolsTableCreateCompanionBuilder =
@@ -20821,39 +20819,39 @@ typedef $$InjuryTableProcessedTableManager =
         bool reportedByCustomer,
       })
     >;
-typedef $$DocumentTableCreateCompanionBuilder =
-    DocumentCompanion Function({
+typedef $$DocumentsTableCreateCompanionBuilder =
+    DocumentsCompanion Function({
       Value<int> id,
       required String title,
       required String filePath,
       Value<DateTime> uploadedAt,
       required int uploadedBy,
-      required int customerId,
-      required int jobId,
+      Value<int?> customerId,
+      Value<int?> jobId,
       Value<DateTime> updatedAt,
       Value<int> version,
       Value<DateTime?> deletedAt,
     });
-typedef $$DocumentTableUpdateCompanionBuilder =
-    DocumentCompanion Function({
+typedef $$DocumentsTableUpdateCompanionBuilder =
+    DocumentsCompanion Function({
       Value<int> id,
       Value<String> title,
       Value<String> filePath,
       Value<DateTime> uploadedAt,
       Value<int> uploadedBy,
-      Value<int> customerId,
-      Value<int> jobId,
+      Value<int?> customerId,
+      Value<int?> jobId,
       Value<DateTime> updatedAt,
       Value<int> version,
       Value<DateTime?> deletedAt,
     });
 
-final class $$DocumentTableReferences
-    extends BaseReferences<_$AppDatabase, $DocumentTable, DocumentData> {
-  $$DocumentTableReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $$DocumentsTableReferences
+    extends BaseReferences<_$AppDatabase, $DocumentsTable, Document> {
+  $$DocumentsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $UsersTable _uploadedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.document.uploadedBy, db.users.id),
+    $_aliasNameGenerator(db.documents.uploadedBy, db.users.id),
   );
 
   $$UsersTableProcessedTableManager get uploadedBy {
@@ -20872,12 +20870,12 @@ final class $$DocumentTableReferences
 
   static $CustomersTable _customerIdTable(_$AppDatabase db) =>
       db.customers.createAlias(
-        $_aliasNameGenerator(db.document.customerId, db.customers.id),
+        $_aliasNameGenerator(db.documents.customerId, db.customers.id),
       );
 
-  $$CustomersTableProcessedTableManager get customerId {
-    final $_column = $_itemColumn<int>('customer_id')!;
-
+  $$CustomersTableProcessedTableManager? get customerId {
+    final $_column = $_itemColumn<int>('customer_id');
+    if ($_column == null) return null;
     final manager = $$CustomersTableTableManager(
       $_db,
       $_db.customers,
@@ -20890,11 +20888,11 @@ final class $$DocumentTableReferences
   }
 
   static $JobsTable _jobIdTable(_$AppDatabase db) =>
-      db.jobs.createAlias($_aliasNameGenerator(db.document.jobId, db.jobs.id));
+      db.jobs.createAlias($_aliasNameGenerator(db.documents.jobId, db.jobs.id));
 
-  $$JobsTableProcessedTableManager get jobId {
-    final $_column = $_itemColumn<int>('job_id')!;
-
+  $$JobsTableProcessedTableManager? get jobId {
+    final $_column = $_itemColumn<int>('job_id');
+    if ($_column == null) return null;
     final manager = $$JobsTableTableManager(
       $_db,
       $_db.jobs,
@@ -20907,9 +20905,9 @@ final class $$DocumentTableReferences
   }
 }
 
-class $$DocumentTableFilterComposer
-    extends Composer<_$AppDatabase, $DocumentTable> {
-  $$DocumentTableFilterComposer({
+class $$DocumentsTableFilterComposer
+    extends Composer<_$AppDatabase, $DocumentsTable> {
+  $$DocumentsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -21021,9 +21019,9 @@ class $$DocumentTableFilterComposer
   }
 }
 
-class $$DocumentTableOrderingComposer
-    extends Composer<_$AppDatabase, $DocumentTable> {
-  $$DocumentTableOrderingComposer({
+class $$DocumentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DocumentsTable> {
+  $$DocumentsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -21135,9 +21133,9 @@ class $$DocumentTableOrderingComposer
   }
 }
 
-class $$DocumentTableAnnotationComposer
-    extends Composer<_$AppDatabase, $DocumentTable> {
-  $$DocumentTableAnnotationComposer({
+class $$DocumentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DocumentsTable> {
+  $$DocumentsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -21237,32 +21235,32 @@ class $$DocumentTableAnnotationComposer
   }
 }
 
-class $$DocumentTableTableManager
+class $$DocumentsTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $DocumentTable,
-          DocumentData,
-          $$DocumentTableFilterComposer,
-          $$DocumentTableOrderingComposer,
-          $$DocumentTableAnnotationComposer,
-          $$DocumentTableCreateCompanionBuilder,
-          $$DocumentTableUpdateCompanionBuilder,
-          (DocumentData, $$DocumentTableReferences),
-          DocumentData,
+          $DocumentsTable,
+          Document,
+          $$DocumentsTableFilterComposer,
+          $$DocumentsTableOrderingComposer,
+          $$DocumentsTableAnnotationComposer,
+          $$DocumentsTableCreateCompanionBuilder,
+          $$DocumentsTableUpdateCompanionBuilder,
+          (Document, $$DocumentsTableReferences),
+          Document,
           PrefetchHooks Function({bool uploadedBy, bool customerId, bool jobId})
         > {
-  $$DocumentTableTableManager(_$AppDatabase db, $DocumentTable table)
+  $$DocumentsTableTableManager(_$AppDatabase db, $DocumentsTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$DocumentTableFilterComposer($db: db, $table: table),
+              $$DocumentsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$DocumentTableOrderingComposer($db: db, $table: table),
+              $$DocumentsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$DocumentTableAnnotationComposer($db: db, $table: table),
+              $$DocumentsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
@@ -21270,12 +21268,12 @@ class $$DocumentTableTableManager
                 Value<String> filePath = const Value.absent(),
                 Value<DateTime> uploadedAt = const Value.absent(),
                 Value<int> uploadedBy = const Value.absent(),
-                Value<int> customerId = const Value.absent(),
-                Value<int> jobId = const Value.absent(),
+                Value<int?> customerId = const Value.absent(),
+                Value<int?> jobId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-              }) => DocumentCompanion(
+              }) => DocumentsCompanion(
                 id: id,
                 title: title,
                 filePath: filePath,
@@ -21294,12 +21292,12 @@ class $$DocumentTableTableManager
                 required String filePath,
                 Value<DateTime> uploadedAt = const Value.absent(),
                 required int uploadedBy,
-                required int customerId,
-                required int jobId,
+                Value<int?> customerId = const Value.absent(),
+                Value<int?> jobId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-              }) => DocumentCompanion.insert(
+              }) => DocumentsCompanion.insert(
                 id: id,
                 title: title,
                 filePath: filePath,
@@ -21315,7 +21313,7 @@ class $$DocumentTableTableManager
               .map(
                 (e) => (
                   e.readTable(table),
-                  $$DocumentTableReferences(db, table, e),
+                  $$DocumentsTableReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -21345,9 +21343,9 @@ class $$DocumentTableTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.uploadedBy,
-                                    referencedTable: $$DocumentTableReferences
+                                    referencedTable: $$DocumentsTableReferences
                                         ._uploadedByTable(db),
-                                    referencedColumn: $$DocumentTableReferences
+                                    referencedColumn: $$DocumentsTableReferences
                                         ._uploadedByTable(db)
                                         .id,
                                   )
@@ -21358,9 +21356,9 @@ class $$DocumentTableTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.customerId,
-                                    referencedTable: $$DocumentTableReferences
+                                    referencedTable: $$DocumentsTableReferences
                                         ._customerIdTable(db),
-                                    referencedColumn: $$DocumentTableReferences
+                                    referencedColumn: $$DocumentsTableReferences
                                         ._customerIdTable(db)
                                         .id,
                                   )
@@ -21371,9 +21369,9 @@ class $$DocumentTableTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.jobId,
-                                    referencedTable: $$DocumentTableReferences
+                                    referencedTable: $$DocumentsTableReferences
                                         ._jobIdTable(db),
-                                    referencedColumn: $$DocumentTableReferences
+                                    referencedColumn: $$DocumentsTableReferences
                                         ._jobIdTable(db)
                                         .id,
                                   )
@@ -21391,18 +21389,18 @@ class $$DocumentTableTableManager
       );
 }
 
-typedef $$DocumentTableProcessedTableManager =
+typedef $$DocumentsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $DocumentTable,
-      DocumentData,
-      $$DocumentTableFilterComposer,
-      $$DocumentTableOrderingComposer,
-      $$DocumentTableAnnotationComposer,
-      $$DocumentTableCreateCompanionBuilder,
-      $$DocumentTableUpdateCompanionBuilder,
-      (DocumentData, $$DocumentTableReferences),
-      DocumentData,
+      $DocumentsTable,
+      Document,
+      $$DocumentsTableFilterComposer,
+      $$DocumentsTableOrderingComposer,
+      $$DocumentsTableAnnotationComposer,
+      $$DocumentsTableCreateCompanionBuilder,
+      $$DocumentsTableUpdateCompanionBuilder,
+      (Document, $$DocumentsTableReferences),
+      Document,
       PrefetchHooks Function({bool uploadedBy, bool customerId, bool jobId})
     >;
 typedef $$FleetEventsTableCreateCompanionBuilder =
@@ -24703,8 +24701,8 @@ class $AppDatabaseManager {
       $$ComplaintTableTableManager(_db, _db.complaint);
   $$InjuryTableTableManager get injury =>
       $$InjuryTableTableManager(_db, _db.injury);
-  $$DocumentTableTableManager get document =>
-      $$DocumentTableTableManager(_db, _db.document);
+  $$DocumentsTableTableManager get documents =>
+      $$DocumentsTableTableManager(_db, _db.documents);
   $$FleetEventsTableTableManager get fleetEvents =>
       $$FleetEventsTableTableManager(_db, _db.fleetEvents);
   $$ChecklistTemplatesTableTableManager get checklistTemplates =>
@@ -24763,6 +24761,16 @@ mixin _$CustomersDaoMixin on DatabaseAccessor<AppDatabase> {
   $CompanyTable get company => attachedDatabase.company;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
+}
+mixin _$DocumentDaoMixin on DatabaseAccessor<AppDatabase> {
+  $AccountsTable get accounts => attachedDatabase.accounts;
+  $CompanyTable get company => attachedDatabase.company;
+  $UsersTable get users => attachedDatabase.users;
+  $CustomersTable get customers => attachedDatabase.customers;
+  $TemplatesTable get templates => attachedDatabase.templates;
+  $JobQuotesTable get jobQuotes => attachedDatabase.jobQuotes;
+  $JobsTable get jobs => attachedDatabase.jobs;
+  $DocumentsTable get documents => attachedDatabase.documents;
 }
 mixin _$ToolsDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;

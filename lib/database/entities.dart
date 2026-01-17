@@ -279,7 +279,7 @@ class Injury extends Table {
 // ------------------
 // DOCUMENTS (TABLE)
 // ------------------
-class Document extends Table {
+class Documents extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text().withLength(min: 1, max: 100)();
   TextColumn get filePath => text()(); // path to the document file
@@ -289,10 +289,10 @@ class Document extends Table {
   IntColumn get uploadedBy => integer().references(Users, #id, onDelete: KeyAction.cascade)();
 
   // Foreign key to Customers table (if document is related to a customer)
-  IntColumn get customerId => integer().references(Customers, #id, onDelete: KeyAction.cascade)();
+  IntColumn get customerId => integer().nullable().references(Customers, #id, onDelete: KeyAction.cascade)();
 
   // Foreign key to Jobs table (if document is related to a job)
-  IntColumn get jobId => integer().references(Jobs, #id, onDelete: KeyAction.cascade)();
+  IntColumn get jobId => integer().nullable().references(Jobs, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   IntColumn get version => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();

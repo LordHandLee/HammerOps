@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hammer_ops/di/injector.dart';
 import 'package:hammer_ops/services/service.dart';
 import 'briefcase.dart';
 
@@ -9,6 +10,7 @@ class BriefcaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> listOfFolders = ["Injury Logs", "Complaints", "My Documents"];
+    final service = getIt<AppService>();
     return Navigator(
       initialRoute: '/',
       onGenerateRoute: (settings) {
@@ -23,18 +25,38 @@ class BriefcaseScreen extends StatelessWidget {
             break;
           case 'Injury Logs':
             // fetch all jobs with injuries
-            page = Briefcase(listOfJobs: [], queryType: 'injury'); // your form/list/etc. Jobs with injuries fetched from service...args.jobs
+            page = FutureBuilder(
+              future: service.injury.getAllInjuries(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                final injuries = snapshot.data!;
+                return Briefcase(listOfInjuries: injuries);
+              },
+            );
             break;
           case 'Complaints':
             // fetch all jobs with complaints
-            page = Briefcase(listOfJobs: [], queryType: 'complaint'); // another example. Jobs with complaints fetched from service... args.jobs
+            page = FutureBuilder(
+              future: service.complaint.getAllComplaints(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                final complaints = snapshot.data!;
+                return Briefcase(listOfComplaints: complaints);
+              },
+            );
             break;
           case 'My Documents':
             page = Briefcase(listOfFolders: ["Jobs", "Documents not assigned to job"],); // another example
             break;
           case "Documents not assigned to job":
             // fetch all documents not associated with jobs
-            page = Briefcase(listOfDocuments: [], queryType: 'document');
+            page = FutureBuilder(
+              future: service.document.getDocumentsWithoutJob(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                return Briefcase(listOfDocuments: snapshot.data!);
+              },
+            );
             break;
           case 'Job':
             // get job id
@@ -62,7 +84,13 @@ class BriefcaseScreen extends StatelessWidget {
             break;
           case "Jobs":
           // fetch all jobs with documents
-            page = Briefcase(listOfJobs: [], queryType: 'document'); // Jobs with documents fetched from service
+            page = FutureBuilder(
+              future: service.jobs.getAllJobs(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                return Briefcase(listOfJobs: snapshot.data!, queryType: 'document');
+              },
+            ); // Jobs with documents fetched from service
             break;
           default:
             page = Briefcase(listOfFolders: listOfFolders);
@@ -77,5 +105,3 @@ class BriefcaseScreen extends StatelessWidget {
     );
   }
 }
-
-

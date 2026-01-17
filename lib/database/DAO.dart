@@ -382,14 +382,23 @@ class InjuryDao extends DatabaseAccessor<AppDatabase> with _$InjuryDaoMixin {
   Future<List<InjuryData>> getAllInjuries() => select(injury).get();
 }
 
-// @DriftAccessor(tables: [Document])
-// class DocumentDao extends DatabaseAccessor<AppDatabase> with _$DocumentDaoMixin {
-//   DocumentDao(super.db);
+@DriftAccessor(tables: [Documents])
+class DocumentDao extends DatabaseAccessor<AppDatabase> with _$DocumentDaoMixin {
+  DocumentDao(AppDatabase db) : super(db);
 
-//   Future<int> insertDocument(DocumentCompanion document) => into(document).insert(document);
+  Future<int> insertDocument(DocumentsCompanion doc) => into(documents).insert(doc);
 
-//   Future<List<DocumentData>> getAllDocuments() => select(document).get();
-// }
+  Future<List<Document>> getAllDocuments() => select(documents).get();
+
+  Future<List<Document>> getDocumentsByJob(int jobId) =>
+      (select(documents)..where((d) => d.jobId.equals(jobId))).get();
+
+  Future<List<Document>> getDocumentsWithoutJob() =>
+      (select(documents)..where((d) => d.jobId.isNull())).get();
+
+  Future<int> deleteDocument(int id) =>
+      (delete(documents)..where((d) => d.id.equals(id))).go();
+}
 
 // jobs, customers, tools, tasks, complaint, injury, document
 
@@ -599,6 +608,7 @@ class AppDao {
   final AccountDao account;
   final AccountSessionDao accountSession;
   final CompanyMemberDao companyMember;
+  final DocumentDao document;
   final LocalChangeDao localChanges;
 
   AppDao(AppDatabase db)
@@ -614,6 +624,7 @@ class AppDao {
         injury = InjuryDao(db),
         checklist = ChecklistDao(db),
         jobs = JobsDao(db),
+        document = DocumentDao(db),
         account = AccountDao(db),
         accountSession = AccountSessionDao(db),
         companyMember = CompanyMemberDao(db),

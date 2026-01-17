@@ -10,6 +10,7 @@ import 'package:hammer_ops/screens/drawer_menu_screens/injury_log.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/custom_checklist.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/admin_checklist.dart';
 import 'package:hammer_ops/screens/drawer_menu_screens/customer_manager.dart';
+import 'package:hammer_ops/screens/drawer_menu_screens/document_manager.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool isDrawerOpen;
@@ -248,6 +249,11 @@ class _DrawerMenu extends StatelessWidget {
           leading: const Icon(Icons.settings),
           title: const Text('SATELLITE MAP'),
           onTap: () => onNavigate(const JobManager()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.insert_drive_file),
+          title: const Text('DOCUMENT MANAGER'),
+          onTap: () => onNavigate(const DocumentManagerScreen()),
         ),
       ],
     );

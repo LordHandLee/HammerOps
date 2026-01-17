@@ -597,6 +597,41 @@ class TaskService {
   Stream<List<Task>> watchTasksForJob(int jobId) => taskRepository.watchTasksForJob(jobId);
 }
 
+class DocumentService {
+  final DocumentRepository repository;
+  final UserService userService;
+
+  DocumentService(this.repository, this.userService);
+
+  int _currentUserOrFallback() {
+    try {
+      return userService.getCurrentUser();
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  Future<int> addDocument({
+    required String title,
+    required String filePath,
+    int? jobId,
+    int? customerId,
+  }) {
+    return repository.addDocument(
+      title: title,
+      filePath: filePath,
+      uploadedBy: _currentUserOrFallback(),
+      jobId: jobId,
+      customerId: customerId,
+    );
+  }
+
+  Future<List<Document>> getAllDocuments() => repository.getAllDocuments();
+  Future<List<Document>> getDocumentsByJob(int jobId) => repository.getDocumentsByJob(jobId);
+  Future<List<Document>> getDocumentsWithoutJob() => repository.getDocumentsWithoutJob();
+  Future<int> deleteDocument(int id) => repository.deleteDocument(id);
+}
+
 class ToolService {
   final ToolRepository toolRepository;
   final UserService userService;
@@ -826,6 +861,7 @@ class AppService {
   late final ToolService tool;
   final TaskService task;
   final InjuryService injury;
+  late final DocumentService document;
   final ChecklistService checklist;
   final JobService jobs;
   final AuthService auth;
@@ -858,5 +894,6 @@ class AppService {
           SyncService(ApiClient(), TokenStorage()),
         ) {
     tool = ToolService(repo.tool, user);
+    document = DocumentService(repo.document, user);
   }
 }
