@@ -40,6 +40,7 @@ class Users extends Table {
   IntColumn get accountId => integer().references(Accounts, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text().withLength(min: 1, max: 50)();
   IntColumn get age => integer().nullable()();
+  TextColumn get jobTitle => text().nullable()();
   TextColumn get role => text().withLength(min: 1, max: 20).withDefault(const Constant('user'))(); // e.g., user, admin
   TextColumn get employer => text().nullable()(); // e.g., company name
 
@@ -49,9 +50,20 @@ class Users extends Table {
 
   // Foreign key to Company table (nullable for users without a company)
   IntColumn get companyId => integer().references(Company, #id, onDelete: KeyAction.cascade)();
+  IntColumn get certificationId => integer().nullable().references(Certifications, #id, onDelete: KeyAction.setNull)();
+  TextColumn get profileImagePath => text().nullable()();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   IntColumn get version => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+}
+
+class Certifications extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 1, max: 100)();
+  TextColumn get issuer => text().nullable()();
+  DateTimeColumn get expiresAt => dateTime().nullable()();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+  IntColumn get version => integer().withDefault(const Constant(0))();
 }
 
 // ------------------

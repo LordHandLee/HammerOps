@@ -433,6 +433,21 @@ class UserService {
   Future<List<User>> getAllUsers() {
     return userRepository.getUsers();
   }
+
+  Future<User?> getUserById(int id) => userRepository.getUserById(id);
+
+  Future<int> updateProfile({
+    required int id,
+    String? jobTitle,
+    int? certificationId,
+    String? profileImagePath,
+  }) =>
+      userRepository.updateProfileFields(
+        id: id,
+        jobTitle: jobTitle,
+        certificationId: certificationId,
+        profileImagePath: profileImagePath,
+      );
 }
 
 class CompanyService {
@@ -630,6 +645,20 @@ class DocumentService {
   Future<List<Document>> getDocumentsByJob(int jobId) => repository.getDocumentsByJob(jobId);
   Future<List<Document>> getDocumentsWithoutJob() => repository.getDocumentsWithoutJob();
   Future<int> deleteDocument(int id) => repository.deleteDocument(id);
+}
+
+class CertificationService {
+  final CertificationRepository repository;
+
+  CertificationService(this.repository);
+
+  Future<List<Certification>> getAll() => repository.getAll();
+  Future<int> addCertification({
+    required String name,
+    String? issuer,
+    DateTime? expiresAt,
+  }) =>
+      repository.addCertification(name: name, issuer: issuer, expiresAt: expiresAt);
 }
 
 class ToolService {
@@ -862,6 +891,7 @@ class AppService {
   final TaskService task;
   final InjuryService injury;
   late final DocumentService document;
+  late final CertificationService certification;
   final ChecklistService checklist;
   final JobService jobs;
   final AuthService auth;
@@ -895,5 +925,6 @@ class AppService {
         ) {
     tool = ToolService(repo.tool, user);
     document = DocumentService(repo.document, user);
+    certification = CertificationService(repo.certification);
   }
 }

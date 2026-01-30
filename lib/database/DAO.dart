@@ -85,6 +85,38 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   Future<int> insertUser(UsersCompanion user) => into(users).insert(user);
   Future<bool> updateUser(User user) => update(users).replace(user);
   Future<int> deleteUser(User user) => delete(users).delete(user);
+  Future<User?> getUserById(int id) =>
+      (select(users)..where((u) => u.id.equals(id))).getSingleOrNull();
+
+  Future<int> updateProfileFields({
+    required int id,
+    String? jobTitle,
+    int? certificationId,
+    String? profileImagePath,
+  }) {
+    return (update(users)..where((u) => u.id.equals(id))).write(
+      UsersCompanion(
+        jobTitle: jobTitle != null ? Value(jobTitle) : const Value.absent(),
+        certificationId:
+            certificationId != null ? Value(certificationId) : const Value.absent(),
+        profileImagePath: profileImagePath != null
+            ? Value(profileImagePath)
+            : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+}
+
+@DriftAccessor(tables: [Certifications])
+class CertificationsDao extends DatabaseAccessor<AppDatabase> with _$CertificationsDaoMixin {
+  CertificationsDao(super.db);
+
+  Future<int> insertCertification(CertificationsCompanion cert) =>
+      into(certifications).insert(cert);
+
+  Future<List<Certification>> getAllCertifications() =>
+      select(certifications).get();
 }
 
 @DriftAccessor(tables: [Templates, TemplateFields])
@@ -609,6 +641,7 @@ class AppDao {
   final AccountSessionDao accountSession;
   final CompanyMemberDao companyMember;
   final DocumentDao document;
+  final CertificationsDao certifications;
   final LocalChangeDao localChanges;
 
   AppDao(AppDatabase db)
@@ -625,6 +658,7 @@ class AppDao {
         checklist = ChecklistDao(db),
         jobs = JobsDao(db),
         document = DocumentDao(db),
+        certifications = CertificationsDao(db),
         account = AccountDao(db),
         accountSession = AccountSessionDao(db),
         companyMember = CompanyMemberDao(db),

@@ -29,12 +29,25 @@ class UserRepository {
       companyId: companyId,
       age: Value(age),
       employer: Value(employer),
-      role: Value(role!),
+      role: Value(role ?? 'user'),
     );
     return userDao.insertUser(companion);
   }
   Future<bool> editUser(User user) => userDao.updateUser(user);
   Future<int> removeUser(User user) => userDao.deleteUser(user);
+  Future<User?> getUserById(int id) => userDao.getUserById(id);
+  Future<int> updateProfileFields({
+    required int id,
+    String? jobTitle,
+    int? certificationId,
+    String? profileImagePath,
+  }) =>
+      userDao.updateProfileFields(
+        id: id,
+        jobTitle: jobTitle,
+        certificationId: certificationId,
+        profileImagePath: profileImagePath,
+      );
 }
 
 class TemplateRepository {
@@ -413,6 +426,27 @@ class DocumentRepository {
   Future<int> deleteDocument(int id) => dao.deleteDocument(id);
 }
 
+class CertificationRepository {
+  final CertificationsDao dao;
+
+  CertificationRepository(this.dao);
+
+  Future<int> addCertification({
+    required String name,
+    String? issuer,
+    DateTime? expiresAt,
+  }) {
+    final companion = CertificationsCompanion.insert(
+      name: name,
+      issuer: Value(issuer),
+      expiresAt: Value(expiresAt),
+    );
+    return dao.insertCertification(companion);
+  }
+
+  Future<List<Certification>> getAll() => dao.getAllCertifications();
+}
+
 class ChecklistRepository {
   final ChecklistDao dao;
 
@@ -520,6 +554,7 @@ class AppRepository {
   final ChecklistRepository checklist;
   final JobRepository jobs;
   final DocumentRepository document;
+  final CertificationRepository certification;
   final AccountRepository account;
   final LocalChangeDao localChanges;
 
@@ -537,6 +572,7 @@ class AppRepository {
         checklist = ChecklistRepository(dao.checklist),
         jobs = JobRepository(dao.jobs),
         document = DocumentRepository(dao.document),
+        certification = CertificationRepository(dao.certifications),
         account = AccountRepository(dao.account, dao.accountSession, dao.companyMember),
         localChanges = dao.localChanges;
 }

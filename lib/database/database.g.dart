@@ -1076,6 +1076,404 @@ class CompanyCompanion extends UpdateCompanion<CompanyData> {
   }
 }
 
+class $CertificationsTable extends Certifications
+    with TableInfo<$CertificationsTable, Certification> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CertificationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _issuerMeta = const VerificationMeta('issuer');
+  @override
+  late final GeneratedColumn<String> issuer = GeneratedColumn<String>(
+    'issuer',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _expiresAtMeta = const VerificationMeta(
+    'expiresAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expiresAt = GeneratedColumn<DateTime>(
+    'expires_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    issuer,
+    expiresAt,
+    updatedAt,
+    version,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'certifications';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Certification> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('issuer')) {
+      context.handle(
+        _issuerMeta,
+        issuer.isAcceptableOrUnknown(data['issuer']!, _issuerMeta),
+      );
+    }
+    if (data.containsKey('expires_at')) {
+      context.handle(
+        _expiresAtMeta,
+        expiresAt.isAcceptableOrUnknown(data['expires_at']!, _expiresAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Certification map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Certification(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      issuer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}issuer'],
+      ),
+      expiresAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expires_at'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+    );
+  }
+
+  @override
+  $CertificationsTable createAlias(String alias) {
+    return $CertificationsTable(attachedDatabase, alias);
+  }
+}
+
+class Certification extends DataClass implements Insertable<Certification> {
+  final int id;
+  final String name;
+  final String? issuer;
+  final DateTime? expiresAt;
+  final DateTime updatedAt;
+  final int version;
+  const Certification({
+    required this.id,
+    required this.name,
+    this.issuer,
+    this.expiresAt,
+    required this.updatedAt,
+    required this.version,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || issuer != null) {
+      map['issuer'] = Variable<String>(issuer);
+    }
+    if (!nullToAbsent || expiresAt != null) {
+      map['expires_at'] = Variable<DateTime>(expiresAt);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['version'] = Variable<int>(version);
+    return map;
+  }
+
+  CertificationsCompanion toCompanion(bool nullToAbsent) {
+    return CertificationsCompanion(
+      id: Value(id),
+      name: Value(name),
+      issuer: issuer == null && nullToAbsent
+          ? const Value.absent()
+          : Value(issuer),
+      expiresAt: expiresAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expiresAt),
+      updatedAt: Value(updatedAt),
+      version: Value(version),
+    );
+  }
+
+  factory Certification.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Certification(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      issuer: serializer.fromJson<String?>(json['issuer']),
+      expiresAt: serializer.fromJson<DateTime?>(json['expiresAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      version: serializer.fromJson<int>(json['version']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'issuer': serializer.toJson<String?>(issuer),
+      'expiresAt': serializer.toJson<DateTime?>(expiresAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'version': serializer.toJson<int>(version),
+    };
+  }
+
+  Certification copyWith({
+    int? id,
+    String? name,
+    Value<String?> issuer = const Value.absent(),
+    Value<DateTime?> expiresAt = const Value.absent(),
+    DateTime? updatedAt,
+    int? version,
+  }) => Certification(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    issuer: issuer.present ? issuer.value : this.issuer,
+    expiresAt: expiresAt.present ? expiresAt.value : this.expiresAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    version: version ?? this.version,
+  );
+  Certification copyWithCompanion(CertificationsCompanion data) {
+    return Certification(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      issuer: data.issuer.present ? data.issuer.value : this.issuer,
+      expiresAt: data.expiresAt.present ? data.expiresAt.value : this.expiresAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      version: data.version.present ? data.version.value : this.version,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Certification(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('issuer: $issuer, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('version: $version')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, issuer, expiresAt, updatedAt, version);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Certification &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.issuer == this.issuer &&
+          other.expiresAt == this.expiresAt &&
+          other.updatedAt == this.updatedAt &&
+          other.version == this.version);
+}
+
+class CertificationsCompanion extends UpdateCompanion<Certification> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> issuer;
+  final Value<DateTime?> expiresAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> version;
+  const CertificationsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.issuer = const Value.absent(),
+    this.expiresAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.version = const Value.absent(),
+  });
+  CertificationsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.issuer = const Value.absent(),
+    this.expiresAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.version = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<Certification> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? issuer,
+    Expression<DateTime>? expiresAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? version,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (issuer != null) 'issuer': issuer,
+      if (expiresAt != null) 'expires_at': expiresAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (version != null) 'version': version,
+    });
+  }
+
+  CertificationsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String?>? issuer,
+    Value<DateTime?>? expiresAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? version,
+  }) {
+    return CertificationsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      issuer: issuer ?? this.issuer,
+      expiresAt: expiresAt ?? this.expiresAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      version: version ?? this.version,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (issuer.present) {
+      map['issuer'] = Variable<String>(issuer.value);
+    }
+    if (expiresAt.present) {
+      map['expires_at'] = Variable<DateTime>(expiresAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CertificationsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('issuer: $issuer, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('version: $version')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1128,6 +1526,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     aliasedName,
     true,
     type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobTitleMeta = const VerificationMeta(
+    'jobTitle',
+  );
+  @override
+  late final GeneratedColumn<String> jobTitle = GeneratedColumn<String>(
+    'job_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _roleMeta = const VerificationMeta('role');
@@ -1195,6 +1604,31 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       'REFERENCES company (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _certificationIdMeta = const VerificationMeta(
+    'certificationId',
+  );
+  @override
+  late final GeneratedColumn<int> certificationId = GeneratedColumn<int>(
+    'certification_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES certifications (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _profileImagePathMeta = const VerificationMeta(
+    'profileImagePath',
+  );
+  @override
+  late final GeneratedColumn<String> profileImagePath = GeneratedColumn<String>(
+    'profile_image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -1236,11 +1670,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     accountId,
     name,
     age,
+    jobTitle,
     role,
     employer,
     permissions,
     canManageUsers,
     companyId,
+    certificationId,
+    profileImagePath,
     updatedAt,
     version,
     deletedAt,
@@ -1282,6 +1719,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         age.isAcceptableOrUnknown(data['age']!, _ageMeta),
       );
     }
+    if (data.containsKey('job_title')) {
+      context.handle(
+        _jobTitleMeta,
+        jobTitle.isAcceptableOrUnknown(data['job_title']!, _jobTitleMeta),
+      );
+    }
     if (data.containsKey('role')) {
       context.handle(
         _roleMeta,
@@ -1319,6 +1762,24 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       );
     } else if (isInserting) {
       context.missing(_companyIdMeta);
+    }
+    if (data.containsKey('certification_id')) {
+      context.handle(
+        _certificationIdMeta,
+        certificationId.isAcceptableOrUnknown(
+          data['certification_id']!,
+          _certificationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('profile_image_path')) {
+      context.handle(
+        _profileImagePathMeta,
+        profileImagePath.isAcceptableOrUnknown(
+          data['profile_image_path']!,
+          _profileImagePathMeta,
+        ),
+      );
     }
     if (data.containsKey('updated_at')) {
       context.handle(
@@ -1363,6 +1824,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.int,
         data['${effectivePrefix}age'],
       ),
+      jobTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_title'],
+      ),
       role: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}role'],
@@ -1383,6 +1848,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.int,
         data['${effectivePrefix}company_id'],
       )!,
+      certificationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}certification_id'],
+      ),
+      profileImagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_image_path'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -1409,11 +1882,14 @@ class User extends DataClass implements Insertable<User> {
   final int accountId;
   final String name;
   final int? age;
+  final String? jobTitle;
   final String role;
   final String? employer;
   final String? permissions;
   final bool canManageUsers;
   final int companyId;
+  final int? certificationId;
+  final String? profileImagePath;
   final DateTime updatedAt;
   final int version;
   final DateTime? deletedAt;
@@ -1422,11 +1898,14 @@ class User extends DataClass implements Insertable<User> {
     required this.accountId,
     required this.name,
     this.age,
+    this.jobTitle,
     required this.role,
     this.employer,
     this.permissions,
     required this.canManageUsers,
     required this.companyId,
+    this.certificationId,
+    this.profileImagePath,
     required this.updatedAt,
     required this.version,
     this.deletedAt,
@@ -1440,6 +1919,9 @@ class User extends DataClass implements Insertable<User> {
     if (!nullToAbsent || age != null) {
       map['age'] = Variable<int>(age);
     }
+    if (!nullToAbsent || jobTitle != null) {
+      map['job_title'] = Variable<String>(jobTitle);
+    }
     map['role'] = Variable<String>(role);
     if (!nullToAbsent || employer != null) {
       map['employer'] = Variable<String>(employer);
@@ -1449,6 +1931,12 @@ class User extends DataClass implements Insertable<User> {
     }
     map['can_manage_users'] = Variable<bool>(canManageUsers);
     map['company_id'] = Variable<int>(companyId);
+    if (!nullToAbsent || certificationId != null) {
+      map['certification_id'] = Variable<int>(certificationId);
+    }
+    if (!nullToAbsent || profileImagePath != null) {
+      map['profile_image_path'] = Variable<String>(profileImagePath);
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['version'] = Variable<int>(version);
     if (!nullToAbsent || deletedAt != null) {
@@ -1463,6 +1951,9 @@ class User extends DataClass implements Insertable<User> {
       accountId: Value(accountId),
       name: Value(name),
       age: age == null && nullToAbsent ? const Value.absent() : Value(age),
+      jobTitle: jobTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobTitle),
       role: Value(role),
       employer: employer == null && nullToAbsent
           ? const Value.absent()
@@ -1472,6 +1963,12 @@ class User extends DataClass implements Insertable<User> {
           : Value(permissions),
       canManageUsers: Value(canManageUsers),
       companyId: Value(companyId),
+      certificationId: certificationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(certificationId),
+      profileImagePath: profileImagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(profileImagePath),
       updatedAt: Value(updatedAt),
       version: Value(version),
       deletedAt: deletedAt == null && nullToAbsent
@@ -1490,11 +1987,14 @@ class User extends DataClass implements Insertable<User> {
       accountId: serializer.fromJson<int>(json['accountId']),
       name: serializer.fromJson<String>(json['name']),
       age: serializer.fromJson<int?>(json['age']),
+      jobTitle: serializer.fromJson<String?>(json['jobTitle']),
       role: serializer.fromJson<String>(json['role']),
       employer: serializer.fromJson<String?>(json['employer']),
       permissions: serializer.fromJson<String?>(json['permissions']),
       canManageUsers: serializer.fromJson<bool>(json['canManageUsers']),
       companyId: serializer.fromJson<int>(json['companyId']),
+      certificationId: serializer.fromJson<int?>(json['certificationId']),
+      profileImagePath: serializer.fromJson<String?>(json['profileImagePath']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       version: serializer.fromJson<int>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -1508,11 +2008,14 @@ class User extends DataClass implements Insertable<User> {
       'accountId': serializer.toJson<int>(accountId),
       'name': serializer.toJson<String>(name),
       'age': serializer.toJson<int?>(age),
+      'jobTitle': serializer.toJson<String?>(jobTitle),
       'role': serializer.toJson<String>(role),
       'employer': serializer.toJson<String?>(employer),
       'permissions': serializer.toJson<String?>(permissions),
       'canManageUsers': serializer.toJson<bool>(canManageUsers),
       'companyId': serializer.toJson<int>(companyId),
+      'certificationId': serializer.toJson<int?>(certificationId),
+      'profileImagePath': serializer.toJson<String?>(profileImagePath),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'version': serializer.toJson<int>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -1524,11 +2027,14 @@ class User extends DataClass implements Insertable<User> {
     int? accountId,
     String? name,
     Value<int?> age = const Value.absent(),
+    Value<String?> jobTitle = const Value.absent(),
     String? role,
     Value<String?> employer = const Value.absent(),
     Value<String?> permissions = const Value.absent(),
     bool? canManageUsers,
     int? companyId,
+    Value<int?> certificationId = const Value.absent(),
+    Value<String?> profileImagePath = const Value.absent(),
     DateTime? updatedAt,
     int? version,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -1537,11 +2043,18 @@ class User extends DataClass implements Insertable<User> {
     accountId: accountId ?? this.accountId,
     name: name ?? this.name,
     age: age.present ? age.value : this.age,
+    jobTitle: jobTitle.present ? jobTitle.value : this.jobTitle,
     role: role ?? this.role,
     employer: employer.present ? employer.value : this.employer,
     permissions: permissions.present ? permissions.value : this.permissions,
     canManageUsers: canManageUsers ?? this.canManageUsers,
     companyId: companyId ?? this.companyId,
+    certificationId: certificationId.present
+        ? certificationId.value
+        : this.certificationId,
+    profileImagePath: profileImagePath.present
+        ? profileImagePath.value
+        : this.profileImagePath,
     updatedAt: updatedAt ?? this.updatedAt,
     version: version ?? this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -1552,6 +2065,7 @@ class User extends DataClass implements Insertable<User> {
       accountId: data.accountId.present ? data.accountId.value : this.accountId,
       name: data.name.present ? data.name.value : this.name,
       age: data.age.present ? data.age.value : this.age,
+      jobTitle: data.jobTitle.present ? data.jobTitle.value : this.jobTitle,
       role: data.role.present ? data.role.value : this.role,
       employer: data.employer.present ? data.employer.value : this.employer,
       permissions: data.permissions.present
@@ -1561,6 +2075,12 @@ class User extends DataClass implements Insertable<User> {
           ? data.canManageUsers.value
           : this.canManageUsers,
       companyId: data.companyId.present ? data.companyId.value : this.companyId,
+      certificationId: data.certificationId.present
+          ? data.certificationId.value
+          : this.certificationId,
+      profileImagePath: data.profileImagePath.present
+          ? data.profileImagePath.value
+          : this.profileImagePath,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       version: data.version.present ? data.version.value : this.version,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -1574,11 +2094,14 @@ class User extends DataClass implements Insertable<User> {
           ..write('accountId: $accountId, ')
           ..write('name: $name, ')
           ..write('age: $age, ')
+          ..write('jobTitle: $jobTitle, ')
           ..write('role: $role, ')
           ..write('employer: $employer, ')
           ..write('permissions: $permissions, ')
           ..write('canManageUsers: $canManageUsers, ')
           ..write('companyId: $companyId, ')
+          ..write('certificationId: $certificationId, ')
+          ..write('profileImagePath: $profileImagePath, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
           ..write('deletedAt: $deletedAt')
@@ -1592,11 +2115,14 @@ class User extends DataClass implements Insertable<User> {
     accountId,
     name,
     age,
+    jobTitle,
     role,
     employer,
     permissions,
     canManageUsers,
     companyId,
+    certificationId,
+    profileImagePath,
     updatedAt,
     version,
     deletedAt,
@@ -1609,11 +2135,14 @@ class User extends DataClass implements Insertable<User> {
           other.accountId == this.accountId &&
           other.name == this.name &&
           other.age == this.age &&
+          other.jobTitle == this.jobTitle &&
           other.role == this.role &&
           other.employer == this.employer &&
           other.permissions == this.permissions &&
           other.canManageUsers == this.canManageUsers &&
           other.companyId == this.companyId &&
+          other.certificationId == this.certificationId &&
+          other.profileImagePath == this.profileImagePath &&
           other.updatedAt == this.updatedAt &&
           other.version == this.version &&
           other.deletedAt == this.deletedAt);
@@ -1624,11 +2153,14 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<int> accountId;
   final Value<String> name;
   final Value<int?> age;
+  final Value<String?> jobTitle;
   final Value<String> role;
   final Value<String?> employer;
   final Value<String?> permissions;
   final Value<bool> canManageUsers;
   final Value<int> companyId;
+  final Value<int?> certificationId;
+  final Value<String?> profileImagePath;
   final Value<DateTime> updatedAt;
   final Value<int> version;
   final Value<DateTime?> deletedAt;
@@ -1637,11 +2169,14 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.accountId = const Value.absent(),
     this.name = const Value.absent(),
     this.age = const Value.absent(),
+    this.jobTitle = const Value.absent(),
     this.role = const Value.absent(),
     this.employer = const Value.absent(),
     this.permissions = const Value.absent(),
     this.canManageUsers = const Value.absent(),
     this.companyId = const Value.absent(),
+    this.certificationId = const Value.absent(),
+    this.profileImagePath = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -1651,11 +2186,14 @@ class UsersCompanion extends UpdateCompanion<User> {
     required int accountId,
     required String name,
     this.age = const Value.absent(),
+    this.jobTitle = const Value.absent(),
     this.role = const Value.absent(),
     this.employer = const Value.absent(),
     this.permissions = const Value.absent(),
     this.canManageUsers = const Value.absent(),
     required int companyId,
+    this.certificationId = const Value.absent(),
+    this.profileImagePath = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.version = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -1667,11 +2205,14 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<int>? accountId,
     Expression<String>? name,
     Expression<int>? age,
+    Expression<String>? jobTitle,
     Expression<String>? role,
     Expression<String>? employer,
     Expression<String>? permissions,
     Expression<bool>? canManageUsers,
     Expression<int>? companyId,
+    Expression<int>? certificationId,
+    Expression<String>? profileImagePath,
     Expression<DateTime>? updatedAt,
     Expression<int>? version,
     Expression<DateTime>? deletedAt,
@@ -1681,11 +2222,14 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (accountId != null) 'account_id': accountId,
       if (name != null) 'name': name,
       if (age != null) 'age': age,
+      if (jobTitle != null) 'job_title': jobTitle,
       if (role != null) 'role': role,
       if (employer != null) 'employer': employer,
       if (permissions != null) 'permissions': permissions,
       if (canManageUsers != null) 'can_manage_users': canManageUsers,
       if (companyId != null) 'company_id': companyId,
+      if (certificationId != null) 'certification_id': certificationId,
+      if (profileImagePath != null) 'profile_image_path': profileImagePath,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (version != null) 'version': version,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -1697,11 +2241,14 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<int>? accountId,
     Value<String>? name,
     Value<int?>? age,
+    Value<String?>? jobTitle,
     Value<String>? role,
     Value<String?>? employer,
     Value<String?>? permissions,
     Value<bool>? canManageUsers,
     Value<int>? companyId,
+    Value<int?>? certificationId,
+    Value<String?>? profileImagePath,
     Value<DateTime>? updatedAt,
     Value<int>? version,
     Value<DateTime?>? deletedAt,
@@ -1711,11 +2258,14 @@ class UsersCompanion extends UpdateCompanion<User> {
       accountId: accountId ?? this.accountId,
       name: name ?? this.name,
       age: age ?? this.age,
+      jobTitle: jobTitle ?? this.jobTitle,
       role: role ?? this.role,
       employer: employer ?? this.employer,
       permissions: permissions ?? this.permissions,
       canManageUsers: canManageUsers ?? this.canManageUsers,
       companyId: companyId ?? this.companyId,
+      certificationId: certificationId ?? this.certificationId,
+      profileImagePath: profileImagePath ?? this.profileImagePath,
       updatedAt: updatedAt ?? this.updatedAt,
       version: version ?? this.version,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -1737,6 +2287,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (age.present) {
       map['age'] = Variable<int>(age.value);
     }
+    if (jobTitle.present) {
+      map['job_title'] = Variable<String>(jobTitle.value);
+    }
     if (role.present) {
       map['role'] = Variable<String>(role.value);
     }
@@ -1751,6 +2304,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (companyId.present) {
       map['company_id'] = Variable<int>(companyId.value);
+    }
+    if (certificationId.present) {
+      map['certification_id'] = Variable<int>(certificationId.value);
+    }
+    if (profileImagePath.present) {
+      map['profile_image_path'] = Variable<String>(profileImagePath.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -1771,11 +2330,14 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('accountId: $accountId, ')
           ..write('name: $name, ')
           ..write('age: $age, ')
+          ..write('jobTitle: $jobTitle, ')
           ..write('role: $role, ')
           ..write('employer: $employer, ')
           ..write('permissions: $permissions, ')
           ..write('canManageUsers: $canManageUsers, ')
           ..write('companyId: $companyId, ')
+          ..write('certificationId: $certificationId, ')
+          ..write('profileImagePath: $profileImagePath, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('version: $version, ')
           ..write('deletedAt: $deletedAt')
@@ -12009,6 +12571,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $AccountsTable accounts = $AccountsTable(this);
   late final $CompanyTable company = $CompanyTable(this);
+  late final $CertificationsTable certifications = $CertificationsTable(this);
   late final $UsersTable users = $UsersTable(this);
   late final $TemplatesTable templates = $TemplatesTable(this);
   late final $TemplateFieldsTable templateFields = $TemplateFieldsTable(this);
@@ -12062,6 +12625,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     accounts,
     company,
+    certifications,
     users,
     templates,
     templateFields,
@@ -12105,6 +12669,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('users', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'certifications',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('users', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -13426,17 +13997,346 @@ typedef $$CompanyTableProcessedTableManager =
         bool companyMembersRefs,
       })
     >;
+typedef $$CertificationsTableCreateCompanionBuilder =
+    CertificationsCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<String?> issuer,
+      Value<DateTime?> expiresAt,
+      Value<DateTime> updatedAt,
+      Value<int> version,
+    });
+typedef $$CertificationsTableUpdateCompanionBuilder =
+    CertificationsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String?> issuer,
+      Value<DateTime?> expiresAt,
+      Value<DateTime> updatedAt,
+      Value<int> version,
+    });
+
+final class $$CertificationsTableReferences
+    extends BaseReferences<_$AppDatabase, $CertificationsTable, Certification> {
+  $$CertificationsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$UsersTable, List<User>> _usersRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.users,
+    aliasName: $_aliasNameGenerator(
+      db.certifications.id,
+      db.users.certificationId,
+    ),
+  );
+
+  $$UsersTableProcessedTableManager get usersRefs {
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.certificationId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_usersRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CertificationsTableFilterComposer
+    extends Composer<_$AppDatabase, $CertificationsTable> {
+  $$CertificationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get issuer => $composableBuilder(
+    column: $table.issuer,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> usersRefs(
+    Expression<bool> Function($$UsersTableFilterComposer f) f,
+  ) {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.certificationId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CertificationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CertificationsTable> {
+  $$CertificationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get issuer => $composableBuilder(
+    column: $table.issuer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CertificationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CertificationsTable> {
+  $$CertificationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get issuer =>
+      $composableBuilder(column: $table.issuer, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expiresAt =>
+      $composableBuilder(column: $table.expiresAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  Expression<T> usersRefs<T extends Object>(
+    Expression<T> Function($$UsersTableAnnotationComposer a) f,
+  ) {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.certificationId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CertificationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CertificationsTable,
+          Certification,
+          $$CertificationsTableFilterComposer,
+          $$CertificationsTableOrderingComposer,
+          $$CertificationsTableAnnotationComposer,
+          $$CertificationsTableCreateCompanionBuilder,
+          $$CertificationsTableUpdateCompanionBuilder,
+          (Certification, $$CertificationsTableReferences),
+          Certification,
+          PrefetchHooks Function({bool usersRefs})
+        > {
+  $$CertificationsTableTableManager(
+    _$AppDatabase db,
+    $CertificationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CertificationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CertificationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CertificationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> issuer = const Value.absent(),
+                Value<DateTime?> expiresAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+              }) => CertificationsCompanion(
+                id: id,
+                name: name,
+                issuer: issuer,
+                expiresAt: expiresAt,
+                updatedAt: updatedAt,
+                version: version,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String?> issuer = const Value.absent(),
+                Value<DateTime?> expiresAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+              }) => CertificationsCompanion.insert(
+                id: id,
+                name: name,
+                issuer: issuer,
+                expiresAt: expiresAt,
+                updatedAt: updatedAt,
+                version: version,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CertificationsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({usersRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (usersRefs) db.users],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (usersRefs)
+                    await $_getPrefetchedData<
+                      Certification,
+                      $CertificationsTable,
+                      User
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CertificationsTableReferences
+                          ._usersRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CertificationsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).usersRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.certificationId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CertificationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CertificationsTable,
+      Certification,
+      $$CertificationsTableFilterComposer,
+      $$CertificationsTableOrderingComposer,
+      $$CertificationsTableAnnotationComposer,
+      $$CertificationsTableCreateCompanionBuilder,
+      $$CertificationsTableUpdateCompanionBuilder,
+      (Certification, $$CertificationsTableReferences),
+      Certification,
+      PrefetchHooks Function({bool usersRefs})
+    >;
 typedef $$UsersTableCreateCompanionBuilder =
     UsersCompanion Function({
       Value<int> id,
       required int accountId,
       required String name,
       Value<int?> age,
+      Value<String?> jobTitle,
       Value<String> role,
       Value<String?> employer,
       Value<String?> permissions,
       Value<bool> canManageUsers,
       required int companyId,
+      Value<int?> certificationId,
+      Value<String?> profileImagePath,
       Value<DateTime> updatedAt,
       Value<int> version,
       Value<DateTime?> deletedAt,
@@ -13447,11 +14347,14 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<int> accountId,
       Value<String> name,
       Value<int?> age,
+      Value<String?> jobTitle,
       Value<String> role,
       Value<String?> employer,
       Value<String?> permissions,
       Value<bool> canManageUsers,
       Value<int> companyId,
+      Value<int?> certificationId,
+      Value<String?> profileImagePath,
       Value<DateTime> updatedAt,
       Value<int> version,
       Value<DateTime?> deletedAt,
@@ -13489,6 +14392,25 @@ final class $$UsersTableReferences
       $_db.company,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_companyIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CertificationsTable _certificationIdTable(_$AppDatabase db) =>
+      db.certifications.createAlias(
+        $_aliasNameGenerator(db.users.certificationId, db.certifications.id),
+      );
+
+  $$CertificationsTableProcessedTableManager? get certificationId {
+    final $_column = $_itemColumn<int>('certification_id');
+    if ($_column == null) return null;
+    final manager = $$CertificationsTableTableManager(
+      $_db,
+      $_db.certifications,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_certificationIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -13722,6 +14644,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get jobTitle => $composableBuilder(
+    column: $table.jobTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get role => $composableBuilder(
     column: $table.role,
     builder: (column) => ColumnFilters(column),
@@ -13739,6 +14666,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<bool> get canManageUsers => $composableBuilder(
     column: $table.canManageUsers,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileImagePath => $composableBuilder(
+    column: $table.profileImagePath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13794,6 +14726,29 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
           }) => $$CompanyTableFilterComposer(
             $db: $db,
             $table: $db.company,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CertificationsTableFilterComposer get certificationId {
+    final $$CertificationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.certificationId,
+      referencedTable: $db.certifications,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CertificationsTableFilterComposer(
+            $db: $db,
+            $table: $db.certifications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -14103,6 +15058,11 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get jobTitle => $composableBuilder(
+    column: $table.jobTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get role => $composableBuilder(
     column: $table.role,
     builder: (column) => ColumnOrderings(column),
@@ -14120,6 +15080,11 @@ class $$UsersTableOrderingComposer
 
   ColumnOrderings<bool> get canManageUsers => $composableBuilder(
     column: $table.canManageUsers,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileImagePath => $composableBuilder(
+    column: $table.profileImagePath,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -14183,6 +15148,29 @@ class $$UsersTableOrderingComposer
     );
     return composer;
   }
+
+  $$CertificationsTableOrderingComposer get certificationId {
+    final $$CertificationsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.certificationId,
+      referencedTable: $db.certifications,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CertificationsTableOrderingComposer(
+            $db: $db,
+            $table: $db.certifications,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$UsersTableAnnotationComposer
@@ -14203,6 +15191,9 @@ class $$UsersTableAnnotationComposer
   GeneratedColumn<int> get age =>
       $composableBuilder(column: $table.age, builder: (column) => column);
 
+  GeneratedColumn<String> get jobTitle =>
+      $composableBuilder(column: $table.jobTitle, builder: (column) => column);
+
   GeneratedColumn<String> get role =>
       $composableBuilder(column: $table.role, builder: (column) => column);
 
@@ -14216,6 +15207,11 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<bool> get canManageUsers => $composableBuilder(
     column: $table.canManageUsers,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get profileImagePath => $composableBuilder(
+    column: $table.profileImagePath,
     builder: (column) => column,
   );
 
@@ -14265,6 +15261,29 @@ class $$UsersTableAnnotationComposer
           }) => $$CompanyTableAnnotationComposer(
             $db: $db,
             $table: $db.company,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CertificationsTableAnnotationComposer get certificationId {
+    final $$CertificationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.certificationId,
+      referencedTable: $db.certifications,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CertificationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.certifications,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -14566,6 +15585,7 @@ class $$UsersTableTableManager
           PrefetchHooks Function({
             bool accountId,
             bool companyId,
+            bool certificationId,
             bool templatesRefs,
             bool jobQuotesRefs,
             bool customersRefs,
@@ -14596,11 +15616,14 @@ class $$UsersTableTableManager
                 Value<int> accountId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<int?> age = const Value.absent(),
+                Value<String?> jobTitle = const Value.absent(),
                 Value<String> role = const Value.absent(),
                 Value<String?> employer = const Value.absent(),
                 Value<String?> permissions = const Value.absent(),
                 Value<bool> canManageUsers = const Value.absent(),
                 Value<int> companyId = const Value.absent(),
+                Value<int?> certificationId = const Value.absent(),
+                Value<String?> profileImagePath = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -14609,11 +15632,14 @@ class $$UsersTableTableManager
                 accountId: accountId,
                 name: name,
                 age: age,
+                jobTitle: jobTitle,
                 role: role,
                 employer: employer,
                 permissions: permissions,
                 canManageUsers: canManageUsers,
                 companyId: companyId,
+                certificationId: certificationId,
+                profileImagePath: profileImagePath,
                 updatedAt: updatedAt,
                 version: version,
                 deletedAt: deletedAt,
@@ -14624,11 +15650,14 @@ class $$UsersTableTableManager
                 required int accountId,
                 required String name,
                 Value<int?> age = const Value.absent(),
+                Value<String?> jobTitle = const Value.absent(),
                 Value<String> role = const Value.absent(),
                 Value<String?> employer = const Value.absent(),
                 Value<String?> permissions = const Value.absent(),
                 Value<bool> canManageUsers = const Value.absent(),
                 required int companyId,
+                Value<int?> certificationId = const Value.absent(),
+                Value<String?> profileImagePath = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -14637,11 +15666,14 @@ class $$UsersTableTableManager
                 accountId: accountId,
                 name: name,
                 age: age,
+                jobTitle: jobTitle,
                 role: role,
                 employer: employer,
                 permissions: permissions,
                 canManageUsers: canManageUsers,
                 companyId: companyId,
+                certificationId: certificationId,
+                profileImagePath: profileImagePath,
                 updatedAt: updatedAt,
                 version: version,
                 deletedAt: deletedAt,
@@ -14656,6 +15688,7 @@ class $$UsersTableTableManager
               ({
                 accountId = false,
                 companyId = false,
+                certificationId = false,
                 templatesRefs = false,
                 jobQuotesRefs = false,
                 customersRefs = false,
@@ -14721,6 +15754,19 @@ class $$UsersTableTableManager
                                         ._companyIdTable(db),
                                     referencedColumn: $$UsersTableReferences
                                         ._companyIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (certificationId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.certificationId,
+                                    referencedTable: $$UsersTableReferences
+                                        ._certificationIdTable(db),
+                                    referencedColumn: $$UsersTableReferences
+                                        ._certificationIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -14940,6 +15986,7 @@ typedef $$UsersTableProcessedTableManager =
       PrefetchHooks Function({
         bool accountId,
         bool companyId,
+        bool certificationId,
         bool templatesRefs,
         bool jobQuotesRefs,
         bool customersRefs,
@@ -24680,6 +25727,8 @@ class $AppDatabaseManager {
       $$AccountsTableTableManager(_db, _db.accounts);
   $$CompanyTableTableManager get company =>
       $$CompanyTableTableManager(_db, _db.company);
+  $$CertificationsTableTableManager get certifications =>
+      $$CertificationsTableTableManager(_db, _db.certifications);
   $$UsersTableTableManager get users =>
       $$UsersTableTableManager(_db, _db.users);
   $$TemplatesTableTableManager get templates =>
@@ -24724,11 +25773,13 @@ class $AppDatabaseManager {
 mixin _$UserDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
 }
 mixin _$TemplatesDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $TemplatesTable get templates => attachedDatabase.templates;
   $TemplateFieldsTable get templateFields => attachedDatabase.templateFields;
@@ -24736,6 +25787,7 @@ mixin _$TemplatesDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$JobQuotesDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $TemplatesTable get templates => attachedDatabase.templates;
   $JobQuotesTable get jobQuotes => attachedDatabase.jobQuotes;
@@ -24750,6 +25802,7 @@ mixin _$CompanyDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$JobsDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $TemplatesTable get templates => attachedDatabase.templates;
   $JobQuotesTable get jobQuotes => attachedDatabase.jobQuotes;
@@ -24759,12 +25812,14 @@ mixin _$JobsDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$CustomersDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
 }
 mixin _$DocumentDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
   $TemplatesTable get templates => attachedDatabase.templates;
@@ -24775,6 +25830,7 @@ mixin _$DocumentDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$ToolsDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $ToolsTable get tools => attachedDatabase.tools;
 }
@@ -24804,9 +25860,13 @@ mixin _$CompanyMemberDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$LocalChangeDaoMixin on DatabaseAccessor<AppDatabase> {
   $LocalChangesTable get localChanges => attachedDatabase.localChanges;
 }
+mixin _$CertificationsDaoMixin on DatabaseAccessor<AppDatabase> {
+  $CertificationsTable get certifications => attachedDatabase.certifications;
+}
 mixin _$TasksDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $TemplatesTable get templates => attachedDatabase.templates;
   $JobQuotesTable get jobQuotes => attachedDatabase.jobQuotes;
@@ -24817,6 +25877,7 @@ mixin _$TasksDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$ComplaintDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
   $ComplaintTable get complaint => attachedDatabase.complaint;
@@ -24824,6 +25885,7 @@ mixin _$ComplaintDaoMixin on DatabaseAccessor<AppDatabase> {
 mixin _$InjuryDaoMixin on DatabaseAccessor<AppDatabase> {
   $AccountsTable get accounts => attachedDatabase.accounts;
   $CompanyTable get company => attachedDatabase.company;
+  $CertificationsTable get certifications => attachedDatabase.certifications;
   $UsersTable get users => attachedDatabase.users;
   $CustomersTable get customers => attachedDatabase.customers;
   $InjuryTable get injury => attachedDatabase.injury;
