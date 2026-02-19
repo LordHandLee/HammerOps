@@ -14,8 +14,8 @@ import 'package:timezone/timezone.dart' as tz;
 // import 'database/repository.dart';
 
 void main() async {
-  await setupDependencies();
   WidgetsFlutterBinding.ensureInitialized();
+  await setupDependencies();
   tz.initializeTimeZones(); // loads tz data
   tz.setLocalLocation(tz.getLocation('America/New_York')); // or use device locale
   runApp(const HammerOps());
