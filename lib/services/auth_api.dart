@@ -56,7 +56,10 @@ class SignupResult {
   SignupResult({required this.message});
 
   factory SignupResult.fromJson(Map<String, dynamic> json) {
-    return SignupResult(message: json['message'] as String? ?? 'Account created.');
+    final message = json['message'];
+    return SignupResult(
+      message: message == null ? 'Account created.' : message.toString(),
+    );
   }
 }
 
@@ -67,9 +70,14 @@ class InviteResult {
   InviteResult({required this.inviteId, required this.message});
 
   factory InviteResult.fromJson(Map<String, dynamic> json) {
+    final rawInviteId = json['inviteId'];
+    final inviteId = rawInviteId is int
+        ? rawInviteId
+        : int.tryParse(rawInviteId?.toString() ?? '') ?? 0;
+    final rawMessage = json['message'];
     return InviteResult(
-      inviteId: json['inviteId'] as int? ?? 0,
-      message: json['message'] as String? ?? 'Invite sent.',
+      inviteId: inviteId,
+      message: rawMessage == null ? 'Invite sent.' : rawMessage.toString(),
     );
   }
 }
@@ -90,12 +98,17 @@ class AuthTokens {
   });
 
   factory AuthTokens.fromJson(Map<String, dynamic> json) {
+    int? parseInt(dynamic value) {
+      if (value is int) return value;
+      return int.tryParse(value?.toString() ?? '');
+    }
+
     return AuthTokens(
-      accessToken: json['accessToken'] as String,
-      refreshToken: json['refreshToken'] as String,
-      accountId: json['accountId'] as int,
-      companyId: json['companyId'] as int?,
-      refreshSessionId: json['refreshSessionId'] as int?,
+      accessToken: json['accessToken']?.toString() ?? '',
+      refreshToken: json['refreshToken']?.toString() ?? '',
+      accountId: parseInt(json['accountId']) ?? 0,
+      companyId: parseInt(json['companyId']),
+      refreshSessionId: parseInt(json['refreshSessionId']),
     );
   }
 }

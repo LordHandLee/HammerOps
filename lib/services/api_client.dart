@@ -58,6 +58,16 @@ class ApiClient {
 
   Map<String, dynamic> _decode(http.Response r) {
     if (r.body.isEmpty) return {};
-    return jsonDecode(r.body) as Map<String, dynamic>;
+    final decoded = jsonDecode(r.body);
+    if (decoded is Map<String, dynamic>) {
+      return decoded;
+    }
+    if (decoded is Map) {
+      return decoded.cast<String, dynamic>();
+    }
+    if (decoded is String) {
+      return {'message': decoded};
+    }
+    return {'data': decoded};
   }
 }
