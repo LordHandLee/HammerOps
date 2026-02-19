@@ -1,13 +1,11 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hammer_ops/database/database.dart';
 import 'package:hammer_ops/di/injector.dart';
 import 'package:hammer_ops/services/QR_generator.dart';
+import 'package:hammer_ops/services/qr_file_saver.dart';
 import 'package:hammer_ops/services/qr_scanner.dart';
 import 'package:hammer_ops/services/service.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class Tools extends StatefulWidget {
@@ -58,12 +56,10 @@ class _ToolsCreatorState extends State<Tools> {
       final imgData = await painter.toImageData(300);
       if (imgData == null) throw Exception('Failed to render QR');
       final bytes = imgData.buffer.asUint8List();
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/tool_$toolId.png');
-      await file.writeAsBytes(bytes);
+      final savedPath = await saveToolQrBytes(bytes, toolId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('QR saved to ${file.path}')),
+          SnackBar(content: Text('QR saved to $savedPath')),
         );
       }
     } catch (e) {

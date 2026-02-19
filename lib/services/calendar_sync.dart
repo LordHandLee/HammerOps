@@ -1,5 +1,5 @@
-import 'dart:io' show Platform;
 import 'package:device_calendar/device_calendar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -17,9 +17,18 @@ abstract class CalendarSync {
   Future<void> deleteEvent(String externalId);
 
   factory CalendarSync() {
-    if (Platform.isIOS || Platform.isAndroid) return _MobileCalendarSync();
-    if (Platform.isMacOS) return _MacCalendarSync();
-    return const _NoopCalendarSync();
+    if (kIsWeb) return const _NoopCalendarSync();
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+      case TargetPlatform.android:
+        return _MobileCalendarSync();
+      case TargetPlatform.macOS:
+        return _MacCalendarSync();
+      case TargetPlatform.windows:
+      case TargetPlatform.linux:
+      case TargetPlatform.fuchsia:
+        return const _NoopCalendarSync();
+    }
   }
 }
 
