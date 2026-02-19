@@ -76,11 +76,11 @@ class AuthRoutes {
         return Response(409, body: 'email already exists');
       }
 
-      InvitesData? invite;
+      Invite? invite;
       if (hasInvite) {
         final now = DateTime.now();
         invite = await (db.select(db.invites)
-              ..where((i) => i.code.equals(inviteCode!))
+              ..where((i) => i.code.equals(inviteCode))
               ..where((i) => i.usedAt.isNull())
               ..where((i) => i.expiresAt.isBiggerThanValue(now)))
             .getSingleOrNull();
@@ -102,16 +102,18 @@ class AuthRoutes {
 
       int? companyId;
       if (hasInvite && invite != null) {
-        companyId = invite.companyId;
+        final inviteData = invite;
+        final invitedCompanyId = inviteData.companyId;
+        companyId = invitedCompanyId;
         await db.into(db.companyMembers).insert(
               CompanyMembersCompanion.insert(
-                companyId: companyId,
+                companyId: invitedCompanyId,
                 accountId: accountId,
-                role: invite.role,
-                invitedBy: Value(invite.invitedBy),
+                role: inviteData.role,
+                invitedBy: Value(inviteData.invitedBy),
               ),
             );
-        await (db.update(db.invites)..where((i) => i.id.equals(invite.id)))
+        await (db.update(db.invites)..where((i) => i.id.equals(inviteData.id)))
             .write(InvitesCompanion(usedAt: Value(DateTime.now())));
       } else if (hasCompany) {
         companyId = await db.into(db.company).insert(
@@ -255,7 +257,7 @@ class AuthRoutes {
             companyId: adminMember.companyId,
             invitedBy: Value(accountId),
             email: normalizedEmail,
-            role: 'user',
+            role: const Value('user'),
             code: code,
             expiresAt: expiresAt,
           ),

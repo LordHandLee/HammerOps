@@ -66,9 +66,6 @@ class AppServerDatabase extends _$AppServerDatabase {
   int get schemaVersion => 2;
 
   @override
-  SqlDialect get dialect => SqlDialect.postgres;
-
-  @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => m.createAll(),
         onUpgrade: (m, from, to) async {

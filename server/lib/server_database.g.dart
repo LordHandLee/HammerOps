@@ -11916,6 +11916,555 @@ class EmailVerificationsCompanion extends UpdateCompanion<EmailVerification> {
   }
 }
 
+class $InvitesTable extends Invites with TableInfo<$InvitesTable, Invite> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InvitesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _companyIdMeta = const VerificationMeta(
+    'companyId',
+  );
+  @override
+  late final GeneratedColumn<int> companyId = GeneratedColumn<int>(
+    'company_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES company (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _invitedByMeta = const VerificationMeta(
+    'invitedBy',
+  );
+  @override
+  late final GeneratedColumn<int> invitedBy = GeneratedColumn<int>(
+    'invited_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES accounts (id) ON DELETE SET NULL',
+    ),
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 20,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('user'),
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expiresAtMeta = const VerificationMeta(
+    'expiresAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expiresAt = GeneratedColumn<DateTime>(
+    'expires_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usedAtMeta = const VerificationMeta('usedAt');
+  @override
+  late final GeneratedColumn<DateTime> usedAt = GeneratedColumn<DateTime>(
+    'used_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now(),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    companyId,
+    invitedBy,
+    email,
+    role,
+    code,
+    expiresAt,
+    usedAt,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'invites';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Invite> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('company_id')) {
+      context.handle(
+        _companyIdMeta,
+        companyId.isAcceptableOrUnknown(data['company_id']!, _companyIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_companyIdMeta);
+    }
+    if (data.containsKey('invited_by')) {
+      context.handle(
+        _invitedByMeta,
+        invitedBy.isAcceptableOrUnknown(data['invited_by']!, _invitedByMeta),
+      );
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_emailMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('expires_at')) {
+      context.handle(
+        _expiresAtMeta,
+        expiresAt.isAcceptableOrUnknown(data['expires_at']!, _expiresAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_expiresAtMeta);
+    }
+    if (data.containsKey('used_at')) {
+      context.handle(
+        _usedAtMeta,
+        usedAt.isAcceptableOrUnknown(data['used_at']!, _usedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Invite map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Invite(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      companyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}company_id'],
+      )!,
+      invitedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}invited_by'],
+      ),
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      expiresAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expires_at'],
+      )!,
+      usedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}used_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $InvitesTable createAlias(String alias) {
+    return $InvitesTable(attachedDatabase, alias);
+  }
+}
+
+class Invite extends DataClass implements Insertable<Invite> {
+  final int id;
+  final int companyId;
+  final int? invitedBy;
+  final String email;
+  final String role;
+  final String code;
+  final DateTime expiresAt;
+  final DateTime? usedAt;
+  final DateTime createdAt;
+  const Invite({
+    required this.id,
+    required this.companyId,
+    this.invitedBy,
+    required this.email,
+    required this.role,
+    required this.code,
+    required this.expiresAt,
+    this.usedAt,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['company_id'] = Variable<int>(companyId);
+    if (!nullToAbsent || invitedBy != null) {
+      map['invited_by'] = Variable<int>(invitedBy);
+    }
+    map['email'] = Variable<String>(email);
+    map['role'] = Variable<String>(role);
+    map['code'] = Variable<String>(code);
+    map['expires_at'] = Variable<DateTime>(expiresAt);
+    if (!nullToAbsent || usedAt != null) {
+      map['used_at'] = Variable<DateTime>(usedAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  InvitesCompanion toCompanion(bool nullToAbsent) {
+    return InvitesCompanion(
+      id: Value(id),
+      companyId: Value(companyId),
+      invitedBy: invitedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(invitedBy),
+      email: Value(email),
+      role: Value(role),
+      code: Value(code),
+      expiresAt: Value(expiresAt),
+      usedAt: usedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(usedAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Invite.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Invite(
+      id: serializer.fromJson<int>(json['id']),
+      companyId: serializer.fromJson<int>(json['companyId']),
+      invitedBy: serializer.fromJson<int?>(json['invitedBy']),
+      email: serializer.fromJson<String>(json['email']),
+      role: serializer.fromJson<String>(json['role']),
+      code: serializer.fromJson<String>(json['code']),
+      expiresAt: serializer.fromJson<DateTime>(json['expiresAt']),
+      usedAt: serializer.fromJson<DateTime?>(json['usedAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'companyId': serializer.toJson<int>(companyId),
+      'invitedBy': serializer.toJson<int?>(invitedBy),
+      'email': serializer.toJson<String>(email),
+      'role': serializer.toJson<String>(role),
+      'code': serializer.toJson<String>(code),
+      'expiresAt': serializer.toJson<DateTime>(expiresAt),
+      'usedAt': serializer.toJson<DateTime?>(usedAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Invite copyWith({
+    int? id,
+    int? companyId,
+    Value<int?> invitedBy = const Value.absent(),
+    String? email,
+    String? role,
+    String? code,
+    DateTime? expiresAt,
+    Value<DateTime?> usedAt = const Value.absent(),
+    DateTime? createdAt,
+  }) => Invite(
+    id: id ?? this.id,
+    companyId: companyId ?? this.companyId,
+    invitedBy: invitedBy.present ? invitedBy.value : this.invitedBy,
+    email: email ?? this.email,
+    role: role ?? this.role,
+    code: code ?? this.code,
+    expiresAt: expiresAt ?? this.expiresAt,
+    usedAt: usedAt.present ? usedAt.value : this.usedAt,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Invite copyWithCompanion(InvitesCompanion data) {
+    return Invite(
+      id: data.id.present ? data.id.value : this.id,
+      companyId: data.companyId.present ? data.companyId.value : this.companyId,
+      invitedBy: data.invitedBy.present ? data.invitedBy.value : this.invitedBy,
+      email: data.email.present ? data.email.value : this.email,
+      role: data.role.present ? data.role.value : this.role,
+      code: data.code.present ? data.code.value : this.code,
+      expiresAt: data.expiresAt.present ? data.expiresAt.value : this.expiresAt,
+      usedAt: data.usedAt.present ? data.usedAt.value : this.usedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Invite(')
+          ..write('id: $id, ')
+          ..write('companyId: $companyId, ')
+          ..write('invitedBy: $invitedBy, ')
+          ..write('email: $email, ')
+          ..write('role: $role, ')
+          ..write('code: $code, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('usedAt: $usedAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    companyId,
+    invitedBy,
+    email,
+    role,
+    code,
+    expiresAt,
+    usedAt,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Invite &&
+          other.id == this.id &&
+          other.companyId == this.companyId &&
+          other.invitedBy == this.invitedBy &&
+          other.email == this.email &&
+          other.role == this.role &&
+          other.code == this.code &&
+          other.expiresAt == this.expiresAt &&
+          other.usedAt == this.usedAt &&
+          other.createdAt == this.createdAt);
+}
+
+class InvitesCompanion extends UpdateCompanion<Invite> {
+  final Value<int> id;
+  final Value<int> companyId;
+  final Value<int?> invitedBy;
+  final Value<String> email;
+  final Value<String> role;
+  final Value<String> code;
+  final Value<DateTime> expiresAt;
+  final Value<DateTime?> usedAt;
+  final Value<DateTime> createdAt;
+  const InvitesCompanion({
+    this.id = const Value.absent(),
+    this.companyId = const Value.absent(),
+    this.invitedBy = const Value.absent(),
+    this.email = const Value.absent(),
+    this.role = const Value.absent(),
+    this.code = const Value.absent(),
+    this.expiresAt = const Value.absent(),
+    this.usedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  InvitesCompanion.insert({
+    this.id = const Value.absent(),
+    required int companyId,
+    this.invitedBy = const Value.absent(),
+    required String email,
+    this.role = const Value.absent(),
+    required String code,
+    required DateTime expiresAt,
+    this.usedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : companyId = Value(companyId),
+       email = Value(email),
+       code = Value(code),
+       expiresAt = Value(expiresAt);
+  static Insertable<Invite> custom({
+    Expression<int>? id,
+    Expression<int>? companyId,
+    Expression<int>? invitedBy,
+    Expression<String>? email,
+    Expression<String>? role,
+    Expression<String>? code,
+    Expression<DateTime>? expiresAt,
+    Expression<DateTime>? usedAt,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (companyId != null) 'company_id': companyId,
+      if (invitedBy != null) 'invited_by': invitedBy,
+      if (email != null) 'email': email,
+      if (role != null) 'role': role,
+      if (code != null) 'code': code,
+      if (expiresAt != null) 'expires_at': expiresAt,
+      if (usedAt != null) 'used_at': usedAt,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  InvitesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? companyId,
+    Value<int?>? invitedBy,
+    Value<String>? email,
+    Value<String>? role,
+    Value<String>? code,
+    Value<DateTime>? expiresAt,
+    Value<DateTime?>? usedAt,
+    Value<DateTime>? createdAt,
+  }) {
+    return InvitesCompanion(
+      id: id ?? this.id,
+      companyId: companyId ?? this.companyId,
+      invitedBy: invitedBy ?? this.invitedBy,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      code: code ?? this.code,
+      expiresAt: expiresAt ?? this.expiresAt,
+      usedAt: usedAt ?? this.usedAt,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (companyId.present) {
+      map['company_id'] = Variable<int>(companyId.value);
+    }
+    if (invitedBy.present) {
+      map['invited_by'] = Variable<int>(invitedBy.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (expiresAt.present) {
+      map['expires_at'] = Variable<DateTime>(expiresAt.value);
+    }
+    if (usedAt.present) {
+      map['used_at'] = Variable<DateTime>(usedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InvitesCompanion(')
+          ..write('id: $id, ')
+          ..write('companyId: $companyId, ')
+          ..write('invitedBy: $invitedBy, ')
+          ..write('email: $email, ')
+          ..write('role: $role, ')
+          ..write('code: $code, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('usedAt: $usedAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppServerDatabase extends GeneratedDatabase {
   _$AppServerDatabase(QueryExecutor e) : super(e);
   $AppServerDatabaseManager get managers => $AppServerDatabaseManager(this);
@@ -11948,6 +12497,7 @@ abstract class _$AppServerDatabase extends GeneratedDatabase {
       $ChecklistRunItemsTable(this);
   late final $EmailVerificationsTable emailVerifications =
       $EmailVerificationsTable(this);
+  late final $InvitesTable invites = $InvitesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11975,6 +12525,7 @@ abstract class _$AppServerDatabase extends GeneratedDatabase {
     checklistRuns,
     checklistRunItems,
     emailVerifications,
+    invites,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -12174,6 +12725,20 @@ abstract class _$AppServerDatabase extends GeneratedDatabase {
       ),
       result: [TableUpdate('email_verifications', kind: UpdateKind.delete)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'company',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('invites', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'accounts',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('invites', kind: UpdateKind.update)],
+    ),
   ]);
 }
 
@@ -12288,6 +12853,25 @@ final class $$AccountsTableReferences
     final cache = $_typedResult.readTableOrNull(
       _emailVerificationsRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$InvitesTable, List<Invite>> _invitesRefsTable(
+    _$AppServerDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.invites,
+    aliasName: $_aliasNameGenerator(db.accounts.id, db.invites.invitedBy),
+  );
+
+  $$InvitesTableProcessedTableManager get invitesRefs {
+    final manager = $$InvitesTableTableManager(
+      $_db,
+      $_db.invites,
+    ).filter((f) => f.invitedBy.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_invitesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -12444,6 +13028,31 @@ class $$AccountsTableFilterComposer
           }) => $$EmailVerificationsTableFilterComposer(
             $db: $db,
             $table: $db.emailVerifications,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> invitesRefs(
+    Expression<bool> Function($$InvitesTableFilterComposer f) f,
+  ) {
+    final $$InvitesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.invites,
+      getReferencedColumn: (t) => t.invitedBy,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InvitesTableFilterComposer(
+            $db: $db,
+            $table: $db.invites,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -12659,6 +13268,31 @@ class $$AccountsTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> invitesRefs<T extends Object>(
+    Expression<T> Function($$InvitesTableAnnotationComposer a) f,
+  ) {
+    final $$InvitesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.invites,
+      getReferencedColumn: (t) => t.invitedBy,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InvitesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.invites,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$AccountsTableTableManager
@@ -12679,6 +13313,7 @@ class $$AccountsTableTableManager
             bool companyRefs,
             bool usersRefs,
             bool emailVerificationsRefs,
+            bool invitesRefs,
           })
         > {
   $$AccountsTableTableManager(_$AppServerDatabase db, $AccountsTable table)
@@ -12754,6 +13389,7 @@ class $$AccountsTableTableManager
                 companyRefs = false,
                 usersRefs = false,
                 emailVerificationsRefs = false,
+                invitesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -12762,6 +13398,7 @@ class $$AccountsTableTableManager
                     if (companyRefs) db.company,
                     if (usersRefs) db.users,
                     if (emailVerificationsRefs) db.emailVerifications,
+                    if (invitesRefs) db.invites,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -12850,6 +13487,27 @@ class $$AccountsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (invitesRefs)
+                        await $_getPrefetchedData<
+                          Account,
+                          $AccountsTable,
+                          Invite
+                        >(
+                          currentTable: table,
+                          referencedTable: $$AccountsTableReferences
+                              ._invitesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$AccountsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).invitesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.invitedBy == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -12875,6 +13533,7 @@ typedef $$AccountsTableProcessedTableManager =
         bool companyRefs,
         bool usersRefs,
         bool emailVerificationsRefs,
+        bool invitesRefs,
       })
     >;
 typedef $$AccountSessionsTableCreateCompanionBuilder =
@@ -13346,6 +14005,25 @@ final class $$CompanyTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$InvitesTable, List<Invite>> _invitesRefsTable(
+    _$AppServerDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.invites,
+    aliasName: $_aliasNameGenerator(db.company.id, db.invites.companyId),
+  );
+
+  $$InvitesTableProcessedTableManager get invitesRefs {
+    final manager = $$InvitesTableTableManager(
+      $_db,
+      $_db.invites,
+    ).filter((f) => f.companyId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_invitesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$CompanyTableFilterComposer
@@ -13451,6 +14129,31 @@ class $$CompanyTableFilterComposer
           }) => $$UsersTableFilterComposer(
             $db: $db,
             $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> invitesRefs(
+    Expression<bool> Function($$InvitesTableFilterComposer f) f,
+  ) {
+    final $$InvitesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.invites,
+      getReferencedColumn: (t) => t.companyId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InvitesTableFilterComposer(
+            $db: $db,
+            $table: $db.invites,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -13623,6 +14326,31 @@ class $$CompanyTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> invitesRefs<T extends Object>(
+    Expression<T> Function($$InvitesTableAnnotationComposer a) f,
+  ) {
+    final $$InvitesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.invites,
+      getReferencedColumn: (t) => t.companyId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$InvitesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.invites,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CompanyTableTableManager
@@ -13642,6 +14370,7 @@ class $$CompanyTableTableManager
             bool adminAccountId,
             bool companyMembersRefs,
             bool usersRefs,
+            bool invitesRefs,
           })
         > {
   $$CompanyTableTableManager(_$AppServerDatabase db, $CompanyTable table)
@@ -13704,12 +14433,14 @@ class $$CompanyTableTableManager
                 adminAccountId = false,
                 companyMembersRefs = false,
                 usersRefs = false,
+                invitesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (companyMembersRefs) db.companyMembers,
                     if (usersRefs) db.users,
+                    if (invitesRefs) db.invites,
                   ],
                   addJoins:
                       <
@@ -13783,6 +14514,27 @@ class $$CompanyTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (invitesRefs)
+                        await $_getPrefetchedData<
+                          CompanyData,
+                          $CompanyTable,
+                          Invite
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CompanyTableReferences
+                              ._invitesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CompanyTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).invitesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.companyId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -13807,6 +14559,7 @@ typedef $$CompanyTableProcessedTableManager =
         bool adminAccountId,
         bool companyMembersRefs,
         bool usersRefs,
+        bool invitesRefs,
       })
     >;
 typedef $$CompanyMembersTableCreateCompanionBuilder =
@@ -24641,6 +25394,479 @@ typedef $$EmailVerificationsTableProcessedTableManager =
       EmailVerification,
       PrefetchHooks Function({bool accountId})
     >;
+typedef $$InvitesTableCreateCompanionBuilder =
+    InvitesCompanion Function({
+      Value<int> id,
+      required int companyId,
+      Value<int?> invitedBy,
+      required String email,
+      Value<String> role,
+      required String code,
+      required DateTime expiresAt,
+      Value<DateTime?> usedAt,
+      Value<DateTime> createdAt,
+    });
+typedef $$InvitesTableUpdateCompanionBuilder =
+    InvitesCompanion Function({
+      Value<int> id,
+      Value<int> companyId,
+      Value<int?> invitedBy,
+      Value<String> email,
+      Value<String> role,
+      Value<String> code,
+      Value<DateTime> expiresAt,
+      Value<DateTime?> usedAt,
+      Value<DateTime> createdAt,
+    });
+
+final class $$InvitesTableReferences
+    extends BaseReferences<_$AppServerDatabase, $InvitesTable, Invite> {
+  $$InvitesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CompanyTable _companyIdTable(_$AppServerDatabase db) => db.company
+      .createAlias($_aliasNameGenerator(db.invites.companyId, db.company.id));
+
+  $$CompanyTableProcessedTableManager get companyId {
+    final $_column = $_itemColumn<int>('company_id')!;
+
+    final manager = $$CompanyTableTableManager(
+      $_db,
+      $_db.company,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_companyIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $AccountsTable _invitedByTable(_$AppServerDatabase db) => db.accounts
+      .createAlias($_aliasNameGenerator(db.invites.invitedBy, db.accounts.id));
+
+  $$AccountsTableProcessedTableManager? get invitedBy {
+    final $_column = $_itemColumn<int>('invited_by');
+    if ($_column == null) return null;
+    final manager = $$AccountsTableTableManager(
+      $_db,
+      $_db.accounts,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_invitedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$InvitesTableFilterComposer
+    extends Composer<_$AppServerDatabase, $InvitesTable> {
+  $$InvitesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get usedAt => $composableBuilder(
+    column: $table.usedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CompanyTableFilterComposer get companyId {
+    final $$CompanyTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.companyId,
+      referencedTable: $db.company,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanyTableFilterComposer(
+            $db: $db,
+            $table: $db.company,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableFilterComposer get invitedBy {
+    final $$AccountsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedBy,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AccountsTableFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$InvitesTableOrderingComposer
+    extends Composer<_$AppServerDatabase, $InvitesTable> {
+  $$InvitesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get usedAt => $composableBuilder(
+    column: $table.usedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CompanyTableOrderingComposer get companyId {
+    final $$CompanyTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.companyId,
+      referencedTable: $db.company,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanyTableOrderingComposer(
+            $db: $db,
+            $table: $db.company,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableOrderingComposer get invitedBy {
+    final $$AccountsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedBy,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AccountsTableOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$InvitesTableAnnotationComposer
+    extends Composer<_$AppServerDatabase, $InvitesTable> {
+  $$InvitesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expiresAt =>
+      $composableBuilder(column: $table.expiresAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get usedAt =>
+      $composableBuilder(column: $table.usedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$CompanyTableAnnotationComposer get companyId {
+    final $$CompanyTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.companyId,
+      referencedTable: $db.company,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanyTableAnnotationComposer(
+            $db: $db,
+            $table: $db.company,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$AccountsTableAnnotationComposer get invitedBy {
+    final $$AccountsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.invitedBy,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AccountsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$InvitesTableTableManager
+    extends
+        RootTableManager<
+          _$AppServerDatabase,
+          $InvitesTable,
+          Invite,
+          $$InvitesTableFilterComposer,
+          $$InvitesTableOrderingComposer,
+          $$InvitesTableAnnotationComposer,
+          $$InvitesTableCreateCompanionBuilder,
+          $$InvitesTableUpdateCompanionBuilder,
+          (Invite, $$InvitesTableReferences),
+          Invite,
+          PrefetchHooks Function({bool companyId, bool invitedBy})
+        > {
+  $$InvitesTableTableManager(_$AppServerDatabase db, $InvitesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InvitesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InvitesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InvitesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> companyId = const Value.absent(),
+                Value<int?> invitedBy = const Value.absent(),
+                Value<String> email = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<DateTime> expiresAt = const Value.absent(),
+                Value<DateTime?> usedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => InvitesCompanion(
+                id: id,
+                companyId: companyId,
+                invitedBy: invitedBy,
+                email: email,
+                role: role,
+                code: code,
+                expiresAt: expiresAt,
+                usedAt: usedAt,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int companyId,
+                Value<int?> invitedBy = const Value.absent(),
+                required String email,
+                Value<String> role = const Value.absent(),
+                required String code,
+                required DateTime expiresAt,
+                Value<DateTime?> usedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => InvitesCompanion.insert(
+                id: id,
+                companyId: companyId,
+                invitedBy: invitedBy,
+                email: email,
+                role: role,
+                code: code,
+                expiresAt: expiresAt,
+                usedAt: usedAt,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$InvitesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({companyId = false, invitedBy = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (companyId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.companyId,
+                                referencedTable: $$InvitesTableReferences
+                                    ._companyIdTable(db),
+                                referencedColumn: $$InvitesTableReferences
+                                    ._companyIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (invitedBy) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.invitedBy,
+                                referencedTable: $$InvitesTableReferences
+                                    ._invitedByTable(db),
+                                referencedColumn: $$InvitesTableReferences
+                                    ._invitedByTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$InvitesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppServerDatabase,
+      $InvitesTable,
+      Invite,
+      $$InvitesTableFilterComposer,
+      $$InvitesTableOrderingComposer,
+      $$InvitesTableAnnotationComposer,
+      $$InvitesTableCreateCompanionBuilder,
+      $$InvitesTableUpdateCompanionBuilder,
+      (Invite, $$InvitesTableReferences),
+      Invite,
+      PrefetchHooks Function({bool companyId, bool invitedBy})
+    >;
 
 class $AppServerDatabaseManager {
   final _$AppServerDatabase _db;
@@ -24688,4 +25914,6 @@ class $AppServerDatabaseManager {
       $$ChecklistRunItemsTableTableManager(_db, _db.checklistRunItems);
   $$EmailVerificationsTableTableManager get emailVerifications =>
       $$EmailVerificationsTableTableManager(_db, _db.emailVerifications);
+  $$InvitesTableTableManager get invites =>
+      $$InvitesTableTableManager(_db, _db.invites);
 }
