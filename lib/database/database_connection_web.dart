@@ -5,12 +5,31 @@ import 'package:sqlite3/wasm.dart';
 // import 'package:http/http.dart' as http;
 
 Future<QueryExecutor> openConnection() async {
-  print("web");
-  // final uri = Uri.parse('https://unpkg.com/sql.js@1.10.3/dist/sql-wasm.wasm');
-  final uri = Uri.parse('/web/assets/sqlite3.wasm');
-  final sqlite3 = await WasmSqlite3.loadFromUrl(uri);
+  final wasmCandidates = <Uri>[
+    Uri.parse('/assets/sqlite3.wasm'),
+    Uri.parse('/assets/web/assets/sqlite3.wasm'),
+    Uri.parse('/web/assets/sqlite3.wasm'),
+  ];
+
+  Object? lastError;
+  WasmSqlite3? sqlite3;
+  for (final candidate in wasmCandidates) {
+    try {
+      sqlite3 = await WasmSqlite3.loadFromUrl(candidate);
+      break;
+    } catch (e) {
+      lastError = e;
+    }
+  }
+
+  if (sqlite3 == null) {
+    throw StateError(
+      'Failed to load sqlite3.wasm from known paths: $wasmCandidates. '
+      'Last error: $lastError',
+    );
+  }
+
   final fileSystem = await IndexedDbFileSystem.open(dbName: 'my_app');
   sqlite3.registerVirtualFileSystem(fileSystem, makeDefault: true);
-  // return sqlite3;
   return WasmDatabase(sqlite3: sqlite3, path: 'app.db');
 }

@@ -15,10 +15,40 @@ import 'package:timezone/timezone.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setupDependencies();
-  tz.initializeTimeZones(); // loads tz data
-  tz.setLocalLocation(tz.getLocation('America/New_York')); // or use device locale
-  runApp(const HammerOps());
+  try {
+    await setupDependencies();
+    tz.initializeTimeZones(); // loads tz data
+    tz.setLocalLocation(tz.getLocation('America/New_York')); // or use device locale
+    runApp(const HammerOps());
+  } catch (e, st) {
+    debugPrint('Bootstrap failed: $e\n$st');
+    runApp(_BootstrapErrorApp(error: e.toString()));
+  }
+}
+
+class _BootstrapErrorApp extends StatelessWidget {
+  const _BootstrapErrorApp({required this.error});
+
+  final String error;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              'App startup failed:\n$error',
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class HammerOps extends StatelessWidget {
