@@ -15,14 +15,34 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _companyController = TextEditingController();
+  final _inviteController = TextEditingController();
   bool _submitting = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _inviteController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    final invite = Uri.base.queryParameters['invite'];
+    final email = Uri.base.queryParameters['email'];
+    if (invite != null && invite.isNotEmpty) {
+      _inviteController.text = invite;
+    }
+    if (email != null && email.isNotEmpty) {
+      _emailController.text = email;
+    }
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _companyController.dispose();
+    _inviteController.dispose();
     super.dispose();
   }
 
@@ -34,16 +54,19 @@ class _SignupScreenState extends State<SignupScreen> {
     });
     try {
       final service = GetIt.I<AppService>();
-      await service.auth.signUp(
+      final result = await service.auth.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         companyName: _companyController.text.trim().isEmpty
             ? null
             : _companyController.text.trim(),
+        inviteCode: _inviteController.text.trim().isEmpty
+            ? null
+            : _inviteController.text.trim(),
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created. You can log in now.')),
+        SnackBar(content: Text(result.message)),
       );
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
@@ -64,6 +87,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final theme = Theme.of(context);
     final width = MediaQuery.of(context).size.width;
     final isWide = width > 800;
+    final hasInvite = _inviteController.text.trim().isNotEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
@@ -89,7 +113,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         Align(
                           alignment: Alignment.center,
                           child: Image.asset(
-                            'images/logo1.png',
+                            'images/logo1.jpg',
                             height: 80,
                             errorBuilder: (_, __, ___) =>
                                 const SizedBox.shrink(),
@@ -134,9 +158,23 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        controller: _inviteController,
+                        decoration:
+                            _inputDecoration('Invite code (employees)', Icons.mail),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
                         controller: _companyController,
                         decoration:
-                            _inputDecoration('Company name (optional)', Icons.business),
+                            _inputDecoration('Company name (owner)', Icons.business),
+                        enabled: !hasInvite,
+                        validator: (v) {
+                          if (!hasInvite &&
+                              (v == null || v.trim().isEmpty)) {
+                            return 'Company name required for owners';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 24),
                       if (_error != null)

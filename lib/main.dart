@@ -27,7 +27,10 @@ class HammerOps extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final initialRoute = kIsWeb ? '/landing' : '/login';
+    final hasInvite = kIsWeb && Uri.base.queryParameters['invite'] != null;
+    final initialRoute = kIsWeb
+        ? (hasInvite ? '/signup' : '/landing')
+        : '/login';
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -191,9 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 32, 43, 62),
-      appBar: AppBar(
+        appBar: AppBar(
           leading: Image.asset(
-            'images/logo1.png', // URL for network image
+            'images/logo1.jpg',
             width: 40,
             height: 40,
           ),
@@ -492,4 +495,3 @@ class _SnugTileState extends State<SnugTile> with SingleTickerProviderStateMixin
     );
   }
 }
-

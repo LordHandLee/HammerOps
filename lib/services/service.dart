@@ -240,44 +240,19 @@ class AuthService {
     required this.tokenStorage,
   });
 
-  Future<AuthResult> signUp({
+  Future<SignupResult> signUp({
     required String email,
     required String password,
     String? companyName,
+    String? inviteCode,
   }) async {
     final remote = await authApi.signup(
       email: email,
       password: password,
       companyName: companyName,
+      inviteCode: inviteCode,
     );
-    await tokenStorage.saveTokens(
-      accessToken: remote.accessToken,
-      refreshToken: remote.refreshToken,
-      accountId: remote.accountId,
-      companyId: remote.companyId,
-      email: email,
-    );
-    // Optionally hydrate local account record for offline reference
-    await accountRepository.createAccount(
-      email: email,
-      passwordHash: 'REMOTE',
-      passwordSalt: 'REMOTE',
-    );
-    return AuthResult(
-      account: Account(
-        id: remote.accountId,
-        email: email,
-        passwordHash: 'REMOTE',
-        passwordSalt: 'REMOTE',
-        isEmailVerified: false,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        lastSeen: null,
-        version: 0,
-        deletedAt: null,
-      ),
-      companyId: remote.companyId,
-    );
+    return remote;
   }
 
   Future<AuthResult> login({
@@ -331,6 +306,14 @@ class AuthService {
       }
       rethrow;
     }
+  }
+
+  Future<InviteResult> inviteEmployee({required String email}) async {
+    final tokens = await tokenStorage.load();
+    if (tokens == null) {
+      throw Exception('Not authenticated');
+    }
+    return authApi.invite(email: email, accessToken: tokens.accessToken);
   }
 
   String _generateSalt({int length = 16}) {
@@ -513,8 +496,20 @@ class CustomerService {
 
   CustomerService(this.customerRepository);
 
-  Future<int> addCustomer(String name, String contactInfo, int managedBy) {
-    return customerRepository.addCustomer(name, contactInfo, managedBy);
+  Future<int> addCustomer(
+    String name,
+    String contactInfo,
+    int managedBy, {
+    int? id,
+    String? address,
+  }) {
+    return customerRepository.addCustomer(
+      name,
+      contactInfo,
+      managedBy,
+      id: id,
+      address: address,
+    );
   }
 
   Future<List<Customer>> getAllCustomers() {
@@ -526,12 +521,14 @@ class CustomerService {
     required String name,
     required String contactInfo,
     String? address,
+    int? version,
   }) {
     return customerRepository.updateCustomer(
       id: id,
       name: name,
       contactInfo: contactInfo,
       address: address,
+      version: version,
     );
   }
 

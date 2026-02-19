@@ -268,12 +268,14 @@ class CustomersDao extends DatabaseAccessor<AppDatabase> with _$CustomersDaoMixi
     required String name,
     required String contactInfo,
     String? address,
+    int? version,
   }) {
     return (update(customers)..where((c) => c.id.equals(id))).write(
       CustomersCompanion(
         name: Value(name),
         contactInfo: Value(contactInfo),
         address: Value(address),
+        version: version != null ? Value(version) : const Value.absent(),
         updatedAt: Value(DateTime.now()),
       ),
     );

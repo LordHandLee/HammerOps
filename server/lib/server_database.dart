@@ -16,6 +16,22 @@ class EmailVerifications extends Table {
       dateTime().clientDefault(() => DateTime.now())();
 }
 
+class Invites extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get companyId =>
+      integer().references(Company, #id, onDelete: KeyAction.cascade)();
+  IntColumn get invitedBy =>
+      integer().nullable().references(Accounts, #id, onDelete: KeyAction.setNull)();
+  TextColumn get email => text()();
+  TextColumn get role =>
+      text().withLength(min: 1, max: 20).withDefault(const Constant('user'))();
+  TextColumn get code => text()();
+  DateTimeColumn get expiresAt => dateTime()();
+  DateTimeColumn get usedAt => dateTime().nullable()();
+  DateTimeColumn get createdAt =>
+      dateTime().clientDefault(() => DateTime.now())();
+}
+
 @DriftDatabase(
   tables: [
     Accounts,
@@ -40,13 +56,14 @@ class EmailVerifications extends Table {
     ChecklistRuns,
     ChecklistRunItems,
     EmailVerifications,
+    Invites,
   ],
 )
 class AppServerDatabase extends _$AppServerDatabase {
   AppServerDatabase(PgDatabase db) : super(db);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   SqlDialect get dialect => SqlDialect.postgres;
@@ -54,7 +71,11 @@ class AppServerDatabase extends _$AppServerDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => m.createAll(),
-        // TODO: add onUpgrade steps when bumping schemaVersion in prod
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(invites);
+          }
+        },
       );
 
   static Future<AppServerDatabase> openFromUrl(String url) async {

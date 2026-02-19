@@ -68,7 +68,7 @@ class SyncCoordinator {
       for (final row in rows) {
         final version = row['version'] as int? ?? since;
         if (version > maxVersion) maxVersion = version;
-        await db.into(table).insert(_toInsertable(row),
+        await db.into(table).insert(_toInsertable(table, row),
             mode: InsertMode.insertOrReplace);
       }
     }
@@ -126,11 +126,75 @@ class SyncCoordinator {
     }
   }
 
-  RawValuesInsertable _toInsertable(Map<String, dynamic> row) {
+  RawValuesInsertable _toInsertable(
+    TableInfo<Table, dynamic> table,
+    Map<String, dynamic> row,
+  ) {
     final mapped = <String, Expression>{};
+    final knownColumns = {for (final c in table.$columns) c.$name: c};
     for (final entry in row.entries) {
-      mapped[entry.key] = Variable(entry.value);
+      final resolvedKey = _resolveColumnKey(entry.key, knownColumns);
+      if (resolvedKey == null) continue;
+      final column = knownColumns[resolvedKey]!;
+      final coerced = _coerceValue(column, entry.value);
+      mapped[resolvedKey] = Variable(coerced);
     }
     return RawValuesInsertable(mapped);
+  }
+
+  String? _resolveColumnKey(
+    String inputKey,
+    Map<String, GeneratedColumn<dynamic>> knownColumns,
+  ) {
+    if (knownColumns.containsKey(inputKey)) return inputKey;
+    final snake = _toSnakeCase(inputKey);
+    if (knownColumns.containsKey(snake)) return snake;
+    return null;
+  }
+
+  String _toSnakeCase(String value) {
+    final buffer = StringBuffer();
+    for (var i = 0; i < value.length; i++) {
+      final ch = value[i];
+      final isUpper = ch.toUpperCase() == ch && ch.toLowerCase() != ch;
+      if (isUpper && i > 0) buffer.write('_');
+      buffer.write(ch.toLowerCase());
+    }
+    return buffer.toString();
+  }
+
+  dynamic _coerceValue(GeneratedColumn<dynamic> column, dynamic value) {
+    if (value == null) return null;
+
+    if (column.type == DriftSqlType.dateTime) {
+      if (value is DateTime) return value;
+      if (value is String) {
+        final parsed = DateTime.tryParse(value);
+        if (parsed != null) return parsed;
+      }
+      if (value is int) {
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+    }
+
+    if (column.type == DriftSqlType.bool) {
+      if (value is bool) return value;
+      if (value is int) return value != 0;
+      if (value is String) {
+        final v = value.toLowerCase();
+        if (v == 'true' || v == '1') return true;
+        if (v == 'false' || v == '0') return false;
+      }
+    }
+
+    if (column.type == DriftSqlType.int && value is String) {
+      return int.tryParse(value) ?? value;
+    }
+
+    if (column.type == DriftSqlType.double && value is String) {
+      return double.tryParse(value) ?? value;
+    }
+
+    return value;
   }
 }

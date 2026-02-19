@@ -191,10 +191,18 @@ class CustomerRepository {
 
   CustomerRepository(this.customerDao);
 
-  Future<int> addCustomer(String name, String contactInfo, int user) {
+  Future<int> addCustomer(
+    String name,
+    String contactInfo,
+    int user, {
+    int? id,
+    String? address,
+  }) {
     final customer = CustomersCompanion.insert(
+      id: id != null ? Value(id) : const Value.absent(),
       name: name,
       contactInfo: contactInfo,
+      address: Value(address),
       managedBy: user,
     );
     return customerDao.insertCustomer(customer);
@@ -207,12 +215,14 @@ class CustomerRepository {
     required String name,
     required String contactInfo,
     String? address,
+    int? version,
   }) {
     return customerDao.updateCustomer(
       id: id,
       name: name,
       contactInfo: contactInfo,
       address: address,
+      version: version,
     );
   }
 

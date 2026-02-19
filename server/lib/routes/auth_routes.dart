@@ -13,6 +13,7 @@ import 'package:mailer/smtp_server.dart';
 import 'package:http/http.dart' as http;
 
 import '../server_database.dart';
+import '../middleware/jwt_middleware.dart';
 
 class AuthRoutes {
   final AppServerDatabase db;
@@ -36,6 +37,10 @@ class AuthRoutes {
     r.post('/login', _login);
     r.post('/refresh', _refresh);
     r.get('/verify', _verify);
+    r.post(
+      '/invite',
+      Pipeline().addMiddleware(jwtMiddleware(secret)).addHandler(_invite),
+    );
     return r;
   }
 
@@ -45,32 +50,70 @@ class AuthRoutes {
     final email = (data['email'] as String?)?.trim();
     final password = data['password'] as String?;
     final companyName = (data['companyName'] as String?)?.trim();
+    final inviteCode = (data['inviteCode'] as String?)?.trim();
 
     if (email == null || password == null || email.isEmpty || password.isEmpty) {
       return Response(400, body: 'email and password required');
+    }
+    final hasInvite = inviteCode != null && inviteCode.isNotEmpty;
+    final hasCompany = companyName != null && companyName.isNotEmpty;
+    if (!hasInvite && !hasCompany) {
+      return Response(
+        400,
+        body: 'companyName required for owner signup or inviteCode for employee signup',
+      );
     }
 
     final salt = _generateSalt();
     final hash = _hashPassword(password, salt);
 
     return db.transaction(() async {
+      final normalizedEmail = email.toLowerCase();
       final existing = await (db.select(db.accounts)
-            ..where((a) => a.email.equals(email)))
+            ..where((a) => a.email.equals(normalizedEmail)))
           .getSingleOrNull();
       if (existing != null) {
         return Response(409, body: 'email already exists');
       }
 
+      InvitesData? invite;
+      if (hasInvite) {
+        final now = DateTime.now();
+        invite = await (db.select(db.invites)
+              ..where((i) => i.code.equals(inviteCode!))
+              ..where((i) => i.usedAt.isNull())
+              ..where((i) => i.expiresAt.isBiggerThanValue(now)))
+            .getSingleOrNull();
+        if (invite == null) {
+          return Response(400, body: 'invalid or expired invite code');
+        }
+        if (invite.email.toLowerCase() != normalizedEmail) {
+          return Response(400, body: 'invite email does not match');
+        }
+      }
+
       final accountId = await db.into(db.accounts).insert(
             AccountsCompanion.insert(
-              email: email,
+              email: normalizedEmail,
               passwordHash: hash,
               passwordSalt: Value(salt),
             ),
           );
 
       int? companyId;
-      if (companyName != null && companyName.isNotEmpty) {
+      if (hasInvite && invite != null) {
+        companyId = invite.companyId;
+        await db.into(db.companyMembers).insert(
+              CompanyMembersCompanion.insert(
+                companyId: companyId,
+                accountId: accountId,
+                role: invite.role,
+                invitedBy: Value(invite.invitedBy),
+              ),
+            );
+        await (db.update(db.invites)..where((i) => i.id.equals(invite.id)))
+            .write(InvitesCompanion(usedAt: Value(DateTime.now())));
+      } else if (hasCompany) {
         companyId = await db.into(db.company).insert(
               CompanyCompanion.insert(
                 name: companyName,
@@ -86,11 +129,14 @@ class AuthRoutes {
             );
       }
 
-      await _sendVerificationEmail(accountId, email);
+      await _sendVerificationEmail(accountId, normalizedEmail);
       return Response(
         202,
-        body:
-            'Account created. Please check your email to verify before logging in.',
+        body: jsonEncode({
+          'message':
+              'Account created. Please check your email to verify before logging in.',
+        }),
+        headers: {'content-type': 'application/json'},
       );
     });
   }
@@ -104,9 +150,10 @@ class AuthRoutes {
     if (email == null || password == null || email.isEmpty || password.isEmpty) {
       return Response(400, body: 'email and password required');
     }
+    final normalizedEmail = email.toLowerCase();
 
     final account = await (db.select(db.accounts)
-          ..where((a) => a.email.equals(email)))
+          ..where((a) => a.email.equals(normalizedEmail)))
         .getSingleOrNull();
     if (account == null) {
       return Response(401, body: 'invalid credentials');
@@ -168,6 +215,65 @@ class AuthRoutes {
     });
 
     return Response.ok('Email verified');
+  }
+
+  Future<Response> _invite(Request req) async {
+    final auth = req.context['auth'] as Map<String, dynamic>?;
+    final accountId = auth?['accountId'] as int?;
+    if (accountId == null) {
+      return Response(401, body: 'missing auth context');
+    }
+
+    final body = await req.readAsString();
+    final data = jsonDecode(body) as Map<String, dynamic>;
+    final email = (data['email'] as String?)?.trim();
+    if (email == null || email.isEmpty) {
+      return Response(400, body: 'email required');
+    }
+
+    final adminMember = await (db.select(db.companyMembers)
+          ..where((m) => m.accountId.equals(accountId))
+          ..where((m) => m.role.equals('admin')))
+        .getSingleOrNull();
+    if (adminMember == null) {
+      return Response(403, body: 'admin role required');
+    }
+
+    final normalizedEmail = email.toLowerCase();
+    final existingAccount = await (db.select(db.accounts)
+          ..where((a) => a.email.equals(normalizedEmail)))
+        .getSingleOrNull();
+    if (existingAccount != null) {
+      return Response(409, body: 'account already exists');
+    }
+
+    final code = _generateInviteCode();
+    final expiresAt = DateTime.now().add(const Duration(days: 7));
+
+    final inviteId = await db.into(db.invites).insert(
+          InvitesCompanion.insert(
+            companyId: adminMember.companyId,
+            invitedBy: Value(accountId),
+            email: normalizedEmail,
+            role: 'user',
+            code: code,
+            expiresAt: expiresAt,
+          ),
+        );
+
+    final company = await (db.select(db.company)
+          ..where((c) => c.id.equals(adminMember.companyId)))
+        .getSingleOrNull();
+    await _sendInviteEmail(
+      normalizedEmail,
+      code,
+      companyName: company?.name,
+    );
+
+    return Response.ok(
+      jsonEncode({'inviteId': inviteId, 'message': 'Invite sent'}),
+      headers: {'content-type': 'application/json'},
+    );
   }
 
   Future<Response> _refresh(Request req) async {
@@ -294,6 +400,12 @@ class AuthRoutes {
     final random = Random.secure();
     final bytes = List<int>.generate(length, (_) => random.nextInt(256));
     return base64Encode(bytes);
+  }
+
+  String _generateInviteCode({int length = 32}) {
+    final random = Random.secure();
+    final bytes = List<int>.generate(length, (_) => random.nextInt(256));
+    return base64UrlEncode(bytes);
   }
 
   String _hashPassword(String password, String saltBase64,
@@ -450,6 +562,107 @@ class AuthRoutes {
       stderr.writeln('Verification email sent to $email');
     } catch (e, st) {
       stderr.writeln('Failed to send verification email to $email: $e\n$st');
+    }
+  }
+
+  Future<void> _sendInviteEmail(
+    String email,
+    String code, {
+    String? companyName,
+  }) async {
+    final inviteBase = Platform.environment['INVITE_BASE_URL'] ??
+        Platform.environment['VERIFY_BASE_URL'] ??
+        'http://localhost:8080';
+    final inviteUri = Uri.parse(inviteBase).replace(
+      path: Uri.parse(inviteBase).path.isEmpty ? '/' : Uri.parse(inviteBase).path,
+      queryParameters: {
+        'invite': code,
+        'email': email,
+      },
+    );
+    final link = inviteUri.toString();
+    final subject = companyName == null || companyName.isEmpty
+        ? 'You are invited to Hammer Ops'
+        : 'You are invited to join $companyName on Hammer Ops';
+    final body =
+        'You have been invited to join Hammer Ops. Click to sign up: $link';
+
+    // Prefer Mailgun HTTP API if configured
+    final mgKey = Platform.environment['MAILGUN_API_KEY'];
+    final mgDomain = Platform.environment['MAILGUN_DOMAIN'];
+    final mgFrom =
+        Platform.environment['MAILGUN_FROM'] ?? Platform.environment['SMTP_FROM'] ?? 'no-reply@$mgDomain';
+    if (mgKey != null && mgDomain != null) {
+      final uri = Uri.https('$mgDomain', '/v3/mail/send');
+      final auth = '$mgKey';
+      final payload = {
+        "personalizations": [
+          {
+            "to": [
+              {"email": email}
+            ]
+          }
+        ],
+        "from": {"email": mgFrom},
+        "subject": subject,
+        "content": [
+          {
+            "type": "text/plain",
+            "value": body
+          }
+        ]
+      };
+      try {
+        final resp = await http.post(
+          uri,
+          headers: {
+            'Authorization': 'Bearer $auth',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(payload),
+        );
+        if (resp.statusCode >= 200 && resp.statusCode < 300) {
+          stderr.writeln('Invite email sent via Mailgun to $email');
+          return;
+        } else {
+          stderr.writeln('Mailgun send failed (${resp.statusCode}): ${resp.body}');
+        }
+      } catch (e, st) {
+        stderr.writeln('Mailgun send error to $email: $e\n$st');
+      }
+    }
+
+    // Fallback to SMTP
+    final host = Platform.environment['SMTP_HOST'];
+    final port = int.tryParse(Platform.environment['SMTP_PORT'] ?? '587') ?? 587;
+    final user = Platform.environment['SMTP_USER'];
+    final pass = Platform.environment['SMTP_PASS'];
+    final from = Platform.environment['SMTP_FROM'] ?? user;
+
+    if (host == null || user == null || pass == null) {
+      stderr.writeln('SMTP not configured; skipping invite email for $email');
+      return;
+    }
+
+    final smtp = SmtpServer(
+      host,
+      port: port,
+      username: user,
+      password: pass,
+      ssl: port == 465,
+      allowInsecure: port == 587,
+    );
+    final message = Message()
+      ..from = Address(from!)
+      ..recipients.add(email)
+      ..subject = subject
+      ..text = body;
+
+    try {
+      await send(message, smtp);
+      stderr.writeln('Invite email sent to $email');
+    } catch (e, st) {
+      stderr.writeln('Failed to send invite email to $email: $e\n$st');
     }
   }
 }

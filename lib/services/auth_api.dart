@@ -5,17 +5,19 @@ class AuthApi {
 
   final ApiClient api;
 
-  Future<AuthTokens> signup({
+  Future<SignupResult> signup({
     required String email,
     required String password,
     String? companyName,
+    String? inviteCode,
   }) async {
     final res = await api.postJson('/auth/signup', body: {
       'email': email,
       'password': password,
       if (companyName != null) 'companyName': companyName,
+      if (inviteCode != null) 'inviteCode': inviteCode,
     });
-    return AuthTokens.fromJson(res);
+    return SignupResult.fromJson(res);
   }
 
   Future<AuthTokens> login({
@@ -29,10 +31,46 @@ class AuthApi {
     return AuthTokens.fromJson(res);
   }
 
+  Future<InviteResult> invite({
+    required String email,
+    required String accessToken,
+  }) async {
+    final res = await api.postJson(
+      '/auth/invite',
+      bearer: accessToken,
+      body: {'email': email},
+    );
+    return InviteResult.fromJson(res);
+  }
+
   Future<AuthTokens> refresh(String refreshToken) async {
     final res =
         await api.postJson('/auth/refresh', body: {'refreshToken': refreshToken});
     return AuthTokens.fromJson(res);
+  }
+}
+
+class SignupResult {
+  final String message;
+
+  SignupResult({required this.message});
+
+  factory SignupResult.fromJson(Map<String, dynamic> json) {
+    return SignupResult(message: json['message'] as String? ?? 'Account created.');
+  }
+}
+
+class InviteResult {
+  final int inviteId;
+  final String message;
+
+  InviteResult({required this.inviteId, required this.message});
+
+  factory InviteResult.fromJson(Map<String, dynamic> json) {
+    return InviteResult(
+      inviteId: json['inviteId'] as int? ?? 0,
+      message: json['message'] as String? ?? 'Invite sent.',
+    );
   }
 }
 

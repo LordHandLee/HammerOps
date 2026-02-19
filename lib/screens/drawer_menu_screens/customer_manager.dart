@@ -28,12 +28,23 @@ class _CustomerManagerScreenState extends State<CustomerManagerScreen> {
     setState(_load);
   }
 
-  int _managedByFallback() {
+  Future<int> _managedByFallback() async {
     try {
       return service.user.getCurrentUser();
     } catch (_) {
-      return 1; // fallback when current user is not set
+      final tokenBundle = await service.auth.tokenStorage.load();
+      return tokenBundle?.accountId ?? 1;
     }
+  }
+
+  Future<void> _queueAndSyncUpsert(Map<String, dynamic> row) async {
+    await service.syncCoordinator.queueUpsert('customers', row);
+    await service.syncCoordinator.sync();
+  }
+
+  Future<void> _queueAndSyncDelete(int id) async {
+    await service.syncCoordinator.queueDelete('customers', id);
+    await service.syncCoordinator.sync();
   }
 
   Future<void> _showCustomerDialog({Customer? existing}) async {
@@ -74,27 +85,80 @@ class _CustomerManagerScreenState extends State<CustomerManagerScreen> {
               onPressed: () async {
                 final name = nameCtrl.text.trim();
                 final contact = contactCtrl.text.trim();
+                final address = addressCtrl.text.trim().isEmpty
+                    ? null
+                    : addressCtrl.text.trim();
                 if (name.isEmpty || contact.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Name and contact are required')),
                   );
                   return;
                 }
+                final managedBy =
+                    existing?.managedBy ?? await _managedByFallback();
+                final now = DateTime.now().toUtc();
                 if (existing == null) {
+                  final newId = -DateTime.now().microsecondsSinceEpoch;
                   await service.customer.addCustomer(
                     name,
                     contact,
-                    _managedByFallback(),
+                    managedBy,
+                    id: newId,
+                    address: address,
                   );
+                  try {
+                    await _queueAndSyncUpsert({
+                      'id': newId,
+                      'name': name,
+                      'contactInfo': contact,
+                      'address': address,
+                      'managedBy': managedBy,
+                      'updatedAt': now.toIso8601String(),
+                      'version': 0,
+                      'deletedAt': null,
+                    });
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Customer created locally; sync pending: $e',
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 } else {
+                  final nextVersion = existing.version + 1;
                   await service.customer.updateCustomer(
                     id: existing.id,
                     name: name,
                     contactInfo: contact,
-                    address: addressCtrl.text.trim().isEmpty
-                        ? null
-                        : addressCtrl.text.trim(),
+                    address: address,
+                    version: nextVersion,
                   );
+                  try {
+                    await _queueAndSyncUpsert({
+                      'id': existing.id,
+                      'name': name,
+                      'contactInfo': contact,
+                      'address': address,
+                      'managedBy': managedBy,
+                      'updatedAt': now.toIso8601String(),
+                      'version': nextVersion,
+                      'deletedAt': existing.deletedAt?.toIso8601String(),
+                    });
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Customer updated locally; sync pending: $e',
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 }
                 if (context.mounted) Navigator.pop(context, true);
               },
@@ -133,6 +197,15 @@ class _CustomerManagerScreenState extends State<CustomerManagerScreen> {
 
     if (confirm == true) {
       await service.customer.deleteCustomer(customer.id);
+      try {
+        await _queueAndSyncDelete(customer.id);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Customer deleted locally; sync failed: $e')),
+          );
+        }
+      }
       _refresh();
     }
   }
